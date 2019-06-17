@@ -6,7 +6,7 @@ namespace Z80AssemblyParsing.Commands
 {
     public class LoadCommand : CommandWithTwoOperands
     {
-        protected LoadCommand(string sourceText, Operand source, Operand destination) : base(sourceText, source, destination)
+        public LoadCommand(string sourceText, Operand source, Operand destination) : base(sourceText, source, destination)
         {
         }
 

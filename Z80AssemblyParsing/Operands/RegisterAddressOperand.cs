@@ -8,7 +8,7 @@ namespace Z80AssemblyParsing.Operands
     {
         public RegisterAddressOperand(Register register)
         {
-            Register = Register;
+            Register = register;
         }
 
         public Register Register { get; }

@@ -15,13 +15,14 @@ namespace Z80AssemblyParsing
             SourceText = sourceText;
         }
 
-        public string SourceText { get; protected set; }
+        public string SourceText { get; }
         public abstract OpCode OpCode { get; }
+        public string Label { get; }
     }
 
     public enum OpCode
     {
-        ADD, ADC, LD, POP, PUSH, LDI, LDIR, LDD, LDDR
+        INVALID, ADD, ADC, LD, POP, PUSH, LDI, LDIR, LDD, LDDR
     }
 
     public enum Register

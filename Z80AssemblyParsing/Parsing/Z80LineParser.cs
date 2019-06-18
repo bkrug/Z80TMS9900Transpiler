@@ -12,7 +12,10 @@ namespace Z80AssemblyParsing.Parsing
     {
         public Command ParseLine(string line)
         {
+            var hasLabel = line[0] != ' ' && line[0] != '\t';
             var parts = line.Split(' ').Where(p => !string.IsNullOrEmpty(p)).ToList();
+            if (hasLabel)
+                parts = parts.Skip(1).ToList();
             if (!Enum.TryParse<OpCode>(parts[0], out var opCode))
                 throw new Exception("Invalid OpCode");
             var operandPart = string.Join("", parts.Skip(1));

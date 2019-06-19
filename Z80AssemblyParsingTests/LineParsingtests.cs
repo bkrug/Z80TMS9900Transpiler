@@ -109,5 +109,64 @@ namespace Z80AssemblyParsingTests
             var parser = new Z80LineParser();
             Assert.Throws<Exception>(() => parser.ParseLine(sourceCode));
         }
+
+        [Test]
+        public void LineParsing_LoadCommand_EightBitImmediate()
+        {
+            var sourceCode = "      LD   B,132";
+
+            var parser = new Z80LineParser();
+            var actualCommand = parser.ParseLine(sourceCode) as LoadCommand;
+            var actualSourceOperand = actualCommand.SourceOperand as ImediateOperand;
+            var actualDestinationOperand = actualCommand.DestinationOperand as RegisterOperand;
+
+            Assert.IsNotNull(actualCommand);
+            Assert.IsNotNull(actualSourceOperand);
+            Assert.AreEqual(132, actualSourceOperand.ImmediateValue);
+            Assert.IsNotNull(actualDestinationOperand);
+            Assert.AreEqual(Register.B, actualDestinationOperand.Register);
+        }
+
+        [Test]
+        public void LineParsing_LoadCommand_ImmediateTooLong_ShouldFail()
+        {
+            var sourceCode = "      LD   B,256";
+            var parser = new Z80LineParser();
+            Assert.Throws<Exception>(() => parser.ParseLine(sourceCode));
+        }
+
+        [Test]
+        public void LineParsing_LoadCommand_FromMemory_EightBit()
+        {
+            var sourceCode = "      LD   B,(48a9)";
+
+            var parser = new Z80LineParser();
+            var actualCommand = parser.ParseLine(sourceCode) as LoadCommand;
+            var actualSourceOperand = actualCommand.SourceOperand as ExtendedAddressOperand;
+            var actualDestinationOperand = actualCommand.DestinationOperand as RegisterOperand;
+
+            Assert.IsNotNull(actualCommand);
+            Assert.IsNotNull(actualSourceOperand);
+            Assert.AreEqual(0x48a9, actualSourceOperand.MemoryAddress);
+            Assert.IsNotNull(actualDestinationOperand);
+            Assert.AreEqual(Register.B, actualDestinationOperand.Register);
+        }
+
+        [Test]
+        public void LineParsing_LoadCommand_FromMemory_SixteenBit()
+        {
+            var sourceCode = "      LD   BC,(48a9)";
+
+            var parser = new Z80LineParser();
+            var actualCommand = parser.ParseLine(sourceCode) as LoadCommand;
+            var actualSourceOperand = actualCommand.SourceOperand as ExtendedAddressOperand;
+            var actualDestinationOperand = actualCommand.DestinationOperand as RegisterOperand;
+
+            Assert.IsNotNull(actualCommand);
+            Assert.IsNotNull(actualSourceOperand);
+            Assert.AreEqual(0x48a9, actualSourceOperand.MemoryAddress);
+            Assert.IsNotNull(actualDestinationOperand);
+            Assert.AreEqual(Register.B, actualDestinationOperand.Register);
+        }
     }
 }

@@ -9,9 +9,23 @@ namespace Z80AssemblyParsing
         public abstract string DisplayValue { get; }
         private List<Type> SixteenBitOperands = new List<Type>()
         {
-            typeof(RegisterExtendedOperand), typeof(ImediateExtendedOperand), typeof(ExtendedAddressOperand)
+            typeof(RegisterExtendedOperand), typeof(ImediateExtendedOperand)
         };
-        public OperandSize OperandSize => SixteenBitOperands.Contains(GetType()) ? OperandSize.SixteenBit : OperandSize.EightBit;
+        private List<Type> EightBitOperands = new List<Type>()
+        {
+            typeof(RegisterOperand), typeof(ImediateOperand)
+        };
+        public OperandSize OperandSize {
+            get
+            {
+                var operandType = GetType();
+                if (SixteenBitOperands.Contains(operandType))
+                    return OperandSize.SixteenBit;
+                if (EightBitOperands.Contains(operandType))
+                    return OperandSize.EightBit;
+                return OperandSize.Unknown;
+            }
+        }
     }
 
     public abstract class Command

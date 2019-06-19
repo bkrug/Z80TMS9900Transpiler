@@ -50,29 +50,22 @@ namespace Z80AssemblyParsing.Parsing
                 {
                     if (byte.TryParse(operandString, out var immediateNumber))
                         return new ImediateOperand(immediateNumber);
-                    if (Enum.TryParse<Register>(operandString, out var register))
+                    if (Enum.GetNames(typeof(Register)).Contains(operandString) && Enum.TryParse<Register>(operandString, out var register))
                         return new RegisterOperand(register);
                 }
                 if (expectedSize != OperandSize.EightBit)
                 {
                     if (ushort.TryParse(operandString, out var immediate16BitNumber))
                         return new ImediateExtendedOperand(immediate16BitNumber);
-                    if (Enum.TryParse<ExtendedRegister>(operandString, out var extendedRegister))
+                    if (Enum.GetNames(typeof(ExtendedRegister)).Contains(operandString) && Enum.TryParse<ExtendedRegister>(operandString, out var extendedRegister))
                         return new RegisterExtendedOperand(extendedRegister);
                 }
             }
             else
             {
                 var operandWithoutParens = operandString.TrimStart('(').TrimEnd(')');
-                if (expectedSize != OperandSize.SixteenBit)
-                {
-
-                }
-                if (expectedSize != OperandSize.EightBit)
-                {
-                    if (ushort.TryParse(operandWithoutParens, out var memoryAddress))
-                        return new ExtendedAddressOperand(memoryAddress);
-                }
+                if (ushort.TryParse(operandWithoutParens, out var memoryAddress))
+                    return new ExtendedAddressOperand(memoryAddress);
             }
             throw new Exception($"Invalid operand: {operandString}");
         }

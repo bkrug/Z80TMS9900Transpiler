@@ -4,9 +4,9 @@ using System.Text;
 
 namespace Z80AssemblyParsing.Operands
 {
-    public class RegisterAddressOperand : Operand
+    public class RegisterOperand : Operand
     {
-        public RegisterAddressOperand(Register register)
+        public RegisterOperand(Register register)
         {
             Register = register;
         }

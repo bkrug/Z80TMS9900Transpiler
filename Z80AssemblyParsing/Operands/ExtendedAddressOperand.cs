@@ -12,6 +12,6 @@ namespace Z80AssemblyParsing.Operands
         }
 
         public ushort MemoryAddress { get; }
-        public override string DisplayValue => MemoryAddress.ToString();
+        public override string DisplayValue => $"({MemoryAddress})";
     }
 }

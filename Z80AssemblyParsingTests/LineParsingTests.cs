@@ -136,11 +136,39 @@ namespace Z80AssemblyParsingTests
         }
 
         [Test]
+        public void LineParsing_LoadCommand_HexPrefix()
+        {
+            var sourceCode = "      LD   B,#AA";
+
+            var parser = new Z80LineParser("#", "");
+            var actualCommand = parser.ParseLine(sourceCode) as LoadCommand;
+            var actualSourceOperand = actualCommand.SourceOperand as ImediateOperand;
+            var actualDestinationOperand = actualCommand.DestinationOperand as RegisterExtendedOperand;
+
+            Assert.IsNotNull(actualSourceOperand);
+            Assert.AreEqual(0xAA, actualSourceOperand.ImmediateValue);
+        }
+
+        [Test]
+        public void LineParsing_LoadCommand_HexNumberNoPrefix()
+        {
+            var sourceCode = "      LD   B,AA";
+
+            var parser = new Z80LineParser("", "");
+            var actualCommand = parser.ParseLine(sourceCode) as LoadCommand;
+            var actualSourceOperand = actualCommand.SourceOperand as ImediateOperand;
+            var actualDestinationOperand = actualCommand.DestinationOperand as RegisterExtendedOperand;
+
+            Assert.IsNotNull(actualSourceOperand);
+            Assert.AreEqual(0xAA, actualSourceOperand.ImmediateValue);
+        }
+
+        [Test]
         public void LineParsing_LoadCommand_FromMemory_EightBit()
         {
-            var sourceCode = "      LD   B,(48a9)";
+            var sourceCode = "      LD   B,(48a9h)";
 
-            var parser = new Z80LineParser();
+            var parser = new Z80LineParser("", "h");
             var actualCommand = parser.ParseLine(sourceCode) as LoadCommand;
             var actualSourceOperand = actualCommand.SourceOperand as ExtendedAddressOperand;
             var actualDestinationOperand = actualCommand.DestinationOperand as RegisterOperand;
@@ -155,18 +183,18 @@ namespace Z80AssemblyParsingTests
         [Test]
         public void LineParsing_LoadCommand_FromMemory_SixteenBit()
         {
-            var sourceCode = "      LD   BC,(48a9)";
+            var sourceCode = "      LD   BC,(#48a9)";
 
-            var parser = new Z80LineParser();
+            var parser = new Z80LineParser("#", "");
             var actualCommand = parser.ParseLine(sourceCode) as LoadCommand;
             var actualSourceOperand = actualCommand.SourceOperand as ExtendedAddressOperand;
-            var actualDestinationOperand = actualCommand.DestinationOperand as RegisterOperand;
+            var actualDestinationOperand = actualCommand.DestinationOperand as RegisterExtendedOperand;
 
             Assert.IsNotNull(actualCommand);
             Assert.IsNotNull(actualSourceOperand);
             Assert.AreEqual(0x48a9, actualSourceOperand.MemoryAddress);
             Assert.IsNotNull(actualDestinationOperand);
-            Assert.AreEqual(Register.B, actualDestinationOperand.Register);
+            Assert.AreEqual(ExtendedRegister.BC, actualDestinationOperand.Register);
         }
     }
 }

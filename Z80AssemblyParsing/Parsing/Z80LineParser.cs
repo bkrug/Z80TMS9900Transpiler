@@ -5,11 +5,22 @@ using System.Text;
 using Z80AssemblyParsing.Commands;
 using Z80AssemblyParsing.Operands;
 using Z80AssemblyParsing.Parsing;
+using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace Z80AssemblyParsing.Parsing
 {
     public class Z80LineParser
     {
+        private string _hexPrefix;
+        private string _hexSuffix;
+
+        public Z80LineParser(string hexPrefix = "", string hexSuffix = "h")
+        {
+            _hexPrefix = hexPrefix ?? string.Empty;
+            _hexSuffix = hexSuffix ?? string.Empty;
+        }
+
         public Command ParseLine(string line)
         {
             var hasLabel = line[0] != ' ' && line[0] != '\t';
@@ -43,19 +54,19 @@ namespace Z80AssemblyParsing.Parsing
 
         private Operand GetOperand(string operandString, OperandSize expectedSize = OperandSize.Unknown)
         {
-            var operandHasParens = operandString.StartsWith("(") && operandString.EndsWith("(");
+            var operandHasParens = operandString.StartsWith("(") && operandString.EndsWith(")");
             if (!operandHasParens)
             {
                 if (expectedSize != OperandSize.SixteenBit)
                 {
-                    if (byte.TryParse(operandString, out var immediateNumber))
+                    if (TryByteParse(operandString, out var immediateNumber))
                         return new ImediateOperand(immediateNumber);
                     if (Enum.GetNames(typeof(Register)).Contains(operandString) && Enum.TryParse<Register>(operandString, out var register))
                         return new RegisterOperand(register);
                 }
                 if (expectedSize != OperandSize.EightBit)
                 {
-                    if (ushort.TryParse(operandString, out var immediate16BitNumber))
+                    if (TryUShortParse(operandString, out var immediate16BitNumber))
                         return new ImediateExtendedOperand(immediate16BitNumber);
                     if (Enum.GetNames(typeof(ExtendedRegister)).Contains(operandString) && Enum.TryParse<ExtendedRegister>(operandString, out var extendedRegister))
                         return new RegisterExtendedOperand(extendedRegister);
@@ -64,10 +75,36 @@ namespace Z80AssemblyParsing.Parsing
             else
             {
                 var operandWithoutParens = operandString.TrimStart('(').TrimEnd(')');
-                if (ushort.TryParse(operandWithoutParens, out var memoryAddress))
+                if (TryUShortParse(operandWithoutParens, out var memoryAddress))
                     return new ExtendedAddressOperand(memoryAddress);
             }
             throw new Exception($"Invalid operand: {operandString}");
+        }
+
+        public bool TryByteParse(string sourceString, out byte number)
+        {
+            if (new Regex(_hexPrefix + "[0-9a-b][0-9a-b]" + _hexSuffix, RegexOptions.IgnoreCase).IsMatch(sourceString))
+            {
+                var hexNoPrefixSuffix = sourceString.ToCharArray().Skip(_hexPrefix.Length).ToArray();
+                hexNoPrefixSuffix = hexNoPrefixSuffix.Take(hexNoPrefixSuffix.Length - _hexSuffix.Length).ToArray();
+                return byte.TryParse(new string(hexNoPrefixSuffix), NumberStyles.HexNumber, CultureInfo.CurrentCulture, out number);
+            }
+            if (byte.TryParse(sourceString, out number))
+                return true;
+            return false;
+        }
+
+        public bool TryUShortParse(string sourceString, out ushort number)
+        {
+            if (new Regex(_hexPrefix + "[0-9a-b][0-9a-b][0-9a-b][0-9a-b]" + _hexSuffix, RegexOptions.IgnoreCase).IsMatch(sourceString))
+            {
+                var hexNoPrefixSuffix = sourceString.ToCharArray().Skip(_hexPrefix.Length).ToArray();
+                hexNoPrefixSuffix = hexNoPrefixSuffix.Take(hexNoPrefixSuffix.Length - _hexSuffix.Length).ToArray();
+                return ushort.TryParse(new string(hexNoPrefixSuffix), NumberStyles.HexNumber, CultureInfo.CurrentCulture, out number);
+            }
+            if (ushort.TryParse(sourceString, out number))
+                return true;
+            return false;
         }
     }
 }

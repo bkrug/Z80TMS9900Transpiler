@@ -11,7 +11,14 @@ namespace TMS9900Translating.Operands
             ImmediateValue = immediateValue;
         }
 
+        public ImdediateTmsOperand(byte immediateValue)
+        {
+            ImmediateValue = immediateValue;
+            _format = "X2";
+        }
+
+        private string _format = "X4";
         public ushort ImmediateValue { get; }
-        public override string DisplayValue => ImmediateValue.ToString();
+        public override string DisplayValue => ">" + ImmediateValue.ToString(_format);
     }
 }

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using TmsCommand = TMS9900Translating.Command;
+using Z80Command = Z80AssemblyParsing.Command;
 
 namespace TMS9900Translating.Translating
 {
@@ -13,6 +15,11 @@ namespace TMS9900Translating.Translating
         {
             _registerMap = registerMap;
             _memoryMap = memoryMap;
+        }
+
+        public IEnumerable<TmsCommand> Translate(Z80Command sourceCommand)
+        {
+            throw new NotImplementedException();
         }
     }
 }

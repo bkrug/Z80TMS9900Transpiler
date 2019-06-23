@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Z80Command = Z80AssemblyParsing.Command;
 
 namespace TMS9900Translating.Commands
 {
     public abstract class CommandWithNoOperands : Command
     {
-        public CommandWithNoOperands(string sourceText) : base(sourceText) { }
+        public CommandWithNoOperands(Z80Command sourceCommand) : base(sourceCommand) { }
     }
 
     public abstract class CommandWithOneOperand : Command
     {
-        public CommandWithOneOperand(string sourceText, Operand operand) : base(sourceText) {
+        public CommandWithOneOperand(Z80Command sourceCommand, Operand operand) : base(sourceCommand) {
             Operand = operand;
         }
 
@@ -20,7 +21,7 @@ namespace TMS9900Translating.Commands
 
     public abstract class CommandWithTwoOperands : Command
     {
-        public CommandWithTwoOperands(string sourceText, Operand source, Operand destination) : base(sourceText) {
+        public CommandWithTwoOperands(Z80Command sourceCommand, Operand source, Operand destination) : base(sourceCommand) {
             SourceOperand = source;
             DestinationOperand = destination;
         }

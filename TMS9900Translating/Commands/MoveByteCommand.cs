@@ -6,7 +6,7 @@ namespace TMS9900Translating.Commands
 {
     public class MoveByteCommand : CommandWithTwoOperands
     {
-        public MoveByteCommand(string sourceString, Operand source, Operand destination) : base(sourceString, source, destination)
+        public MoveByteCommand(Z80AssemblyParsing.Command sourceCommand, Operand source, Operand destination) : base(sourceCommand, source, destination)
         {
         }
 

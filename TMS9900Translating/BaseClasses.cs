@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using TMS9900Translating.Operands;
+using Z80Command = Z80AssemblyParsing.Command;
 
 namespace TMS9900Translating
 {
@@ -12,12 +13,12 @@ namespace TMS9900Translating
     public abstract class Command
     {
         private Command() { }
-        public Command(string sourceText)
+        public Command(Z80Command sourceCommand)
         {
-            SourceText = sourceText;
+            SourceCommand = sourceCommand;
         }
 
-        public string SourceText { get; }
+        public Z80Command SourceCommand { get; }
         public abstract OpCode OpCode { get; }
         public string Label { get; }
     }

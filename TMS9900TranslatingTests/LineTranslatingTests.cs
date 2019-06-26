@@ -19,15 +19,12 @@ namespace TMS9900TranslatingTests
                 new Z80AssemblyParsing.Operands.RegisterOperand(Z80AssemblyParsing.Register.C),
                 new Z80AssemblyParsing.Operands.RegisterOperand(Z80AssemblyParsing.Register.B));
             var translator = new TMS9900Translator(
-                new List<RegisterMapElement>()
+                new List<(Z80AssemblyParsing.Register, WorkspaceRegister)>()
                 {
-                    new RegisterMapElement() { Z80Register = Z80AssemblyParsing.Register.B, TMS900Register = WorkspaceRegister.R2 },
-                    new RegisterMapElement() { Z80Register = Z80AssemblyParsing.Register.C, TMS900Register = WorkspaceRegister.R3 }
+                    (Z80AssemblyParsing.Register.B, WorkspaceRegister.R2),
+                    (Z80AssemblyParsing.Register.C, WorkspaceRegister.R3)
                 },
                 new List<MemoryMapElement>()
-                {
-                    new MemoryMapElement() { Z80Start = 0x4000, TMS9900Start = 0xA000, BlockLength = 0x6000 }
-                }
             );
             var tmsCommand = translator.Translate(z80Command).ToList();
 

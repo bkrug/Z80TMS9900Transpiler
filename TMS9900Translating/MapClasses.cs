@@ -7,6 +7,11 @@ namespace TMS9900Translating
         R1, R2, R3, R4, R5, R6, R7, R8, R9
     }
 
+    public enum ExpandedWorkspaceRegister
+    {
+        R1, R1LB, R2, R2LB, R3, R3LB, R4, R4LB, R5, R5LB, R6, R6LB, R7, R7LB, R8, R8LB, R9, R9LB
+    }
+
     public struct RegisterMapElement
     {
         public Z80AssemblyParsing.Register Z80Register { get; set; }

@@ -1,7 +1,9 @@
 # Z80TMS9900Transpiler
 Transpile Assembly code from Z80 assembly to TMS9900 assembly
 
-If this project were ever to be finished, the main goal would be to port MSX games to the TI-99/4a with minimal effort.
+If this project were ever to be finished, the main goal would be to port freeware MSX software to the TI-99/4a with minimal effort.
+Part of the reason that this is thought to be feasable is that both machines use the same VDP chip. 
+Granted even if this were to work, the resulting TMS9900 code would still need to be manually inspected for possible optimizations.
 The idea is to:
 * Parse the Z80 assembly code
 * Create TMS9900 assembly code with the same functionality

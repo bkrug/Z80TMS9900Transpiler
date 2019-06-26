@@ -96,7 +96,7 @@ namespace Z80AssemblyParsing.Parsing
 
         public bool TryUShortParse(string sourceString, out ushort number)
         {
-            if (new Regex(_hexPrefix + "[0-9a-b][0-9a-b][0-9a-b][0-9a-b]" + _hexSuffix, RegexOptions.IgnoreCase).IsMatch(sourceString))
+            if (new Regex(_hexPrefix + "[0-9a-f][0-9a-f][0-9a-f][0-9a-f]" + _hexSuffix, RegexOptions.IgnoreCase).IsMatch(sourceString))
             {
                 var hexNoPrefixSuffix = sourceString.ToCharArray().Skip(_hexPrefix.Length).ToArray();
                 hexNoPrefixSuffix = hexNoPrefixSuffix.Take(hexNoPrefixSuffix.Length - _hexSuffix.Length).ToArray();

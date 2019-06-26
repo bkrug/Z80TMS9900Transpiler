@@ -5,7 +5,6 @@ using TMS9900Translating;
 using TMS9900Translating.Commands;
 using TMS9900Translating.Translating;
 using Z80Register = Z80AssemblyParsing.Register;
-using Z80Operands = Z80AssemblyParsing.Operands;
 
 namespace TMS9900TranslatingTests
 {
@@ -23,9 +22,7 @@ namespace TMS9900TranslatingTests
         public void LineTranslating_LoadToMoveByte_TwoRegisters_NoLowBytes()
         {
             var z80SourceCommand = "    ld   B,C";
-            var z80Command = new Z80AssemblyParsing.Commands.LoadCommand(z80SourceCommand,
-                new Z80Operands.RegisterOperand(Z80Register.C),
-                new Z80Operands.RegisterOperand(Z80Register.B));
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
             var translator = new TMS9900Translator(
                 new List<(Z80Register, WorkspaceRegister)>()
                 {
@@ -44,9 +41,7 @@ namespace TMS9900TranslatingTests
         public void LineTranslating_LoadToMoveByte_TwoRegisters_LowBytes()
         {
             var z80SourceCommand = "    ld   B,C";
-            var z80Command = new Z80AssemblyParsing.Commands.LoadCommand(z80SourceCommand,
-                new Z80Operands.RegisterOperand(Z80Register.C),
-                new Z80Operands.RegisterOperand(Z80Register.B));
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
             var translator = new TMS9900Translator(
                 new List<(Z80Register, WorkspaceRegister)>()
                 {
@@ -65,9 +60,7 @@ namespace TMS9900TranslatingTests
         public void LineTranslating_LoadToMoveByte_OneRegisterAndImmediate_NoLowBytes()
         {
             var z80SourceCommand = "    ld   B,4Dh";
-            var z80Command = new Z80AssemblyParsing.Commands.LoadCommand(z80SourceCommand,
-                new Z80Operands.ImediateOperand(0x4D),
-                new Z80Operands.RegisterOperand(Z80Register.B));
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
             var translator = new TMS9900Translator(
                 new List<(Z80Register, WorkspaceRegister)>()
                 {
@@ -86,9 +79,7 @@ namespace TMS9900TranslatingTests
         public void LineTranslating_LoadToMoveByte_OneRegisterAndImmediate_LowBytes()
         {
             var z80SourceCommand = "    ld   B,4Dh";
-            var z80Command = new Z80AssemblyParsing.Commands.LoadCommand(z80SourceCommand,
-                new Z80Operands.ImediateOperand(0x4D),
-                new Z80Operands.RegisterOperand(Z80Register.B));
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
             var translator = new TMS9900Translator(
                 new List<(Z80Register, WorkspaceRegister)>()
                 {
@@ -108,9 +99,7 @@ namespace TMS9900TranslatingTests
         public void LineTranslating_LoadToMoveByte_LowerRegisterAndImmediate_LowBytes()
         {
             var z80SourceCommand = "    ld   C,4Dh";
-            var z80Command = new Z80AssemblyParsing.Commands.LoadCommand(z80SourceCommand,
-                new Z80Operands.ImediateOperand(0x4D),
-                new Z80Operands.RegisterOperand(Z80Register.C));
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
             var translator = new TMS9900Translator(
                 new List<(Z80Register, WorkspaceRegister)>()
                 {

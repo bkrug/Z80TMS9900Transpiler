@@ -27,7 +27,7 @@ namespace Z80AssemblyParsing.Parsing
             var parts = line.Split(' ').Where(p => !string.IsNullOrEmpty(p)).ToList();
             if (hasLabel)
                 parts = parts.Skip(1).ToList();
-            if (!Enum.TryParse<OpCode>(parts[0], out var opCode))
+            if (!Enum.TryParse<OpCode>(parts[0], ignoreCase: true, result: out var opCode))
                 throw new Exception("Invalid OpCode");
             var operandPart = string.Join("", parts.Skip(1));
             var operands = operandPart.Split(',').ToList();
@@ -83,7 +83,7 @@ namespace Z80AssemblyParsing.Parsing
 
         public bool TryByteParse(string sourceString, out byte number)
         {
-            if (new Regex(_hexPrefix + "[0-9a-b][0-9a-b]" + _hexSuffix, RegexOptions.IgnoreCase).IsMatch(sourceString))
+            if (new Regex(_hexPrefix + "[0-9a-f][0-9a-f]" + _hexSuffix, RegexOptions.IgnoreCase).IsMatch(sourceString))
             {
                 var hexNoPrefixSuffix = sourceString.ToCharArray().Skip(_hexPrefix.Length).ToArray();
                 hexNoPrefixSuffix = hexNoPrefixSuffix.Take(hexNoPrefixSuffix.Length - _hexSuffix.Length).ToArray();

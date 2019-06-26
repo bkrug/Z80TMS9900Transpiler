@@ -21,11 +21,12 @@ namespace TMS9900Translating
         public Z80Command SourceCommand { get; }
         public abstract OpCode OpCode { get; }
         public string Label { get; }
+        public abstract string CommandText { get; }
     }
 
     public enum OpCode
     {
-        MOV, MOVB
+        MOV, MOVB, LI
     }
 
     public enum OperandSize

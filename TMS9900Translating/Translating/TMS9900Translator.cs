@@ -33,7 +33,17 @@ namespace TMS9900Translating.Translating
             {
                 if (loadCommand.DestinationOperand.OperandSize == Z80AssemblyParsing.OperandSize.EightBit || loadCommand.SourceOperand.OperandSize == Z80AssemblyParsing.OperandSize.EightBit)
                 {
-                    return new List<TmsCommand>() { new MoveByteCommand(sourceCommand, GetOperand(loadCommand.SourceOperand), GetOperand(loadCommand.DestinationOperand)) };
+                    var sourceOperand = GetOperand(loadCommand.SourceOperand);
+                    var destinationOperand = GetOperand(loadCommand.DestinationOperand);
+                    if (sourceOperand is ImmediateTmsOperand && LowerByteHasData(loadCommand.DestinationOperand))
+                        return new List<TmsCommand>() {
+                            new LoadImmediateCommand(sourceCommand, (ImmediateTmsOperand)sourceOperand, new RegisterTmsOperand(WorkspaceRegister.R0)),
+                            new MoveByteCommand(sourceCommand, new RegisterTmsOperand(WorkspaceRegister.R0), destinationOperand)
+                        };
+                    if (sourceOperand is ImmediateTmsOperand)
+                        return new List<TmsCommand>() { new LoadImmediateCommand(sourceCommand, (ImmediateTmsOperand)sourceOperand, destinationOperand) };
+                    else
+                        return new List<TmsCommand>() { new MoveByteCommand(sourceCommand, sourceOperand, destinationOperand) };
                 }
                 else
                 {
@@ -47,12 +57,15 @@ namespace TMS9900Translating.Translating
         {
             var registerOperand = sourceOperand as Z80AssemblyParsing.Operands.RegisterOperand;
             var registerExtendedOperand = sourceOperand as Z80AssemblyParsing.Operands.RegisterExtendedOperand;
+            var immediateOperand = sourceOperand as Z80AssemblyParsing.Operands.ImediateOperand;
             if (registerOperand != null)
             {
                 if (ShouldUseLowByte(registerOperand.Register, out var lowByteLabel))
                     return new LabelTmsOperand(lowByteLabel);
                 return new RegisterTmsOperand(_registerMap[registerOperand.Register]);
             }
+            if (immediateOperand != null)
+                return new ImmediateTmsOperand((ushort)(immediateOperand.ImmediateValue * 0x100));
             //if (registerExtendedOperand != null)
             //{
             //    return new RegisterTmsOperand(_registerMap.Find((r) => r.Z80Register == registerExtendedOperand.Register).TMS900Register);
@@ -71,6 +84,17 @@ namespace TMS9900Translating.Translating
             }
             lowByteLabel = string.Empty;
             return false;
+        }
+
+        private bool LowerByteHasData(Z80AssemblyParsing.Operand sourceOperand)
+        {
+            var registerOperand = sourceOperand as Z80AssemblyParsing.Operands.RegisterOperand;
+            if (registerOperand == null)
+                return false;
+            var register = registerOperand.Register;
+            return ((register == Z80AssemblyParsing.Register.B || register == Z80AssemblyParsing.Register.C) && _registerMap[Z80AssemblyParsing.Register.B] == _registerMap[Z80AssemblyParsing.Register.C]
+                 || (register == Z80AssemblyParsing.Register.D || register == Z80AssemblyParsing.Register.E) && _registerMap[Z80AssemblyParsing.Register.D] == _registerMap[Z80AssemblyParsing.Register.E]
+                 || (register == Z80AssemblyParsing.Register.H || register == Z80AssemblyParsing.Register.L) && _registerMap[Z80AssemblyParsing.Register.H] == _registerMap[Z80AssemblyParsing.Register.L]);
         }
     }
 }

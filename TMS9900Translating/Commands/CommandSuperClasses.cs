@@ -8,6 +8,8 @@ namespace TMS9900Translating.Commands
     public abstract class CommandWithNoOperands : Command
     {
         public CommandWithNoOperands(Z80Command sourceCommand) : base(sourceCommand) { }
+        //TODO: Add logic for including the source command's label
+        public override string CommandText => "       " + Enum.GetName(typeof(OpCode), OpCode);
     }
 
     public abstract class CommandWithOneOperand : Command
@@ -17,6 +19,8 @@ namespace TMS9900Translating.Commands
         }
 
         public Operand Operand { get; set; }
+        //TODO: Add logic for including the source command's label
+        public override string CommandText => "       " + Enum.GetName(typeof(OpCode), OpCode).BackPadSpaces(4) + " " + Operand.DisplayValue;
     }
 
     public abstract class CommandWithTwoOperands : Command
@@ -28,5 +32,18 @@ namespace TMS9900Translating.Commands
 
         public Operand SourceOperand { get; set; }
         public Operand DestinationOperand { get; set; }
+        //TODO: Add logic for including the source command's label
+        public override string CommandText => "       " + Enum.GetName(typeof(OpCode), OpCode).BackPadSpaces(4) + " " + SourceOperand.DisplayValue + "," + DestinationOperand.DisplayValue;
+    }
+
+    public static class StringExtension {
+        public static string BackPadSpaces(this string givenString, int totalLength)
+        {
+            var requiredSpaces = totalLength - givenString.Length;
+            var spaceList = new List<char>();
+            while (requiredSpaces-- > 0)
+                spaceList.Add(' ');
+            return givenString + new string(spaceList.ToArray());
+        }
     }
 }

@@ -4,9 +4,9 @@ using System.Text;
 
 namespace Z80AssemblyParsing.Operands
 {
-    public class ImediateExtendedOperand : Operand
+    public class ImmediateExtendedOperand : Operand
     {
-        public ImediateExtendedOperand(ushort immediateValue)
+        public ImmediateExtendedOperand(ushort immediateValue)
         {
             ImmediateValue = immediateValue;
         }

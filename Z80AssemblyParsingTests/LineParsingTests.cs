@@ -18,7 +18,7 @@ namespace Z80AssemblyParsingTests
             
             var parser = new Z80LineParser();
             var actualCommand = parser.ParseLine(sourceCode) as LoadCommand;
-            var actualSourceOperand = actualCommand.SourceOperand as ImediateExtendedOperand;
+            var actualSourceOperand = actualCommand.SourceOperand as ImmediateExtendedOperand;
             var actualDestinationOperand = actualCommand.DestinationOperand as RegisterExtendedOperand;
 
             Assert.IsNotNull(actualCommand);
@@ -37,7 +37,7 @@ namespace Z80AssemblyParsingTests
 
             var parser = new Z80LineParser();
             var actualCommand = parser.ParseLine(sourceCode) as LoadCommand;
-            var actualSourceOperand = actualCommand.SourceOperand as ImediateExtendedOperand;
+            var actualSourceOperand = actualCommand.SourceOperand as ImmediateExtendedOperand;
             var actualDestinationOperand = actualCommand.DestinationOperand as RegisterExtendedOperand;
 
             Assert.IsNotNull(actualCommand);
@@ -56,7 +56,7 @@ namespace Z80AssemblyParsingTests
 
             var parser = new Z80LineParser();
             var actualCommand = parser.ParseLine(sourceCode) as LoadCommand;
-            var actualSourceOperand = actualCommand.SourceOperand as ImediateExtendedOperand;
+            var actualSourceOperand = actualCommand.SourceOperand as ImmediateExtendedOperand;
             var actualDestinationOperand = actualCommand.DestinationOperand as RegisterExtendedOperand;
 
             Assert.IsNotNull(actualCommand);
@@ -231,6 +231,30 @@ namespace Z80AssemblyParsingTests
             Assert.AreEqual("(curScore)", actualSourceOperand.DisplayValue);
             Assert.IsNotNull(actualDestinationOperand);
             Assert.AreEqual(Register.E, actualDestinationOperand.Register);
+        }
+
+        [Test]
+        public void LineParsing_LoadCommand_IndirectRegisterOperand()
+        {
+            var sourceCode = "      LD   (HL),47h";
+
+            var parser = new Z80LineParser();
+            var actualCommand = parser.ParseLine(sourceCode) as LoadCommand;
+            var actualSourceOperand = actualCommand.SourceOperand as ImediateOperand;
+            var actualDestinationOperand = actualCommand.DestinationOperand as IndirectRegisterOperand;
+
+            Assert.IsNotNull(actualCommand);
+            Assert.IsNotNull(actualSourceOperand);
+            Assert.AreEqual(0x47, actualSourceOperand.ImmediateValue);
+            Assert.IsNotNull(actualDestinationOperand);
+            Assert.AreEqual(ExtendedRegister.HL, actualDestinationOperand.Register);
+        }
+
+        [Test]
+        public void LineParsing_LoadCommand_IndirectRegisterOperand_ShouldFail()
+        {
+            var sourceCode = "      LD   (HL),47F2h";
+            Assert.Throws<Exception>(() => new Z80LineParser().ParseLine(sourceCode), "The immediate must be 8-bit");
         }
 
     }

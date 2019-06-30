@@ -9,11 +9,11 @@ namespace Z80AssemblyParsing
         public abstract string DisplayValue { get; }
         private List<Type> SixteenBitOperands = new List<Type>()
         {
-            typeof(RegisterExtendedOperand), typeof(ImediateExtendedOperand)
+            typeof(RegisterExtendedOperand), typeof(ImmediateExtendedOperand)
         };
         private List<Type> EightBitOperands = new List<Type>()
         {
-            typeof(RegisterOperand), typeof(ImediateOperand)
+            typeof(RegisterOperand), typeof(ImediateOperand), typeof(IndirectRegisterOperand)
         };
         public OperandSize OperandSize {
             get

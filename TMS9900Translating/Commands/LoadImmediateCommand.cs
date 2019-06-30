@@ -5,7 +5,7 @@ namespace TMS9900Translating.Commands
 {
     public class LoadImmediateCommand : CommandWithTwoOperands
     {
-        public LoadImmediateCommand(Z80AssemblyParsing.Command sourceCommand, ImmediateTmsOperand source, Operand destination) : base(sourceCommand, source, destination)
+        public LoadImmediateCommand(Z80AssemblyParsing.Command sourceCommand, Operand source, Operand destination) : base(sourceCommand, source, destination)
         {
         }
 

@@ -35,13 +35,14 @@ namespace TMS9900Translating.Translating
                 {
                     var sourceOperand = GetOperand(loadCommand.SourceOperand);
                     var destinationOperand = GetOperand(loadCommand.DestinationOperand);
-                    if (sourceOperand is ImmediateTmsOperand && LowerByteHasData(loadCommand.DestinationOperand))
+                    var sourceOperandIsImmediate = (sourceOperand is ImmediateTmsOperand || sourceOperand is LabeledImmediateTmsOperand);
+                    if (sourceOperandIsImmediate && LowerByteHasData(loadCommand.DestinationOperand))
                         return new List<TmsCommand>() {
-                            new LoadImmediateCommand(sourceCommand, (ImmediateTmsOperand)sourceOperand, new RegisterTmsOperand(WorkspaceRegister.R0)),
+                            new LoadImmediateCommand(sourceCommand, sourceOperand, new RegisterTmsOperand(WorkspaceRegister.R0)),
                             new MoveByteCommand(sourceCommand, new RegisterTmsOperand(WorkspaceRegister.R0), destinationOperand)
                         };
-                    if (sourceOperand is ImmediateTmsOperand)
-                        return new List<TmsCommand>() { new LoadImmediateCommand(sourceCommand, (ImmediateTmsOperand)sourceOperand, destinationOperand) };
+                    if (sourceOperandIsImmediate)
+                        return new List<TmsCommand>() { new LoadImmediateCommand(sourceCommand, sourceOperand, destinationOperand) };
                     else
                         return new List<TmsCommand>() { new MoveByteCommand(sourceCommand, sourceOperand, destinationOperand) };
                 }
@@ -59,6 +60,8 @@ namespace TMS9900Translating.Translating
             var registerExtendedOperand = sourceOperand as Z80AssemblyParsing.Operands.RegisterExtendedOperand;
             var immediateOperand = sourceOperand as Z80AssemblyParsing.Operands.ImediateOperand;
             var memoryOperand = sourceOperand as Z80AssemblyParsing.Operands.ExtendedAddressOperand;
+            var labeledAddressOperand = sourceOperand as Z80AssemblyParsing.Operands.LabeledAddressOperand;
+            var labeledImmediateOperand = sourceOperand as Z80AssemblyParsing.Operands.LabeledImmediateOperand;
             if (registerOperand != null)
             {
                 if (IsMappedToLowerByte(registerOperand.Register, out var indirectionRegister))
@@ -69,6 +72,10 @@ namespace TMS9900Translating.Translating
                 return new ImmediateTmsOperand((ushort)(immediateOperand.ImmediateValue * 0x100));
             if (memoryOperand != null)
                 return new AddressTmsOperand(memoryOperand.MemoryAddress);
+            if (labeledAddressOperand != null)
+                return new LabeledAddressTmsOperand(labeledAddressOperand.Label);
+            if (labeledImmediateOperand != null)
+                return new LabeledImmediateTmsOperand(labeledImmediateOperand.Label, true);
             //if (registerExtendedOperand != null)
             //{
             //    return new RegisterTmsOperand(_registerMap.Find((r) => r.Z80Register == registerExtendedOperand.Register).TMS900Register);

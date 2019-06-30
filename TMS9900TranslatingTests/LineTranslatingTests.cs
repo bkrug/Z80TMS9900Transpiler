@@ -270,5 +270,93 @@ namespace TMS9900TranslatingTests
             Assert.AreEqual(1, tmsCommand.Count);
             Assert.AreEqual("       MOVB *R6,R4", tmsCommand[0].CommandText);
         }
+
+        [Test]
+        public void LineTranslating_LoadToMoveByte_FromRegisterToIndirectRegister_NonIndexedIsLowByte()
+        {
+            var z80SourceCommand = "    ld   (HL),E";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80Register, WorkspaceRegister)>()
+                {
+                    (Z80Register.D, WorkspaceRegister.R4),
+                    (Z80Register.E, WorkspaceRegister.R4),
+                    (Z80Register.H, WorkspaceRegister.R6),
+                    (Z80Register.L, WorkspaceRegister.R6)
+                },
+                new List<MemoryMapElement>()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(1, tmsCommand.Count);
+            Assert.AreEqual("       MOVB *R14,*R6", tmsCommand[0].CommandText);
+        }
+
+        [Test]
+        public void LineTranslating_LoadToMoveByte_FromRegisterToIndirectRegister_IndirectMappedToTwoRegisters_IndirectIsDestination()
+        {
+            var z80SourceCommand = "    ld   (HL),D";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80Register, WorkspaceRegister)>()
+                {
+                    (Z80Register.D, WorkspaceRegister.R4),
+                    (Z80Register.E, WorkspaceRegister.R5),
+                    (Z80Register.H, WorkspaceRegister.R6),
+                    (Z80Register.L, WorkspaceRegister.R7)
+                },
+                new List<MemoryMapElement>()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(2, tmsCommand.Count);
+            Assert.AreEqual("       MOVB R7,*R15", tmsCommand[0].CommandText);
+            Assert.AreEqual("       MOVB R4,*R6", tmsCommand[1].CommandText);
+        }
+
+        [Test]
+        public void LineTranslating_LoadToMoveByte_FromRegisterToIndirectRegister_IndirectMappedToTwoRegisters_IndirectIsSource()
+        {
+            var z80SourceCommand = "    ld   D,(HL)";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80Register, WorkspaceRegister)>()
+                {
+                    (Z80Register.D, WorkspaceRegister.R4),
+                    (Z80Register.E, WorkspaceRegister.R5),
+                    (Z80Register.H, WorkspaceRegister.R6),
+                    (Z80Register.L, WorkspaceRegister.R7)
+                },
+                new List<MemoryMapElement>()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(2, tmsCommand.Count);
+            Assert.AreEqual("       MOVB R7,*R15", tmsCommand[0].CommandText);
+            Assert.AreEqual("       MOVB *R6,R4", tmsCommand[1].CommandText);
+        }
+
+        [Test]
+        public void LineTranslating_LoadToMoveByte_FromRegisterToIndirectRegister_IndirectMappedToTwoRegisters_IndirectIsSource2()
+        {
+            var z80SourceCommand = "    ld   E,(HL)";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80Register, WorkspaceRegister)>()
+                {
+                    (Z80Register.D, WorkspaceRegister.R4),
+                    (Z80Register.E, WorkspaceRegister.R4),
+                    (Z80Register.H, WorkspaceRegister.R6),
+                    (Z80Register.L, WorkspaceRegister.R7)
+                },
+                new List<MemoryMapElement>()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(2, tmsCommand.Count);
+            Assert.AreEqual("       MOVB R7,*R15", tmsCommand[0].CommandText);
+            Assert.AreEqual("       MOVB *R6,*R14", tmsCommand[1].CommandText);
+        }
+
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using TMS9900Translating.Commands;
 using TMS9900Translating.Operands;
 using TmsCommand = TMS9900Translating.Command;
@@ -34,25 +33,73 @@ namespace TMS9900Translating.Translating
             {
                 if (loadCommand.DestinationOperand.OperandSize == Z80AssemblyParsing.OperandSize.EightBit || loadCommand.SourceOperand.OperandSize == Z80AssemblyParsing.OperandSize.EightBit)
                 {
-                    var sourceOperand = GetOperand(loadCommand.SourceOperand);
-                    var destinationOperand = GetOperand(loadCommand.DestinationOperand);
+                    if (MustDoUnifyOperation(loadCommand.SourceOperand, out var copyFromOperand1, out var copyToOperand1, out Operand sourceOperand))
+                        yield return new MoveByteCommand(sourceCommand, copyFromOperand1, copyToOperand1);
+                    else
+                        sourceOperand = GetOperand(loadCommand.SourceOperand);
+
+                    if (MustDoUnifyOperation(loadCommand.DestinationOperand, out var copyFromOperand2, out var copyToOperand2, out Operand destinationOperand))
+                        yield return new MoveByteCommand(sourceCommand, copyFromOperand2, copyToOperand2);
+                    else
+                        destinationOperand = GetOperand(loadCommand.DestinationOperand);
+
                     var sourceOperandIsImmediate = (sourceOperand is ImmediateTmsOperand || sourceOperand is LabeledImmediateTmsOperand);
                     if (sourceOperandIsImmediate && LowerByteHasData(loadCommand.DestinationOperand))
-                        return new List<TmsCommand>() {
-                            new LoadImmediateCommand(sourceCommand, sourceOperand, new RegisterTmsOperand(WorkspaceRegister.R0)),
-                            new MoveByteCommand(sourceCommand, new RegisterTmsOperand(WorkspaceRegister.R0), destinationOperand)
-                        };
-                    if (sourceOperandIsImmediate)
-                        return new List<TmsCommand>() { new LoadImmediateCommand(sourceCommand, sourceOperand, destinationOperand) };
+                    {
+                        yield return new LoadImmediateCommand(sourceCommand, sourceOperand, new RegisterTmsOperand(WorkspaceRegister.R0));
+                        yield return new MoveByteCommand(sourceCommand, new RegisterTmsOperand(WorkspaceRegister.R0), destinationOperand);
+                    }
+                    else if (sourceOperandIsImmediate)
+                        yield return new LoadImmediateCommand(sourceCommand, sourceOperand, destinationOperand);
                     else
-                        return new List<TmsCommand>() { new MoveByteCommand(sourceCommand, sourceOperand, destinationOperand) };
+                        yield return new MoveByteCommand(sourceCommand, sourceOperand, destinationOperand);
                 }
                 else
                 {
                     throw new Exception("This command has not been implemented yet.");
                 }
             }
-            throw new Exception("This command has not been implemented yet.");
+            else
+            {
+                throw new Exception("This command has not been implemented yet.");
+            }
+        }
+
+        private bool MustDoUnifyOperation(Z80AssemblyParsing.Operand z80operand, out Operand copyFromOperand, out Operand copyToOperand, out Operand unifiedOperand)
+        {
+            if (!(z80operand is Z80Operands.IndirectRegisterOperand indirectRegisterOperand)
+                || RegisterPairIsMappedToSameWorkspaceRegister(indirectRegisterOperand.Register))
+            {
+                copyFromOperand = null;
+                copyToOperand = null;
+                unifiedOperand = null;
+                return false;
+            }
+            else
+            {
+                if (indirectRegisterOperand.Register == Z80AssemblyParsing.ExtendedRegister.BC) {
+                    unifiedOperand = new IndirectTmsOperand(_registerMap[Z80AssemblyParsing.Register.B]);
+                    copyFromOperand = new RegisterTmsOperand(_registerMap[Z80AssemblyParsing.Register.C]);
+                    copyToOperand = new IndirectTmsOperand(WorkspaceRegister.R13);
+                }
+                else if (indirectRegisterOperand.Register == Z80AssemblyParsing.ExtendedRegister.DE)
+                {
+                    unifiedOperand = new IndirectTmsOperand(_registerMap[Z80AssemblyParsing.Register.D]);
+                    copyFromOperand = new RegisterTmsOperand(_registerMap[Z80AssemblyParsing.Register.E]);
+                    copyToOperand = new IndirectTmsOperand(WorkspaceRegister.R14);
+                }
+                else if (indirectRegisterOperand.Register == Z80AssemblyParsing.ExtendedRegister.HL)
+                {
+                    unifiedOperand = new IndirectTmsOperand(_registerMap[Z80AssemblyParsing.Register.H]);
+                    copyFromOperand = new RegisterTmsOperand(_registerMap[Z80AssemblyParsing.Register.L]);
+                    copyToOperand = new IndirectTmsOperand(WorkspaceRegister.R15);
+                }
+                else
+                {
+                    throw new Exception("Can't do unify operation for " + indirectRegisterOperand.Register);
+                }
+                return true;
+            }
         }
 
         private Operand GetOperand(Z80AssemblyParsing.Operand sourceOperand)
@@ -117,13 +164,20 @@ namespace TMS9900Translating.Translating
 
         private WorkspaceRegister GetRegisterFromRegisterPair(Z80AssemblyParsing.ExtendedRegister registerPair)
         {
-            if (registerPair == Z80AssemblyParsing.ExtendedRegister.BC && _registerMap[Z80AssemblyParsing.Register.B] == _registerMap[Z80AssemblyParsing.Register.C])
+            if (registerPair == Z80AssemblyParsing.ExtendedRegister.BC && RegisterPairIsMappedToSameWorkspaceRegister(registerPair))
                 return _registerMap[Z80AssemblyParsing.Register.B];
-            if (registerPair == Z80AssemblyParsing.ExtendedRegister.DE && _registerMap[Z80AssemblyParsing.Register.D] == _registerMap[Z80AssemblyParsing.Register.E])
+            if (registerPair == Z80AssemblyParsing.ExtendedRegister.DE && RegisterPairIsMappedToSameWorkspaceRegister(registerPair))
                 return _registerMap[Z80AssemblyParsing.Register.D];
-            if (registerPair == Z80AssemblyParsing.ExtendedRegister.HL && _registerMap[Z80AssemblyParsing.Register.H] == _registerMap[Z80AssemblyParsing.Register.L])
+            if (registerPair == Z80AssemblyParsing.ExtendedRegister.HL && RegisterPairIsMappedToSameWorkspaceRegister(registerPair))
                 return _registerMap[Z80AssemblyParsing.Register.H];
             throw new Exception($"Cannot map from {registerPair.ToString()} to a workspace register in a single operation.");
+        }
+
+        private bool RegisterPairIsMappedToSameWorkspaceRegister(Z80AssemblyParsing.ExtendedRegister registerPair)
+        {
+            return registerPair == Z80AssemblyParsing.ExtendedRegister.BC && _registerMap[Z80AssemblyParsing.Register.B] == _registerMap[Z80AssemblyParsing.Register.C]
+                || registerPair == Z80AssemblyParsing.ExtendedRegister.DE && _registerMap[Z80AssemblyParsing.Register.D] == _registerMap[Z80AssemblyParsing.Register.E]
+                || registerPair == Z80AssemblyParsing.ExtendedRegister.HL && _registerMap[Z80AssemblyParsing.Register.H] == _registerMap[Z80AssemblyParsing.Register.L];
         }
     }
 }

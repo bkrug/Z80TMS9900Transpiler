@@ -10,7 +10,7 @@ using Z80Register = Z80AssemblyParsing.Register;
 namespace TMS9900TranslatingTests
 {
     [TestFixture]
-    public class LineTranslatingTests
+    public class LoadEightBitTests
     {
         [Test]
         public void StringBackPadding()
@@ -20,7 +20,7 @@ namespace TMS9900TranslatingTests
         }
 
         [Test]
-        public void LineTranslating_LoadToMoveByte_TwoRegisters_NoLowBytes()
+        public void Load8Bit_MoveByte_TwoRegisters_NoLowBytes()
         {
             var z80SourceCommand = "    ld   B,C";
             var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
@@ -39,7 +39,7 @@ namespace TMS9900TranslatingTests
         }
 
         [Test]
-        public void LineTranslating_LoadToMoveByte_TwoRegisters_LowBytes()
+        public void Load8Bit_MoveByte_TwoRegisters_LowBytes()
         {
             var z80SourceCommand = "    ld   B,C";
             var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
@@ -54,11 +54,11 @@ namespace TMS9900TranslatingTests
             var tmsCommand = translator.Translate(z80Command).ToList();
 
             Assert.AreEqual(1, tmsCommand.Count);
-            Assert.AreEqual("       MOVB *R13,R2", tmsCommand[0].CommandText);
+            Assert.AreEqual("       MOVB *R13,R2", tmsCommand[0].CommandText, "C is mapped to the lower byte of R2. R13 contains the address of the lower byte of R2.");
         }
 
         [Test]
-        public void LineTranslating_LoadToLoadImmediate_OneRegisterAndImmediate_NoLowBytes()
+        public void Load8Bit_LoadImmediate__OneRegisterAndImmediate_NoLowBytes()
         {
             var z80SourceCommand = "    ld   B,4Dh";
             var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
@@ -77,7 +77,7 @@ namespace TMS9900TranslatingTests
         }
 
         [Test]
-        public void LineTranslating_LoadToLoadImmediate_OneRegisterAndImmediate_LowBytes()
+        public void Load8Bit_LoadImmediate__OneRegisterAndImmediate_LowBytes()
         {
             var z80SourceCommand = "    ld   B,4Dh";
             var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
@@ -97,7 +97,7 @@ namespace TMS9900TranslatingTests
         }
 
         [Test]
-        public void LineTranslating_LoadToLoadImmediate_UsingLabel_ByteOperation_NoLowBytes()
+        public void Load8Bit_LoadImmediate__UsingLabel_ByteOperation_NoLowBytes()
         {
             var z80SourceCommand = "    ld   B,byteLabel";
             var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
@@ -116,7 +116,7 @@ namespace TMS9900TranslatingTests
         }
 
         [Test]
-        public void LineTranslating_LoadToLoadImmediate_UsingLabel_ByteOperation_LowByte()
+        public void Load8Bit_LoadImmediate__UsingLabel_ByteOperation_LowByte()
         {
             var z80SourceCommand = "    ld   B,byteLabel";
             var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
@@ -136,7 +136,7 @@ namespace TMS9900TranslatingTests
         }
 
         [Test]
-        public void LineTranslating_LoadToMoveByte_LowerRegisterAndImmediate_LowBytes()
+        public void Load8Bit_MoveByte_LowerRegisterAndImmediate_LowBytes()
         {
             var z80SourceCommand = "    ld   C,4Dh";
             var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
@@ -152,11 +152,11 @@ namespace TMS9900TranslatingTests
 
             Assert.AreEqual(2, tmsCommand.Count);
             Assert.AreEqual("       LI   R0,>4D00", tmsCommand[0].CommandText);
-            Assert.AreEqual("       MOVB R0,*R13", tmsCommand[1].CommandText);
+            Assert.AreEqual("       MOVB R0,*R13", tmsCommand[1].CommandText, "C is mapped to the lower byte of R2. R13 contains the address of the lower byte of R2.");
         }
 
         [Test]
-        public void LineTranslating_LoadToMoveByte_MemoryAddressSource()
+        public void Load8Bit_MoveByte_MemoryAddressSource()
         {
             var z80SourceCommand = "    ld   E,(89ABh)";
             var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
@@ -175,7 +175,7 @@ namespace TMS9900TranslatingTests
         }
 
         [Test]
-        public void LineTranslating_LoadToMoveByte_MemoryAddressDestination()
+        public void Load8Bit_MoveByte_MemoryAddressDestination()
         {
             var z80SourceCommand = "    ld   (89ABh),E";
             var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
@@ -190,11 +190,11 @@ namespace TMS9900TranslatingTests
             var tmsCommand = translator.Translate(z80Command).ToList();
 
             Assert.AreEqual(1, tmsCommand.Count);
-            Assert.AreEqual("       MOVB *R14,@>89AB", tmsCommand[0].CommandText);
+            Assert.AreEqual("       MOVB *R14,@>89AB", tmsCommand[0].CommandText, "E is mapped to the lower byte of R4. R14 contains the address of the lower byte of R4.");
         }
 
         [Test]
-        public void LineTranslating_LoadToMoveByte_FromLabeledMemoryAddressToAccumulator()
+        public void Load8Bit_MoveByte_FromLabeledMemoryAddressToAccumulator()
         {
             var z80SourceCommand = "    ld   A,(myAddress)";
             var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
@@ -212,7 +212,7 @@ namespace TMS9900TranslatingTests
         }
 
         [Test]
-        public void LineTranslating_LoadToMoveByte_FromAccumulatorToLabeledMemoryAddress()
+        public void Load8Bit_MoveByte_FromAccumulatorToLabeledMemoryAddress()
         {
             var z80SourceCommand = "    ld   (myAddress),A";
             var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
@@ -230,7 +230,7 @@ namespace TMS9900TranslatingTests
         }
 
         [Test]
-        public void LineTranslating_LoadToMoveByte_FromRegisterToIndirectRegister_NoLowByte()
+        public void Load8Bit_MoveByte_FromRegisterToIndirectRegister_NoLowByte()
         {
             var z80SourceCommand = "    ld   (HL),D";
             var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
@@ -251,7 +251,7 @@ namespace TMS9900TranslatingTests
         }
 
         [Test]
-        public void LineTranslating_LoadToMoveByte_FromIndirectRegisterToRegister_NoLowByte()
+        public void Load8Bit_MoveByte_FromIndirectRegisterToRegister_NoLowByte()
         {
             var z80SourceCommand = "    ld   D,(HL)";
             var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
@@ -272,7 +272,7 @@ namespace TMS9900TranslatingTests
         }
 
         [Test]
-        public void LineTranslating_LoadToMoveByte_FromRegisterToIndirectRegister_NonIndexedIsLowByte()
+        public void Load8Bit_MoveByte_FromRegisterToIndirectRegister_NonIndexedIsLowByte()
         {
             var z80SourceCommand = "    ld   (HL),E";
             var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
@@ -289,11 +289,11 @@ namespace TMS9900TranslatingTests
             var tmsCommand = translator.Translate(z80Command).ToList();
 
             Assert.AreEqual(1, tmsCommand.Count);
-            Assert.AreEqual("       MOVB *R14,*R6", tmsCommand[0].CommandText);
+            Assert.AreEqual("       MOVB *R14,*R6", tmsCommand[0].CommandText, "E is mapped to the lower byte of R4, R14 contains the address of the lower byte of R4.");
         }
 
         [Test]
-        public void LineTranslating_LoadToMoveByte_FromRegisterToIndirectRegister_IndirectMappedToTwoRegisters_IndirectIsDestination()
+        public void Load8Bit_MoveByte_FromRegisterToIndirectRegister_IndirectMappedToTwoRegisters_IndirectIsDestination()
         {
             var z80SourceCommand = "    ld   (HL),D";
             var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
@@ -310,12 +310,12 @@ namespace TMS9900TranslatingTests
             var tmsCommand = translator.Translate(z80Command).ToList();
 
             Assert.AreEqual(2, tmsCommand.Count);
-            Assert.AreEqual("       MOVB R7,*R15", tmsCommand[0].CommandText);
+            Assert.AreEqual("       MOVB R7,*R15", tmsCommand[0].CommandText, "H is mapped to R6, L is mapped to R7, and R15 contains the address of the lower byte of R6. This operation unifies the contents of HL.");
             Assert.AreEqual("       MOVB R4,*R6", tmsCommand[1].CommandText);
         }
 
         [Test]
-        public void LineTranslating_LoadToMoveByte_FromRegisterToIndirectRegister_IndirectMappedToTwoRegisters_IndirectIsSource()
+        public void Load8Bit_MoveByte_FromRegisterToIndirectRegister_IndirectMappedToTwoRegisters_IndirectIsSource()
         {
             var z80SourceCommand = "    ld   D,(HL)";
             var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
@@ -332,12 +332,12 @@ namespace TMS9900TranslatingTests
             var tmsCommand = translator.Translate(z80Command).ToList();
 
             Assert.AreEqual(2, tmsCommand.Count);
-            Assert.AreEqual("       MOVB R7,*R15", tmsCommand[0].CommandText);
+            Assert.AreEqual("       MOVB R7,*R15", tmsCommand[0].CommandText, "H is mapped to R6, L is mapped to R7, and R15 contains the address of the lower byte of R6. This operation unifies the contents of HL.");
             Assert.AreEqual("       MOVB *R6,R4", tmsCommand[1].CommandText);
         }
 
         [Test]
-        public void LineTranslating_LoadToMoveByte_FromRegisterToIndirectRegister_IndirectMappedToTwoRegisters_IndirectIsSource2()
+        public void Load8Bit_MoveByte_FromRegisterToIndirectRegister_IndirectMappedToTwoRegisters_IndirectIsSource2()
         {
             var z80SourceCommand = "    ld   E,(HL)";
             var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
@@ -354,9 +354,8 @@ namespace TMS9900TranslatingTests
             var tmsCommand = translator.Translate(z80Command).ToList();
 
             Assert.AreEqual(2, tmsCommand.Count);
-            Assert.AreEqual("       MOVB R7,*R15", tmsCommand[0].CommandText);
+            Assert.AreEqual("       MOVB R7,*R15", tmsCommand[0].CommandText, "H is mapped to R6, L is mapped to R7, and R15 contains the address of the lower byte of R6. This operation unifies the contents of HL.");
             Assert.AreEqual("       MOVB *R6,*R14", tmsCommand[1].CommandText);
         }
-
     }
 }

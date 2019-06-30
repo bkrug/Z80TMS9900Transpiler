@@ -60,8 +60,8 @@ namespace TMS9900Translating.Translating
             var immediateOperand = sourceOperand as Z80AssemblyParsing.Operands.ImediateOperand;
             if (registerOperand != null)
             {
-                if (ShouldUseLowByte(registerOperand.Register, out var lowByteLabel))
-                    return new LabelTmsOperand(lowByteLabel);
+                if (IsMappedToLowerByte(registerOperand.Register, out var indirectionRegister))
+                    return indirectionRegister;
                 return new RegisterTmsOperand(_registerMap[registerOperand.Register]);
             }
             if (immediateOperand != null)
@@ -73,16 +73,24 @@ namespace TMS9900Translating.Translating
             throw new Exception();
         }
 
-        private bool ShouldUseLowByte(Z80AssemblyParsing.Register register, out string lowByteLabel)
+        private bool IsMappedToLowerByte(Z80AssemblyParsing.Register register, out Operand lowByteLabel)
         {
-            if (register == Z80AssemblyParsing.Register.C && _registerMap[Z80AssemblyParsing.Register.B] == _registerMap[Z80AssemblyParsing.Register.C]
-                || register == Z80AssemblyParsing.Register.E && _registerMap[Z80AssemblyParsing.Register.D] == _registerMap[Z80AssemblyParsing.Register.E]
-                || register == Z80AssemblyParsing.Register.L && _registerMap[Z80AssemblyParsing.Register.H] == _registerMap[Z80AssemblyParsing.Register.L])
+            if (register == Z80AssemblyParsing.Register.C && _registerMap[Z80AssemblyParsing.Register.B] == _registerMap[Z80AssemblyParsing.Register.C])
             {
-                lowByteLabel = Enum.GetName(typeof(WorkspaceRegister), _registerMap[register]) + "LB";
+                lowByteLabel = new IndirectTmsOperand(WorkspaceRegister.R13);
                 return true;
             }
-            lowByteLabel = string.Empty;
+            if (register == Z80AssemblyParsing.Register.E && _registerMap[Z80AssemblyParsing.Register.D] == _registerMap[Z80AssemblyParsing.Register.E])
+            {
+                lowByteLabel = new IndirectTmsOperand(WorkspaceRegister.R14);
+                return true;
+            }
+            if (register == Z80AssemblyParsing.Register.L && _registerMap[Z80AssemblyParsing.Register.H] == _registerMap[Z80AssemblyParsing.Register.L])
+            {
+                lowByteLabel = new IndirectTmsOperand(WorkspaceRegister.R15);
+                return true;
+            }
+            lowByteLabel = null;
             return false;
         }
 

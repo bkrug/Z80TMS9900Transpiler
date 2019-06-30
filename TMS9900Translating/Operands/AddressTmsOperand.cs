@@ -11,6 +11,6 @@ namespace TMS9900Translating.Operands
             MemoryAddress = memoryAddress;
         }
         public ushort MemoryAddress { get; }
-        public override string DisplayValue => "@" + MemoryAddress.ToString("X4");
+        public override string DisplayValue => "@>" + MemoryAddress.ToString("X4");
     }
 }

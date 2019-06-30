@@ -57,7 +57,7 @@ namespace TMS9900TranslatingTests
         }
 
         [TestMethod]
-        public void LineTranslating_LoadToMoveByte_OneRegisterAndImmediate_NoLowBytes()
+        public void LineTranslating_LoadToLoadImmediate_OneRegisterAndImmediate_NoLowBytes()
         {
             var z80SourceCommand = "    ld   B,4Dh";
             var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
@@ -76,7 +76,7 @@ namespace TMS9900TranslatingTests
         }
 
         [TestMethod]
-        public void LineTranslating_LoadToMoveByte_OneRegisterAndImmediate_LowBytes()
+        public void LineTranslating_LoadToLoadImmediate_OneRegisterAndImmediate_LowBytes()
         {
             var z80SourceCommand = "    ld   B,4Dh";
             var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
@@ -114,5 +114,44 @@ namespace TMS9900TranslatingTests
             Assert.AreEqual("       LI   R0,>4D00", tmsCommand[0].CommandText);
             Assert.AreEqual("       MOVB R0,*R13", tmsCommand[1].CommandText);
         }
+
+        [TestMethod]
+        public void LineTranslating_LoadToMoveByte_MemoryAddressSource()
+        {
+            var z80SourceCommand = "    ld   E,(89ABh)";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80Register, WorkspaceRegister)>()
+                {
+                    (Z80Register.D, WorkspaceRegister.R4),
+                    (Z80Register.E, WorkspaceRegister.R5)
+                },
+                new List<MemoryMapElement>()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(1, tmsCommand.Count);
+            Assert.AreEqual("       MOVB @>89AB,R5", tmsCommand[0].CommandText);
+        }
+
+        [TestMethod]
+        public void LineTranslating_LoadToMoveByte_MemoryAddressDestination()
+        {
+            var z80SourceCommand = "    ld   (89ABh),E";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80Register, WorkspaceRegister)>()
+                {
+                    (Z80Register.D, WorkspaceRegister.R4),
+                    (Z80Register.E, WorkspaceRegister.R4)
+                },
+                new List<MemoryMapElement>()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(1, tmsCommand.Count);
+            Assert.AreEqual("       MOVB *R14,@>89AB", tmsCommand[0].CommandText);
+        }
+
     }
 }

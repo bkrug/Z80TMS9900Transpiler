@@ -71,14 +71,26 @@ namespace Z80AssemblyParsing.Parsing
                     if (Enum.GetNames(typeof(ExtendedRegister)).Contains(operandString) && Enum.TryParse<ExtendedRegister>(operandString, out var extendedRegister))
                         return new RegisterExtendedOperand(extendedRegister);
                 }
+                if (IsValidLabel(operandString))
+                    return new LabeledImmediateOperand(operandString);
             }
             else
             {
                 var operandWithoutParens = operandString.TrimStart('(').TrimEnd(')');
                 if (TryUShortParse(operandWithoutParens, out var memoryAddress))
                     return new ExtendedAddressOperand(memoryAddress);
+                if (IsValidLabel(operandWithoutParens))
+                    return new LabeledAddressOperand(operandWithoutParens);
             }
             throw new Exception($"Invalid operand: {operandString}");
+        }
+
+        private static bool IsValidLabel(string operandString)
+        {
+            return
+                !Enum.GetNames(typeof(Register)).Contains(operandString)
+                && !Enum.GetNames(typeof(ExtendedRegister)).Contains(operandString)
+                && new Regex("[a-z][0-9a-z]*", RegexOptions.IgnoreCase).IsMatch(operandString);
         }
 
         public bool TryByteParse(string sourceString, out byte number)

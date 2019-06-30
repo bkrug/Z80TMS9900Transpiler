@@ -196,5 +196,42 @@ namespace Z80AssemblyParsingTests
             Assert.IsNotNull(actualDestinationOperand);
             Assert.AreEqual(ExtendedRegister.BC, actualDestinationOperand.Register);
         }
+
+        [Test]
+        public void LineParsing_LoadCommand_LabeledImmediate()
+        {
+            var sourceCode = "      LD   HL,currentScore";
+
+            var parser = new Z80LineParser();
+            var actualCommand = parser.ParseLine(sourceCode) as LoadCommand;
+            var actualSourceOperand = actualCommand.SourceOperand as LabeledImmediateOperand;
+            var actualDestinationOperand = actualCommand.DestinationOperand as RegisterExtendedOperand;
+
+            Assert.IsNotNull(actualCommand);
+            Assert.IsNotNull(actualSourceOperand);
+            Assert.AreEqual("currentScore", actualSourceOperand.Label);
+            Assert.AreEqual("currentScore", actualSourceOperand.DisplayValue);
+            Assert.IsNotNull(actualDestinationOperand);
+            Assert.AreEqual(ExtendedRegister.HL, actualDestinationOperand.Register);
+        }
+
+        [Test]
+        public void LineParsing_LoadCommand_LabeledAddress()
+        {
+            var sourceCode = "      LD   E,(curScore)";
+
+            var parser = new Z80LineParser();
+            var actualCommand = parser.ParseLine(sourceCode) as LoadCommand;
+            var actualSourceOperand = actualCommand.SourceOperand as LabeledAddressOperand;
+            var actualDestinationOperand = actualCommand.DestinationOperand as RegisterOperand;
+
+            Assert.IsNotNull(actualCommand);
+            Assert.IsNotNull(actualSourceOperand);
+            Assert.AreEqual("curScore", actualSourceOperand.Label);
+            Assert.AreEqual("(curScore)", actualSourceOperand.DisplayValue);
+            Assert.IsNotNull(actualDestinationOperand);
+            Assert.AreEqual(Register.E, actualDestinationOperand.Register);
+        }
+
     }
 }

@@ -27,5 +27,6 @@ namespace Z80AssemblyParsing.Commands
 
         public Operand SourceOperand { get; set; }
         public Operand DestinationOperand { get; set; }
+        public bool IsEightBitOperation => SourceOperand.OperandSize == OperandSize.EightBit || DestinationOperand.OperandSize == OperandSize.EightBit;
     }
 }

@@ -28,31 +28,37 @@ namespace TMS9900Translating.Translating
 
         public IEnumerable<TmsCommand> Translate(Z80Command sourceCommand)
         {
-            var loadCommand = sourceCommand as Z80AssemblyParsing.Commands.LoadCommand;
-            if (loadCommand != null)
+            if (sourceCommand is Z80AssemblyParsing.Commands.CommandWithTwoOperands commandWithTwoOperands)
             {
-                if (loadCommand.DestinationOperand.OperandSize == Z80AssemblyParsing.OperandSize.EightBit || loadCommand.SourceOperand.OperandSize == Z80AssemblyParsing.OperandSize.EightBit)
+                if (MustDoUnifyOperation(commandWithTwoOperands.SourceOperand, out var copyFromOperand1, out var copyToOperand1, out Operand sourceOperand))
+                    yield return new MoveByteCommand(sourceCommand, copyFromOperand1, copyToOperand1);
+                else
+                    sourceOperand = GetOperand(commandWithTwoOperands.SourceOperand);
+
+                if (MustDoUnifyOperation(commandWithTwoOperands.DestinationOperand, out var copyFromOperand2, out var copyToOperand2, out Operand destinationOperand))
+                    yield return new MoveByteCommand(sourceCommand, copyFromOperand2, copyToOperand2);
+                else
+                    destinationOperand = GetOperand(commandWithTwoOperands.DestinationOperand);
+
+                if (sourceCommand is Z80AssemblyParsing.Commands.LoadCommand loadCommand)
                 {
-                    if (MustDoUnifyOperation(loadCommand.SourceOperand, out var copyFromOperand1, out var copyToOperand1, out Operand sourceOperand))
-                        yield return new MoveByteCommand(sourceCommand, copyFromOperand1, copyToOperand1);
-                    else
-                        sourceOperand = GetOperand(loadCommand.SourceOperand);
-
-                    if (MustDoUnifyOperation(loadCommand.DestinationOperand, out var copyFromOperand2, out var copyToOperand2, out Operand destinationOperand))
-                        yield return new MoveByteCommand(sourceCommand, copyFromOperand2, copyToOperand2);
-                    else
-                        destinationOperand = GetOperand(loadCommand.DestinationOperand);
-
-                    var sourceOperandIsImmediate = (sourceOperand is ImmediateTmsOperand || sourceOperand is LabeledImmediateTmsOperand);
-                    if (sourceOperandIsImmediate && LowerByteHasData(loadCommand.DestinationOperand))
+                    if (loadCommand.IsEightBitOperation)
                     {
-                        yield return new LoadImmediateCommand(sourceCommand, sourceOperand, new RegisterTmsOperand(WorkspaceRegister.R0));
-                        yield return new MoveByteCommand(sourceCommand, new RegisterTmsOperand(WorkspaceRegister.R0), destinationOperand);
+                        var sourceOperandIsImmediate = (sourceOperand is ImmediateTmsOperand || sourceOperand is LabeledImmediateTmsOperand);
+                        if (sourceOperandIsImmediate && LowerByteHasData(loadCommand.DestinationOperand))
+                        {
+                            yield return new LoadImmediateCommand(sourceCommand, sourceOperand, new RegisterTmsOperand(WorkspaceRegister.R0));
+                            yield return new MoveByteCommand(sourceCommand, new RegisterTmsOperand(WorkspaceRegister.R0), destinationOperand);
+                        }
+                        else if (sourceOperandIsImmediate)
+                            yield return new LoadImmediateCommand(sourceCommand, sourceOperand, destinationOperand);
+                        else
+                            yield return new MoveByteCommand(sourceCommand, sourceOperand, destinationOperand);
                     }
-                    else if (sourceOperandIsImmediate)
-                        yield return new LoadImmediateCommand(sourceCommand, sourceOperand, destinationOperand);
                     else
-                        yield return new MoveByteCommand(sourceCommand, sourceOperand, destinationOperand);
+                    {
+                        throw new Exception("This command has not been implemented yet.");
+                    }
                 }
                 else
                 {

@@ -6,6 +6,7 @@ using TMS9900Translating.Commands;
 using TMS9900Translating.Operands;
 using TmsCommand = TMS9900Translating.Command;
 using Z80Command = Z80AssemblyParsing.Command;
+using Z80Operands = Z80AssemblyParsing.Operands;
 
 namespace TMS9900Translating.Translating
 {
@@ -56,31 +57,30 @@ namespace TMS9900Translating.Translating
 
         private Operand GetOperand(Z80AssemblyParsing.Operand sourceOperand)
         {
-            var registerOperand = sourceOperand as Z80AssemblyParsing.Operands.RegisterOperand;
-            var registerExtendedOperand = sourceOperand as Z80AssemblyParsing.Operands.RegisterExtendedOperand;
-            var immediateOperand = sourceOperand as Z80AssemblyParsing.Operands.ImediateOperand;
-            var memoryOperand = sourceOperand as Z80AssemblyParsing.Operands.ExtendedAddressOperand;
-            var labeledAddressOperand = sourceOperand as Z80AssemblyParsing.Operands.LabeledAddressOperand;
-            var labeledImmediateOperand = sourceOperand as Z80AssemblyParsing.Operands.LabeledImmediateOperand;
-            if (registerOperand != null)
+            if (sourceOperand is Z80Operands.RegisterOperand registerOperand)
             {
                 if (IsMappedToLowerByte(registerOperand.Register, out var indirectionRegister))
                     return indirectionRegister;
                 return new RegisterTmsOperand(_registerMap[registerOperand.Register]);
             }
-            if (immediateOperand != null)
+
+            if (sourceOperand is Z80Operands.ImediateOperand immediateOperand)
                 return new ImmediateTmsOperand((ushort)(immediateOperand.ImmediateValue * 0x100));
-            if (memoryOperand != null)
+
+            if (sourceOperand is Z80Operands.ExtendedAddressOperand memoryOperand)
                 return new AddressTmsOperand(memoryOperand.MemoryAddress);
-            if (labeledAddressOperand != null)
+
+            if (sourceOperand is Z80Operands.LabeledAddressOperand labeledAddressOperand)
                 return new LabeledAddressTmsOperand(labeledAddressOperand.Label);
-            if (labeledImmediateOperand != null)
+
+            if (sourceOperand is Z80Operands.LabeledImmediateOperand labeledImmediateOperand)
                 return new LabeledImmediateTmsOperand(labeledImmediateOperand.Label, true);
-            //if (registerExtendedOperand != null)
-            //{
-            //    return new RegisterTmsOperand(_registerMap.Find((r) => r.Z80Register == registerExtendedOperand.Register).TMS900Register);
-            //}
-            throw new Exception();
+
+            if (sourceOperand is Z80Operands.IndirectRegisterOperand indirectOperand)
+                return new IndirectTmsOperand(GetRegisterFromRegisterPair(indirectOperand.Register));
+
+            var registerExtendedOperand = sourceOperand as Z80Operands.RegisterExtendedOperand;
+            throw new Exception("Not a translatable operand: " + sourceOperand.DisplayValue);
         }
 
         private bool IsMappedToLowerByte(Z80AssemblyParsing.Register register, out Operand lowByteLabel)
@@ -113,6 +113,17 @@ namespace TMS9900Translating.Translating
             return ((register == Z80AssemblyParsing.Register.B || register == Z80AssemblyParsing.Register.C) && _registerMap[Z80AssemblyParsing.Register.B] == _registerMap[Z80AssemblyParsing.Register.C]
                  || (register == Z80AssemblyParsing.Register.D || register == Z80AssemblyParsing.Register.E) && _registerMap[Z80AssemblyParsing.Register.D] == _registerMap[Z80AssemblyParsing.Register.E]
                  || (register == Z80AssemblyParsing.Register.H || register == Z80AssemblyParsing.Register.L) && _registerMap[Z80AssemblyParsing.Register.H] == _registerMap[Z80AssemblyParsing.Register.L]);
+        }
+
+        private WorkspaceRegister GetRegisterFromRegisterPair(Z80AssemblyParsing.ExtendedRegister registerPair)
+        {
+            if (registerPair == Z80AssemblyParsing.ExtendedRegister.BC && _registerMap[Z80AssemblyParsing.Register.B] == _registerMap[Z80AssemblyParsing.Register.C])
+                return _registerMap[Z80AssemblyParsing.Register.B];
+            if (registerPair == Z80AssemblyParsing.ExtendedRegister.DE && _registerMap[Z80AssemblyParsing.Register.D] == _registerMap[Z80AssemblyParsing.Register.E])
+                return _registerMap[Z80AssemblyParsing.Register.D];
+            if (registerPair == Z80AssemblyParsing.ExtendedRegister.HL && _registerMap[Z80AssemblyParsing.Register.H] == _registerMap[Z80AssemblyParsing.Register.L])
+                return _registerMap[Z80AssemblyParsing.Register.H];
+            throw new Exception($"Cannot map from {registerPair.ToString()} to a workspace register in a single operation.");
         }
     }
 }

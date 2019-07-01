@@ -44,7 +44,10 @@ namespace TMS9900Translating.Translating
             }
             else
             {
-                var destinationOperand = GetOperand(addCommand.DestinationOperand, addCommand.IsEightBitOperation);
+                if (MustUnifyRegisterPairs(addCommand.DestinationOperand, out var copyFromOperand2, out var copyToOperand2, out Operand destinationOperand))
+                    yield return new MoveByteCommand(addCommand, copyFromOperand2, copyToOperand2);
+                else
+                    destinationOperand = GetOperand(addCommand.DestinationOperand, addCommand.IsEightBitOperation);
 
                 var sourceOperandIsImmediate = (sourceOperand is ImmediateTmsOperand || sourceOperand is LabeledImmediateTmsOperand);
                 if (sourceOperandIsImmediate)
@@ -52,8 +55,8 @@ namespace TMS9900Translating.Translating
                 else
                     yield return new AddCommand(addCommand, sourceOperand, destinationOperand);
 
-                if (MustSeparateRegisterPairs(addCommand.DestinationOperand, out var copyFromOperand2, out var copyToOperand2))
-                    yield return new MoveByteCommand(addCommand, copyFromOperand2, copyToOperand2);
+                if (MustSeparateRegisterPairs(addCommand.DestinationOperand, out var copyFromOperand3, out var copyToOperand3))
+                    yield return new MoveByteCommand(addCommand, copyFromOperand3, copyToOperand3);
             }
         }
     }

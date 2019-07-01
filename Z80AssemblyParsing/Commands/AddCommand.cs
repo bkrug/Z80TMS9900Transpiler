@@ -2,7 +2,7 @@
 {
     public class AddCommand : CommandWithTwoOperands
     {
-        protected AddCommand(string sourceText, Operand source, Operand destination) : base(sourceText, source, destination)
+        public AddCommand(string sourceText, Operand source, Operand destination) : base(sourceText, source, destination)
         {
         }
 

@@ -39,6 +39,8 @@ namespace TMS9900Translating.Translating
             {
                 if (sourceCommand is Z80AssemblyParsing.Commands.LoadCommand loadCommand)
                     return new LoadCommandTranslator(_registerMap, _extendedRegisterMap, _memoryMap).Translate(loadCommand);
+                if (sourceCommand is Z80AssemblyParsing.Commands.AddCommand addCommand)
+                    return new AddCommandTranslator(_registerMap, _extendedRegisterMap, _memoryMap).Translate(addCommand);
                 else
                     throw new Exception("This command has not been implemented yet.");
             }

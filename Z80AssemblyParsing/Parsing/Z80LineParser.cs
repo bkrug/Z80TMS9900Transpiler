@@ -51,6 +51,8 @@ namespace Z80AssemblyParsing.Parsing
             {
                 case OpCode.LD:
                     return new LoadCommand(line, sourceOperand, desinationOperand);
+                case OpCode.ADD:
+                    return new AddCommand(line, sourceOperand, desinationOperand);
                 default:
                     throw new Exception($"OpCode {opCode} does not accept two operands");
             }

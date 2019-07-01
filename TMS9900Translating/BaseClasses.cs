@@ -26,7 +26,7 @@ namespace TMS9900Translating
 
     public enum OpCode
     {
-        MOV, MOVB, LI
+        MOV, MOVB, LI, A, AB, AI
     }
 
     public enum OperandSize

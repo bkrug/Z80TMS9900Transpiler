@@ -5,7 +5,6 @@ using System.Linq;
 using TMS9900Translating;
 using TMS9900Translating.Commands;
 using TMS9900Translating.Translating;
-using Z80Register = Z80AssemblyParsing.Register;
 
 namespace TMS9900TranslatingTests
 {
@@ -25,10 +24,10 @@ namespace TMS9900TranslatingTests
             var z80SourceCommand = "    ld   B,C";
             var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
             var translator = new TMS9900Translator(
-                new List<(Z80Register, WorkspaceRegister)>()
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
                 {
-                    (Z80Register.B, WorkspaceRegister.R2),
-                    (Z80Register.C, WorkspaceRegister.R3)
+                    (Z80SourceRegister.B, WorkspaceRegister.R2),
+                    (Z80SourceRegister.C, WorkspaceRegister.R3)
                 },
                 new List<MemoryMapElement>()
             );
@@ -44,10 +43,10 @@ namespace TMS9900TranslatingTests
             var z80SourceCommand = "    ld   B,C";
             var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
             var translator = new TMS9900Translator(
-                new List<(Z80Register, WorkspaceRegister)>()
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
                 {
-                    (Z80Register.B, WorkspaceRegister.R2),
-                    (Z80Register.C, WorkspaceRegister.R2)
+                    (Z80SourceRegister.B, WorkspaceRegister.R2),
+                    (Z80SourceRegister.C, WorkspaceRegister.R2)
                 },
                 new List<MemoryMapElement>()
             );
@@ -63,10 +62,10 @@ namespace TMS9900TranslatingTests
             var z80SourceCommand = "    ld   B,4Dh";
             var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
             var translator = new TMS9900Translator(
-                new List<(Z80Register, WorkspaceRegister)>()
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
                 {
-                    (Z80Register.B, WorkspaceRegister.R2),
-                    (Z80Register.C, WorkspaceRegister.R3)
+                    (Z80SourceRegister.B, WorkspaceRegister.R2),
+                    (Z80SourceRegister.C, WorkspaceRegister.R3)
                 },
                 new List<MemoryMapElement>()
             );
@@ -82,10 +81,10 @@ namespace TMS9900TranslatingTests
             var z80SourceCommand = "    ld   B,4Dh";
             var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
             var translator = new TMS9900Translator(
-                new List<(Z80Register, WorkspaceRegister)>()
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
                 {
-                    (Z80Register.B, WorkspaceRegister.R2),
-                    (Z80Register.C, WorkspaceRegister.R2)
+                    (Z80SourceRegister.B, WorkspaceRegister.R2),
+                    (Z80SourceRegister.C, WorkspaceRegister.R2)
                 },
                 new List<MemoryMapElement>()
             );
@@ -102,10 +101,10 @@ namespace TMS9900TranslatingTests
             var z80SourceCommand = "    ld   B,byteLabel";
             var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
             var translator = new TMS9900Translator(
-                new List<(Z80Register, WorkspaceRegister)>()
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
                 {
-                    (Z80Register.B, WorkspaceRegister.R2),
-                    (Z80Register.C, WorkspaceRegister.R3)
+                    (Z80SourceRegister.B, WorkspaceRegister.R2),
+                    (Z80SourceRegister.C, WorkspaceRegister.R3)
                 },
                 new List<MemoryMapElement>()
             );
@@ -121,10 +120,10 @@ namespace TMS9900TranslatingTests
             var z80SourceCommand = "    ld   B,byteLabel";
             var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
             var translator = new TMS9900Translator(
-                new List<(Z80Register, WorkspaceRegister)>()
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
                 {
-                    (Z80Register.B, WorkspaceRegister.R2),
-                    (Z80Register.C, WorkspaceRegister.R2)
+                    (Z80SourceRegister.B, WorkspaceRegister.R2),
+                    (Z80SourceRegister.C, WorkspaceRegister.R2)
                 },
                 new List<MemoryMapElement>()
             );
@@ -141,10 +140,10 @@ namespace TMS9900TranslatingTests
             var z80SourceCommand = "    ld   C,4Dh";
             var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
             var translator = new TMS9900Translator(
-                new List<(Z80Register, WorkspaceRegister)>()
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
                 {
-                    (Z80Register.B, WorkspaceRegister.R2),
-                    (Z80Register.C, WorkspaceRegister.R2)
+                    (Z80SourceRegister.B, WorkspaceRegister.R2),
+                    (Z80SourceRegister.C, WorkspaceRegister.R2)
                 },
                 new List<MemoryMapElement>()
             );
@@ -161,10 +160,10 @@ namespace TMS9900TranslatingTests
             var z80SourceCommand = "    ld   E,(89ABh)";
             var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
             var translator = new TMS9900Translator(
-                new List<(Z80Register, WorkspaceRegister)>()
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
                 {
-                    (Z80Register.D, WorkspaceRegister.R4),
-                    (Z80Register.E, WorkspaceRegister.R5)
+                    (Z80SourceRegister.D, WorkspaceRegister.R4),
+                    (Z80SourceRegister.E, WorkspaceRegister.R5)
                 },
                 new List<MemoryMapElement>()
             );
@@ -180,10 +179,10 @@ namespace TMS9900TranslatingTests
             var z80SourceCommand = "    ld   (89ABh),E";
             var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
             var translator = new TMS9900Translator(
-                new List<(Z80Register, WorkspaceRegister)>()
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
                 {
-                    (Z80Register.D, WorkspaceRegister.R4),
-                    (Z80Register.E, WorkspaceRegister.R4)
+                    (Z80SourceRegister.D, WorkspaceRegister.R4),
+                    (Z80SourceRegister.E, WorkspaceRegister.R4)
                 },
                 new List<MemoryMapElement>()
             );
@@ -199,9 +198,9 @@ namespace TMS9900TranslatingTests
             var z80SourceCommand = "    ld   A,(myAddress)";
             var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
             var translator = new TMS9900Translator(
-                new List<(Z80Register, WorkspaceRegister)>()
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
                 {
-                    (Z80Register.A, WorkspaceRegister.R1)
+                    (Z80SourceRegister.A, WorkspaceRegister.R1)
                 },
                 new List<MemoryMapElement>()
             );
@@ -217,9 +216,9 @@ namespace TMS9900TranslatingTests
             var z80SourceCommand = "    ld   (myAddress),A";
             var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
             var translator = new TMS9900Translator(
-                new List<(Z80Register, WorkspaceRegister)>()
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
                 {
-                    (Z80Register.A, WorkspaceRegister.R1)
+                    (Z80SourceRegister.A, WorkspaceRegister.R1)
                 },
                 new List<MemoryMapElement>()
             );
@@ -235,12 +234,12 @@ namespace TMS9900TranslatingTests
             var z80SourceCommand = "    ld   (HL),D";
             var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
             var translator = new TMS9900Translator(
-                new List<(Z80Register, WorkspaceRegister)>()
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
                 {
-                    (Z80Register.D, WorkspaceRegister.R4),
-                    (Z80Register.E, WorkspaceRegister.R5),
-                    (Z80Register.H, WorkspaceRegister.R6),
-                    (Z80Register.L, WorkspaceRegister.R6)
+                    (Z80SourceRegister.D, WorkspaceRegister.R4),
+                    (Z80SourceRegister.E, WorkspaceRegister.R5),
+                    (Z80SourceRegister.H, WorkspaceRegister.R6),
+                    (Z80SourceRegister.L, WorkspaceRegister.R6)
                 },
                 new List<MemoryMapElement>()
             );
@@ -256,12 +255,12 @@ namespace TMS9900TranslatingTests
             var z80SourceCommand = "    ld   D,(HL)";
             var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
             var translator = new TMS9900Translator(
-                new List<(Z80Register, WorkspaceRegister)>()
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
                 {
-                    (Z80Register.D, WorkspaceRegister.R4),
-                    (Z80Register.E, WorkspaceRegister.R5),
-                    (Z80Register.H, WorkspaceRegister.R6),
-                    (Z80Register.L, WorkspaceRegister.R6)
+                    (Z80SourceRegister.D, WorkspaceRegister.R4),
+                    (Z80SourceRegister.E, WorkspaceRegister.R5),
+                    (Z80SourceRegister.H, WorkspaceRegister.R6),
+                    (Z80SourceRegister.L, WorkspaceRegister.R6)
                 },
                 new List<MemoryMapElement>()
             );
@@ -277,12 +276,12 @@ namespace TMS9900TranslatingTests
             var z80SourceCommand = "    ld   (HL),E";
             var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
             var translator = new TMS9900Translator(
-                new List<(Z80Register, WorkspaceRegister)>()
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
                 {
-                    (Z80Register.D, WorkspaceRegister.R4),
-                    (Z80Register.E, WorkspaceRegister.R4),
-                    (Z80Register.H, WorkspaceRegister.R6),
-                    (Z80Register.L, WorkspaceRegister.R6)
+                    (Z80SourceRegister.D, WorkspaceRegister.R4),
+                    (Z80SourceRegister.E, WorkspaceRegister.R4),
+                    (Z80SourceRegister.H, WorkspaceRegister.R6),
+                    (Z80SourceRegister.L, WorkspaceRegister.R6)
                 },
                 new List<MemoryMapElement>()
             );
@@ -298,12 +297,12 @@ namespace TMS9900TranslatingTests
             var z80SourceCommand = "    ld   (HL),D";
             var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
             var translator = new TMS9900Translator(
-                new List<(Z80Register, WorkspaceRegister)>()
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
                 {
-                    (Z80Register.D, WorkspaceRegister.R4),
-                    (Z80Register.E, WorkspaceRegister.R5),
-                    (Z80Register.H, WorkspaceRegister.R6),
-                    (Z80Register.L, WorkspaceRegister.R7)
+                    (Z80SourceRegister.D, WorkspaceRegister.R4),
+                    (Z80SourceRegister.E, WorkspaceRegister.R5),
+                    (Z80SourceRegister.H, WorkspaceRegister.R6),
+                    (Z80SourceRegister.L, WorkspaceRegister.R7)
                 },
                 new List<MemoryMapElement>()
             );
@@ -320,12 +319,12 @@ namespace TMS9900TranslatingTests
             var z80SourceCommand = "    ld   D,(HL)";
             var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
             var translator = new TMS9900Translator(
-                new List<(Z80Register, WorkspaceRegister)>()
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
                 {
-                    (Z80Register.D, WorkspaceRegister.R4),
-                    (Z80Register.E, WorkspaceRegister.R5),
-                    (Z80Register.H, WorkspaceRegister.R6),
-                    (Z80Register.L, WorkspaceRegister.R7)
+                    (Z80SourceRegister.D, WorkspaceRegister.R4),
+                    (Z80SourceRegister.E, WorkspaceRegister.R5),
+                    (Z80SourceRegister.H, WorkspaceRegister.R6),
+                    (Z80SourceRegister.L, WorkspaceRegister.R7)
                 },
                 new List<MemoryMapElement>()
             );
@@ -342,12 +341,12 @@ namespace TMS9900TranslatingTests
             var z80SourceCommand = "    ld   E,(HL)";
             var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
             var translator = new TMS9900Translator(
-                new List<(Z80Register, WorkspaceRegister)>()
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
                 {
-                    (Z80Register.D, WorkspaceRegister.R4),
-                    (Z80Register.E, WorkspaceRegister.R4),
-                    (Z80Register.H, WorkspaceRegister.R6),
-                    (Z80Register.L, WorkspaceRegister.R7)
+                    (Z80SourceRegister.D, WorkspaceRegister.R4),
+                    (Z80SourceRegister.E, WorkspaceRegister.R4),
+                    (Z80SourceRegister.H, WorkspaceRegister.R6),
+                    (Z80SourceRegister.L, WorkspaceRegister.R7)
                 },
                 new List<MemoryMapElement>()
             );

@@ -2,7 +2,7 @@
 {
     public class PushCommand : CommandWithOneOperand
     {
-        protected PushCommand(string sourceText, Operand operand) : base(sourceText, operand)
+        public PushCommand(string sourceText, Operand operand) : base(sourceText, operand)
         {
         }
 

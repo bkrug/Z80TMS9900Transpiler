@@ -2,7 +2,7 @@
 {
     public class PopCommand : CommandWithOneOperand
     {
-        protected PopCommand(string sourceText, Operand operand) : base(sourceText, operand)
+        public PopCommand(string sourceText, Operand operand) : base(sourceText, operand)
         {
         }
 

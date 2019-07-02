@@ -100,5 +100,25 @@ namespace TMS9900TranslatingTests
             Assert.AreEqual(1, tmsCommand.Count);
             Assert.AreEqual("       A    R4,R6", tmsCommand[0].CommandText);
         }
+
+        [Test]
+        public void Add16Bit_IX()
+        {
+            var z80SourceCommand = "    add  IX,BC";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
+                {
+                    (Z80SourceRegister.B, WorkspaceRegister.R2),
+                    (Z80SourceRegister.C, WorkspaceRegister.R2),
+                    (Z80SourceRegister.IX, WorkspaceRegister.R9)
+                },
+                new List<MemoryMapElement>()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(1, tmsCommand.Count);
+            Assert.AreEqual("       A    R2,R9", tmsCommand[0].CommandText);
+        }
     }
 }

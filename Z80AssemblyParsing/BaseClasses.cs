@@ -43,7 +43,7 @@ namespace Z80AssemblyParsing
 
     public enum OpCode
     {
-        INVALID, ADD, ADC, LD, POP, PUSH, LDI, LDIR, LDD, LDDR
+        INVALID, ADD, ADC, LD, POP, PUSH, LDI, LDIR, LDD, LDDR, CALL
     }
 
     public enum Register
@@ -53,7 +53,7 @@ namespace Z80AssemblyParsing
 
     public enum ExtendedRegister
     {
-        None, BC, DE, HL, IX, IY, SP
+        None, BC, DE, HL, AF, IX, IY, SP
     }
 
     public enum OperandSize

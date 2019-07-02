@@ -35,12 +35,30 @@ namespace Z80AssemblyParsing.Parsing
                 throw new Exception("Invalid OpCode");
             var operandPart = string.Join("", parts.Skip(1));
             var operands = operandPart.Split(',').ToList();
-            Command foundCommand;
-            if (operands.Count == 2)
-                foundCommand = GetCommandWithTwoOperands(line, opCode, operands);
-            else
-                throw new Exception("Invlid list of operands");
-            return foundCommand;
+            switch(operands.Count)
+            {
+                case 1:
+                    return GetCommandWithOneOperand(line, opCode, operands[0]);
+                case 2:
+                    return GetCommandWithTwoOperands(line, opCode, operands);
+                default:
+                    throw new Exception("Invalid list of operands");
+            }
+        }
+
+        private Command GetCommandWithOneOperand(string line, OpCode opCode, string operandString)
+        {
+            switch (opCode)
+            {
+                case OpCode.POP:
+                    return new PopCommand(line, GetOperand(operandString));
+                case OpCode.PUSH:
+                    return new PushCommand(line, GetOperand(operandString));
+                case OpCode.CALL:
+                    return new UnconditionalCallCommand(line, GetAddressOperandWithoutParenthesis(operandString));
+                default:
+                    throw new Exception($"OpCode {opCode} does not accept one operand");
+            }
         }
 
         private Command GetCommandWithTwoOperands(string line, OpCode opCode, List<string> operandStrings)
@@ -90,6 +108,15 @@ namespace Z80AssemblyParsing.Parsing
                 if (IsValidLabel(operandWithoutParens))
                     return new LabeledAddressOperand(operandWithoutParens);
             }
+            throw new Exception($"Invalid operand: {operandString}");
+        }
+
+        public Operand GetAddressOperandWithoutParenthesis(string operandString)
+        {
+            if (TryUShortParse(operandString, out var memoryAddress))
+                return new AddressWithoutParenthesisOperand(memoryAddress);
+            if (IsValidLabel(operandString))
+                return new LabeledAddressWithoutParenthesisOperand(operandString);
             throw new Exception($"Invalid operand: {operandString}");
         }
 

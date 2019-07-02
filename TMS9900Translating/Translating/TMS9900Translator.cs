@@ -35,19 +35,14 @@ namespace TMS9900Translating.Translating
 
         public IEnumerable<TmsCommand> Translate(Z80Command sourceCommand)
         {
-            if (sourceCommand is Z80AssemblyParsing.Commands.CommandWithTwoOperands commandWithTwoOperands)
-            {
-                if (sourceCommand is Z80AssemblyParsing.Commands.LoadCommand loadCommand)
-                    return new LoadCommandTranslator(_registerMap, _extendedRegisterMap, _memoryMap).Translate(loadCommand);
-                if (sourceCommand is Z80AssemblyParsing.Commands.AddCommand addCommand)
-                    return new AddCommandTranslator(_registerMap, _extendedRegisterMap, _memoryMap).Translate(addCommand);
-                else
-                    throw new Exception("This command has not been implemented yet.");
-            }
+            if (sourceCommand is Z80AssemblyParsing.Commands.LoadCommand loadCommand)
+                return new LoadCommandTranslator(_registerMap, _extendedRegisterMap, _memoryMap).Translate(loadCommand);
+            if (sourceCommand is Z80AssemblyParsing.Commands.AddCommand addCommand)
+                return new AddCommandTranslator(_registerMap, _extendedRegisterMap, _memoryMap).Translate(addCommand);
+            if (sourceCommand is Z80AssemblyParsing.Commands.PushCommand pushCommand)
+                return new PushCommandTranslator(_registerMap, _extendedRegisterMap, _memoryMap).Translate(pushCommand);
             else
-            {
                 throw new Exception("This command has not been implemented yet.");
-            }
         }
     }
 }

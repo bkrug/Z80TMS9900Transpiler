@@ -10,10 +10,10 @@ using Z80ExtendedRegister = Z80AssemblyParsing.ExtendedRegister;
 namespace TMS9900Translating.Translating
 {
     public abstract class CommandTranslator<T> where T : Z80Command
-    { 
-        private Dictionary<Z80Register, WorkspaceRegister> _registerMap;
-        private Dictionary<Z80ExtendedRegister, WorkspaceRegister> _extendedRegisterMap;
-        private List<MemoryMapElement> _memoryMap;
+    {
+        protected Dictionary<Z80Register, WorkspaceRegister> _registerMap;
+        protected Dictionary<Z80ExtendedRegister, WorkspaceRegister> _extendedRegisterMap;
+        protected List<MemoryMapElement> _memoryMap;
         private static List<Z80ExtendedRegister> _unsplitableRegisters = new List<Z80ExtendedRegister>() { Z80ExtendedRegister.IX, Z80ExtendedRegister.IY, Z80ExtendedRegister.SP };
         private static List<Z80Register> _lastRegisterInPair = new List<Z80Register>() { Z80Register.C, Z80Register.E, Z80Register.L };
 

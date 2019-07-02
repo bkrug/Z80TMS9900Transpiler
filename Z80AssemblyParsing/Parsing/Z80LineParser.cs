@@ -66,7 +66,7 @@ namespace Z80AssemblyParsing.Parsing
                 if (expectedSize != OperandSize.SixteenBit)
                 {
                     if (TryByteParse(operandString, out var immediateNumber))
-                        return new ImediateOperand(immediateNumber);
+                        return new ImmediateOperand(immediateNumber);
                     if (Enum.GetNames(typeof(Register)).Contains(operandString) && Enum.TryParse<Register>(operandString, out var register))
                         return new RegisterOperand(register);
                 }

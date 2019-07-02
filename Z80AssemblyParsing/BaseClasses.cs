@@ -13,7 +13,7 @@ namespace Z80AssemblyParsing
         };
         private List<Type> EightBitOperands = new List<Type>()
         {
-            typeof(RegisterOperand), typeof(ImediateOperand), typeof(IndirectRegisterOperand)
+            typeof(RegisterOperand), typeof(ImmediateOperand), typeof(IndirectRegisterOperand)
         };
         public OperandSize OperandSize {
             get

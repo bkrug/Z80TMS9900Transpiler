@@ -80,7 +80,7 @@ namespace TMS9900Translating.Translating
                 return new RegisterTmsOperand(_registerMap[registerOperand.Register]);
             }
 
-            if (sourceOperand is Z80Operands.ImediateOperand immediateOperand)
+            if (sourceOperand is Z80Operands.ImmediateOperand immediateOperand)
                 return eightBitOperation
                     ? new ImmediateTmsOperand((ushort)(immediateOperand.ImmediateValue * 0x100))
                     : new ImmediateTmsOperand(immediateOperand.ImmediateValue);

@@ -34,15 +34,28 @@ namespace Z80AssemblyParsing.Parsing
             if (!Enum.TryParse<OpCode>(parts[0], ignoreCase: true, result: out var opCode))
                 throw new Exception("Invalid OpCode");
             var operandPart = string.Join("", parts.Skip(1));
-            var operands = operandPart.Split(',').ToList();
+            var operands = operandPart.Split(',').Select(s => s.Trim()).Where(s => !String.IsNullOrEmpty(s)).ToList();
             switch(operands.Count)
             {
+                case 0:
+                    return GetCommandWithoutOperands(line, opCode);
                 case 1:
                     return GetCommandWithOneOperand(line, opCode, operands[0]);
                 case 2:
                     return GetCommandWithTwoOperands(line, opCode, operands);
                 default:
                     throw new Exception("Invalid list of operands");
+            }
+        }
+
+        private Command GetCommandWithoutOperands(string line, OpCode opCode)
+        {
+            switch (opCode)
+            {
+                case OpCode.RET:
+                    return new UnconditionalReturnCommand(line);
+                default:
+                    throw new Exception($"OpCode {opCode} does not accept one operand");
             }
         }
 

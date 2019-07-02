@@ -130,6 +130,8 @@ namespace TMS9900Translating.Translating
         {
             if (!(sourceOperand is Z80Operands.RegisterOperand registerOperand))
                 return false;
+            if (registerOperand.Register == Z80Register.A || registerOperand.Register == Z80Register.F)
+                return false;
             var extendedRegister = GetRegisterPair(registerOperand.Register);
             return RegisterPairIsMappedToSameWorkspaceRegister(extendedRegister);
         }

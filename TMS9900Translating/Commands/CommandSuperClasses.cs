@@ -36,6 +36,16 @@ namespace TMS9900Translating.Commands
         public override string CommandText => "       " + Enum.GetName(typeof(OpCode), OpCode).BackPadSpaces(4) + " " + SourceOperand.DisplayValue + "," + DestinationOperand.DisplayValue;
     }
 
+    public abstract class ImmediateCommand : CommandWithTwoOperands
+    {
+        public ImmediateCommand(Z80Command sourceCommand, Operand source, Operand destination) : base(sourceCommand, source, destination)
+        {
+        }
+
+        //TODO: Add logic for including the source command's label
+        public override string CommandText => "       " + Enum.GetName(typeof(OpCode), OpCode).BackPadSpaces(4) + " " + DestinationOperand.DisplayValue + "," + SourceOperand.DisplayValue;
+    }
+
     public static class StringExtension {
         public static string BackPadSpaces(this string givenString, int totalLength)
         {

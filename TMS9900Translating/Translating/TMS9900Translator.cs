@@ -51,6 +51,8 @@ namespace TMS9900Translating.Translating
                 return new PopCommandTranslator(_mapCollection, _afterthoughAccumulator).Translate(popCommand);
             if (sourceCommand is Z80AssemblyParsing.Commands.UnconditionalCallCommand unconditCallCommand)
                 return new CallCommandTranslator(_mapCollection, _afterthoughAccumulator).Translate(unconditCallCommand);
+            if (sourceCommand is Z80AssemblyParsing.Commands.UnconditionalReturnCommand unconditionalReturnCommand)
+                return new ReturnCommandTranslator(_mapCollection, _afterthoughAccumulator).Translate(unconditionalReturnCommand);
             else
                 throw new Exception("This command has not been implemented yet.");
         }

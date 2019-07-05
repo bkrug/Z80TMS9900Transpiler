@@ -65,5 +65,24 @@ namespace TMS9900TranslatingTests
             Assert.AreEqual("       BL   @otherRoutine", tmsCommand2[0].CommandText);
             Assert.AreEqual(1, accumulator.LabelsBranchedTo.Count(lbt => lbt.Equals("otherRoutine")), "The translator is supposed to store the return address, but only one.");
         }
+
+        [Test]
+        public void Return()
+        {
+            var z80SourceCommand = "    ret";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>() {
+                    (Z80SourceRegister.SP, WorkspaceRegister.R10)
+                },
+                new List<MemoryMapElement>(),
+                null
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(2, tmsCommand.Count);
+            Assert.AreEqual("       MOV  *R10+,R11", tmsCommand[0].CommandText);
+            Assert.AreEqual("       RT", tmsCommand[1].CommandText);
+        }
     }
 }

@@ -42,7 +42,28 @@ namespace TMS9900TranslatingTests
 
             Assert.AreEqual(1, tmsCommand.Count);
             Assert.AreEqual("       BL   @otherRoutine", tmsCommand[0].CommandText);
-            Assert.IsTrue(accumulator.LabelsBranchedTo.Contains("otherRoutine"));
+            Assert.IsTrue(accumulator.LabelsBranchedTo.Contains("otherRoutine"), "Later, the translater is supposed to store the return address from R11 to the stack.");
+        }
+
+        [Test]
+        public void Call_LabeledAddress_Twice()
+        {
+            var z80SourceCommand = "    call otherRoutine";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var accumulator = new AfterthoughAccumulator();
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>(),
+                new List<MemoryMapElement>(),
+                accumulator
+            );
+            var tmsCommand1 = translator.Translate(z80Command).ToList();
+            var tmsCommand2 = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(1, tmsCommand1.Count);
+            Assert.AreEqual("       BL   @otherRoutine", tmsCommand1[0].CommandText);
+            Assert.AreEqual(1, tmsCommand2.Count);
+            Assert.AreEqual("       BL   @otherRoutine", tmsCommand2[0].CommandText);
+            Assert.AreEqual(1, accumulator.LabelsBranchedTo.Count(lbt => lbt.Equals("otherRoutine")), "The translator is supposed to store the return address, but only one.");
         }
     }
 }

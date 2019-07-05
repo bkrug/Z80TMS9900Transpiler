@@ -9,11 +9,8 @@ namespace TMS9900Translating.Translating
 {
     public class AddCommandTranslator : CommandTranslator<Z80AssemblyParsing.Commands.AddCommand>
     {
-        public AddCommandTranslator(
-            Dictionary<Z80Register, WorkspaceRegister> registerMap,
-            Dictionary<Z80ExtendedRegister, WorkspaceRegister> extendedRegisterMap,
-            List<MemoryMapElement> memoryMap)
-            : base(registerMap, extendedRegisterMap, memoryMap)
+        public AddCommandTranslator(MapCollection mapCollection, AfterthoughAccumulator afterthoughAccumulator)
+            : base(mapCollection, afterthoughAccumulator)
         {
         }
 

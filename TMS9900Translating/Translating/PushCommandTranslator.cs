@@ -9,11 +9,8 @@ namespace TMS9900Translating.Translating
 {
     public class PushCommandTranslator : CommandTranslator<Z80AssemblyParsing.Commands.PushCommand>
     {
-        public PushCommandTranslator(
-            Dictionary<Z80Register, WorkspaceRegister> registerMap,
-            Dictionary<Z80ExtendedRegister, WorkspaceRegister> extendedRegisterMap,
-            List<MemoryMapElement> memoryMap)
-            : base(registerMap, extendedRegisterMap, memoryMap)
+        public PushCommandTranslator(MapCollection mapCollection, AfterthoughAccumulator afterthoughAccumulator)
+            : base(mapCollection, afterthoughAccumulator)
         {
         }
 

@@ -8,11 +8,8 @@ using Z80ExtendedRegister = Z80AssemblyParsing.ExtendedRegister;
 namespace TMS9900Translating.Translating
 {
     public class LoadCommandTranslator : CommandTranslator<Z80AssemblyParsing.Commands.LoadCommand> {
-        public LoadCommandTranslator(
-            Dictionary<Z80Register, WorkspaceRegister> registerMap, 
-            Dictionary<Z80ExtendedRegister, WorkspaceRegister> extendedRegisterMap, 
-            List<MemoryMapElement> memoryMap) 
-            : base(registerMap, extendedRegisterMap, memoryMap)
+        public LoadCommandTranslator(MapCollection mapCollection, AfterthoughAccumulator afterthoughAccumulator)
+            : base(mapCollection, afterthoughAccumulator)
         {
         }
 

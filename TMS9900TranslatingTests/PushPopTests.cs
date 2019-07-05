@@ -1,9 +1,7 @@
-using NUnit;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 using TMS9900Translating;
-using TMS9900Translating.Commands;
 using TMS9900Translating.Translating;
 
 namespace TMS9900TranslatingTests
@@ -22,7 +20,8 @@ namespace TMS9900TranslatingTests
                     (Z80SourceRegister.IX, WorkspaceRegister.R1),
                     (Z80SourceRegister.SP, WorkspaceRegister.R3)
                 },
-                new List<MemoryMapElement>()
+                new List<MemoryMapElement>(),
+                null
             );
             var tmsCommand = translator.Translate(z80Command).ToList();
 
@@ -43,7 +42,8 @@ namespace TMS9900TranslatingTests
                     (Z80SourceRegister.D, WorkspaceRegister.R5),
                     (Z80SourceRegister.E, WorkspaceRegister.R6),
                 },
-                new List<MemoryMapElement>()
+                new List<MemoryMapElement>(),
+                null
             );
             var tmsCommand = translator.Translate(z80Command).ToList();
 
@@ -51,6 +51,49 @@ namespace TMS9900TranslatingTests
             Assert.AreEqual("       MOVB R6,*R14", tmsCommand[0].CommandText);
             Assert.AreEqual("       DECT R3", tmsCommand[1].CommandText);
             Assert.AreEqual("       MOV  R5,*R3", tmsCommand[2].CommandText);
+        }
+
+        [Test]
+        public void PushPop_Pop_UnifiedRegisterPair()
+        {
+            var z80SourceCommand = "    pop  BC";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
+                {
+                    (Z80SourceRegister.SP, WorkspaceRegister.R3),
+                    (Z80SourceRegister.B, WorkspaceRegister.R5),
+                    (Z80SourceRegister.C, WorkspaceRegister.R5)
+                },
+                new List<MemoryMapElement>(),
+                null
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(1, tmsCommand.Count);
+            Assert.AreEqual("       MOV  *R3+,R5", tmsCommand[0].CommandText);
+        }
+
+        [Test]
+        public void PushPop_Pop_SeparatedRegisterPair()
+        {
+            var z80SourceCommand = "    pop  DE";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
+                {
+                    (Z80SourceRegister.SP, WorkspaceRegister.R3),
+                    (Z80SourceRegister.D, WorkspaceRegister.R5),
+                    (Z80SourceRegister.E, WorkspaceRegister.R6),
+                },
+                new List<MemoryMapElement>(),
+                null
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(2, tmsCommand.Count);
+            Assert.AreEqual("       MOV  *R3+,R5", tmsCommand[0].CommandText);
+            Assert.AreEqual("       MOVB *R14,R6", tmsCommand[1].CommandText);
         }
     }
 }

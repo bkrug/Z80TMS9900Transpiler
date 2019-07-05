@@ -11,17 +11,18 @@ namespace TMS9900Translating.Translating
 {
     public abstract class CommandTranslator<T> where T : Z80Command
     {
-        protected Dictionary<Z80Register, WorkspaceRegister> _registerMap;
-        protected Dictionary<Z80ExtendedRegister, WorkspaceRegister> _extendedRegisterMap;
-        protected List<MemoryMapElement> _memoryMap;
+        protected Dictionary<Z80Register, WorkspaceRegister> _registerMap => _mapCollection.RegisterMap;
+        protected Dictionary<Z80ExtendedRegister, WorkspaceRegister> _extendedRegisterMap => _mapCollection.ExtendedRegisterMap;
+        protected List<MemoryMapElement> _memoryMap => _mapCollection.MemoryMap;
+        protected AfterthoughAccumulator _afterthoughAccumulator;
+        private MapCollection _mapCollection;
         private static List<Z80ExtendedRegister> _unsplitableRegisters = new List<Z80ExtendedRegister>() { Z80ExtendedRegister.IX, Z80ExtendedRegister.IY, Z80ExtendedRegister.SP };
         private static List<Z80Register> _lastRegisterInPair = new List<Z80Register>() { Z80Register.C, Z80Register.E, Z80Register.L };
 
-        public CommandTranslator(Dictionary<Z80Register, WorkspaceRegister> registerMap, Dictionary<Z80ExtendedRegister, WorkspaceRegister> extendedRegisterMap, List<MemoryMapElement> memoryMap)
+        public CommandTranslator(MapCollection mapCollection, AfterthoughAccumulator afterthoughAccumulator)
         {
-            _registerMap = registerMap;
-            _extendedRegisterMap = extendedRegisterMap;
-            _memoryMap = memoryMap;
+            _mapCollection = mapCollection;
+            _afterthoughAccumulator = afterthoughAccumulator;
         }
 
         public abstract IEnumerable<TmsCommand> Translate(T loadCommand);
@@ -94,8 +95,14 @@ namespace TMS9900Translating.Translating
             if (sourceOperand is Z80Operands.ExtendedAddressOperand addressOperand)
                 return new AddressTmsOperand(addressOperand.MemoryAddress);
 
+            if (sourceOperand is Z80Operands.AddressWithoutParenthesisOperand addressWithoutParenthesisOperand)
+                return new AddressTmsOperand(addressWithoutParenthesisOperand.MemoryAddress);
+
             if (sourceOperand is Z80Operands.LabeledAddressOperand labeledAddressOperand)
                 return new LabeledAddressTmsOperand(labeledAddressOperand.Label);
+
+            if (sourceOperand is Z80Operands.LabeledAddressWithoutParenthesisOperand labeledImmediateWithoutParenthesisOperand)
+                return new LabeledAddressTmsOperand(labeledImmediateWithoutParenthesisOperand.AddressLabel);
 
             if (sourceOperand is Z80Operands.IndirectRegisterOperand indirectOperand)
                 return new IndirectTmsOperand(GetWsRegisterWhereRegisterPairIsMappedToSameRegister(indirectOperand.Register));

@@ -9,14 +9,20 @@ namespace TMS9900Translating.Translating
 {
     public class TMS9900Translator
     {
-        private Dictionary<Z80Register, WorkspaceRegister> _registerMap;
-        private Dictionary<Z80ExtendedRegister, WorkspaceRegister> _extendedRegisterMap;
-        private List<MemoryMapElement> _memoryMap;
+        private Dictionary<Z80Register, WorkspaceRegister> _registerMap => _mapCollection.RegisterMap;
+        private Dictionary<Z80ExtendedRegister, WorkspaceRegister> _extendedRegisterMap => _mapCollection.ExtendedRegisterMap;
+        private List<MemoryMapElement> _memoryMap => _mapCollection.MemoryMap;
+        private AfterthoughAccumulator _afterthoughAccumulator;
+        private MapCollection _mapCollection;
 
-        public TMS9900Translator(List<(Z80SourceRegister, WorkspaceRegister)> registerMap, List<MemoryMapElement> memoryMap)
+        public TMS9900Translator(List<(Z80SourceRegister, WorkspaceRegister)> registerMap, List<MemoryMapElement> memoryMap, AfterthoughAccumulator afterthoughAccumulator)
         {
-            _registerMap = new Dictionary<Z80Register, WorkspaceRegister>();
-            _extendedRegisterMap = new Dictionary<Z80ExtendedRegister, WorkspaceRegister>();
+            _mapCollection = new MapCollection()
+            {
+                RegisterMap = new Dictionary<Z80Register, WorkspaceRegister>(),
+                ExtendedRegisterMap = new Dictionary<Z80ExtendedRegister, WorkspaceRegister>(),
+                MemoryMap = memoryMap
+            };
             registerMap.ForEach((sourceReg) =>
             {
                 if (sourceReg.Item1 <= Z80SourceRegister.L)
@@ -30,19 +36,30 @@ namespace TMS9900Translating.Translating
                     _extendedRegisterMap.Add(key, sourceReg.Item2);
                 }
             });
-            _memoryMap = memoryMap;
+            _afterthoughAccumulator = afterthoughAccumulator;
         }
 
         public IEnumerable<TmsCommand> Translate(Z80Command sourceCommand)
         {
             if (sourceCommand is Z80AssemblyParsing.Commands.LoadCommand loadCommand)
-                return new LoadCommandTranslator(_registerMap, _extendedRegisterMap, _memoryMap).Translate(loadCommand);
+                return new LoadCommandTranslator(_mapCollection, _afterthoughAccumulator).Translate(loadCommand);
             if (sourceCommand is Z80AssemblyParsing.Commands.AddCommand addCommand)
-                return new AddCommandTranslator(_registerMap, _extendedRegisterMap, _memoryMap).Translate(addCommand);
+                return new AddCommandTranslator(_mapCollection, _afterthoughAccumulator).Translate(addCommand);
             if (sourceCommand is Z80AssemblyParsing.Commands.PushCommand pushCommand)
-                return new PushCommandTranslator(_registerMap, _extendedRegisterMap, _memoryMap).Translate(pushCommand);
+                return new PushCommandTranslator(_mapCollection, _afterthoughAccumulator).Translate(pushCommand);
+            if (sourceCommand is Z80AssemblyParsing.Commands.PopCommand popCommand)
+                return new PopCommandTranslator(_mapCollection, _afterthoughAccumulator).Translate(popCommand);
+            if (sourceCommand is Z80AssemblyParsing.Commands.UnconditionalCallCommand unconditCallCommand)
+                return new CallCommandTranslator(_mapCollection, _afterthoughAccumulator).Translate(unconditCallCommand);
             else
                 throw new Exception("This command has not been implemented yet.");
         }
+    }
+
+    public class MapCollection
+    {
+        public Dictionary<Z80Register, WorkspaceRegister> RegisterMap;
+        public Dictionary<Z80ExtendedRegister, WorkspaceRegister> ExtendedRegisterMap;
+        public List<MemoryMapElement> MemoryMap;
     }
 }

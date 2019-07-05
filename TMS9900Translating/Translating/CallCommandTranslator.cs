@@ -1,9 +1,6 @@
 ﻿using System.Collections.Generic;
 using TMS9900Translating.Commands;
-using TMS9900Translating.Operands;
 using TmsCommand = TMS9900Translating.Command;
-using Z80Register = Z80AssemblyParsing.Register;
-using Z80ExtendedRegister = Z80AssemblyParsing.ExtendedRegister;
 
 namespace TMS9900Translating.Translating
 {

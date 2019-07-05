@@ -81,7 +81,7 @@ namespace TMS9900TranslatingTests
             var tmsCommand = translator.Translate(z80Command).ToList();
 
             Assert.AreEqual(2, tmsCommand.Count);
-            Assert.AreEqual("       MOV  *R10+,R11", tmsCommand[0].CommandText);
+            Assert.AreEqual("       MOV  *R10+,R11", tmsCommand[0].CommandText, "pull the return address from the stack.");
             Assert.AreEqual("       RT", tmsCommand[1].CommandText);
         }
     }

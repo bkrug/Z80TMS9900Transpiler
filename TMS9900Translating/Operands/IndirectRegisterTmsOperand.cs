@@ -2,9 +2,9 @@
 
 namespace TMS9900Translating.Operands
 {
-    public class IndirectTmsOperand : Operand
+    public class IndirectRegisterTmsOperand : Operand
     {
-        public IndirectTmsOperand(WorkspaceRegister workspaceRegister)
+        public IndirectRegisterTmsOperand(WorkspaceRegister workspaceRegister)
         {
             Register = workspaceRegister;
         }

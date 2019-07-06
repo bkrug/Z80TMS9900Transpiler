@@ -4,7 +4,9 @@ using TmsCommand = TMS9900Translating.Command;
 using Z80Command = Z80AssemblyParsing.Command;
 using Z80Register = Z80AssemblyParsing.Register;
 using Z80ExtendedRegister = Z80AssemblyParsing.ExtendedRegister;
-using System.Linq;
+using TMS9900Translating.Commands;
+using TMS9900Translating.Operands;
+using TMS9900Translating;
 
 namespace TMS9900Translating.Translating
 {
@@ -44,7 +46,7 @@ namespace TMS9900Translating.Translating
         {
             var commands = GetTmsCommands(sourceCommand);
             var i = 0;
-            foreach(var currCommand in commands)
+            foreach (var currCommand in commands)
             {
                 if (i++ == 0)
                     currCommand.SetLabel(sourceCommand.Label);
@@ -68,6 +70,17 @@ namespace TMS9900Translating.Translating
                 return new ReturnCommandTranslator(_mapCollection, _afterthoughAccumulator).Translate(unconditionalReturnCommand);
             else
                 throw new Exception("This command has not been implemented yet.");
+        }
+
+        public IEnumerable<TmsCommand> StoreReturnAddressToStack(string routineLabel)
+        {
+            var commands = new List<TmsCommand>()
+            {
+                new DecTwoCommand(null, new RegisterTmsOperand(_extendedRegisterMap[Z80ExtendedRegister.SP])),
+                new MoveCommand(null, new RegisterTmsOperand(WorkspaceRegister.R11), new IndirectRegisterTmsOperand(_extendedRegisterMap[Z80ExtendedRegister.SP]))
+            };
+            commands[0].SetLabel(routineLabel);
+            return commands;
         }
     }
 

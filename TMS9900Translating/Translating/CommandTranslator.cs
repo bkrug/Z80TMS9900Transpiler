@@ -38,8 +38,8 @@ namespace TMS9900Translating.Translating
                 }
                 else {
                     copyFromOperand = new RegisterTmsOperand(_registerMap[GetLastRegisterInPair(registerPair)]);
-                    copyToOperand = new IndirectTmsOperand(GetRegisterPointingToLowerByte(registerPair));
-                    unifiedOperand = new IndirectTmsOperand(_registerMap[GetFirstRegisterInPair(registerPair)]);
+                    copyToOperand = new IndirectRegisterTmsOperand(GetRegisterPointingToLowerByte(registerPair));
+                    unifiedOperand = new IndirectRegisterTmsOperand(_registerMap[GetFirstRegisterInPair(registerPair)]);
                 }
                 return true;
             }
@@ -52,7 +52,7 @@ namespace TMS9900Translating.Translating
                 }
                 else {
                     copyFromOperand = new RegisterTmsOperand(_registerMap[GetLastRegisterInPair(registerPair)]);
-                    copyToOperand = new IndirectTmsOperand(GetRegisterPointingToLowerByte(registerPair));
+                    copyToOperand = new IndirectRegisterTmsOperand(GetRegisterPointingToLowerByte(registerPair));
                     unifiedOperand = new RegisterTmsOperand(_registerMap[GetFirstRegisterInPair(registerPair)]);
                 }
                 return true;
@@ -105,7 +105,7 @@ namespace TMS9900Translating.Translating
                 return new LabeledAddressTmsOperand(labeledImmediateWithoutParenthesisOperand.AddressLabel);
 
             if (sourceOperand is Z80Operands.IndirectRegisterOperand indirectOperand)
-                return new IndirectTmsOperand(GetWsRegisterWhereRegisterPairIsMappedToSameRegister(indirectOperand.Register));
+                return new IndirectRegisterTmsOperand(GetWsRegisterWhereRegisterPairIsMappedToSameRegister(indirectOperand.Register));
 
             if (sourceOperand is Z80Operands.RegisterExtendedOperand registerExtendedOperand) {
                 if (_unsplitableRegisters.Contains(registerExtendedOperand.Register))
@@ -125,7 +125,7 @@ namespace TMS9900Translating.Translating
                 var registerPair = GetRegisterPair(register);
                 if (RegisterPairIsMappedToSameWorkspaceRegister(registerPair))
                 {
-                    registerPointingToLowerByte = new IndirectTmsOperand(GetRegisterPointingToLowerByte(registerPair));
+                    registerPointingToLowerByte = new IndirectRegisterTmsOperand(GetRegisterPointingToLowerByte(registerPair));
                     return true;
                 }
             }
@@ -163,6 +163,8 @@ namespace TMS9900Translating.Translating
                 return Z80Register.D;
             if (registerPair == Z80ExtendedRegister.HL)
                 return Z80Register.H;
+            if (registerPair == Z80ExtendedRegister.AF)
+                return Z80Register.A;
             throw new Exception($"Register {registerPair.ToString()} is unsplitable");
         }
 
@@ -174,6 +176,8 @@ namespace TMS9900Translating.Translating
                 return Z80Register.E;
             if (registerPair == Z80ExtendedRegister.HL)
                 return Z80Register.L;
+            if (registerPair == Z80ExtendedRegister.AF)
+                throw new Exception($"Can't do operations on register F.");
             throw new Exception($"Register {registerPair.ToString()} is unsplitable");
         }
 
@@ -185,6 +189,8 @@ namespace TMS9900Translating.Translating
                 return Z80ExtendedRegister.DE;
             if (register == Z80Register.H || register == Z80Register.L)
                 return Z80ExtendedRegister.HL;
+            if (register == Z80Register.A)
+                return Z80ExtendedRegister.AF;
             throw new Exception($"Z80 Register {register} is not associated with a register pair.");
         }
 
@@ -195,7 +201,8 @@ namespace TMS9900Translating.Translating
                 || registerPair == Z80ExtendedRegister.HL && _registerMap[Z80Register.H] == _registerMap[Z80Register.L]
                 || registerPair == Z80ExtendedRegister.SP
                 || registerPair == Z80ExtendedRegister.IX
-                || registerPair == Z80ExtendedRegister.IY;
+                || registerPair == Z80ExtendedRegister.IY
+                || registerPair == Z80ExtendedRegister.AF;
         }
 
         protected WorkspaceRegister GetRegisterPointingToLowerByte(Z80ExtendedRegister registerPair)

@@ -23,7 +23,7 @@ namespace TMS9900Translating.Translating
             var stackPointerForDecrement = new RegisterTmsOperand(_extendedRegisterMap[Z80ExtendedRegister.SP]);
             yield return new DecTwoCommand(pushCommand, stackPointerForDecrement);
 
-            var stackPointerIndirect = new IndirectTmsOperand(_extendedRegisterMap[Z80ExtendedRegister.SP]);
+            var stackPointerIndirect = new IndirectRegisterTmsOperand(_extendedRegisterMap[Z80ExtendedRegister.SP]);
             yield return new MoveCommand(pushCommand, sourceOperand, stackPointerIndirect);
         }
     }

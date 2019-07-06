@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using TMS9900Translating.Operands;
+using TMS9900Translating.Commands;
 using Z80Command = Z80AssemblyParsing.Command;
 
 namespace TMS9900Translating
@@ -26,6 +25,21 @@ namespace TMS9900Translating
         internal void SetLabel(string label)
         {
             Label = label;
+        }
+
+        protected string GetLabelPart()
+        {
+            var label = Label ?? "";
+            return (label.Length <= 6)
+                ? label.BackPadSpaces(6)
+                : label + Environment.NewLine + String.Empty.BackPadSpaces(6);
+        }
+
+        protected string GetOpCodePart(bool padSpaces = true)
+        {
+            return padSpaces 
+                ? Enum.GetName(typeof(OpCode), OpCode).BackPadSpaces(4)
+                : Enum.GetName(typeof(OpCode), OpCode);
         }
     }
 

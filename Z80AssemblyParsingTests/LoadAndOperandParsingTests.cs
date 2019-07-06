@@ -61,6 +61,7 @@ namespace Z80AssemblyParsingTests
 
             Assert.IsNotNull(actualCommand);
             Assert.AreEqual(sourceCode, actualCommand.SourceText);
+            Assert.AreEqual("someLabel", actualCommand.Label);
             Assert.AreEqual(OpCode.LD, actualCommand.OpCode);
             Assert.IsNotNull(actualSourceOperand);
             Assert.AreEqual(132, actualSourceOperand.ImmediateValue);
@@ -255,6 +256,25 @@ namespace Z80AssemblyParsingTests
         {
             var sourceCode = "      LD   (HL),47F2h";
             Assert.Throws<Exception>(() => new Z80LineParser().ParseLine(sourceCode), "The immediate must be 8-bit");
+        }
+
+        [Test]
+        public void LoadParsing_LowerCaseRegisters()
+        {
+            var sourceCode = "      LD   b,c";
+
+            var parser = new Z80LineParser();
+            var actualCommand = parser.ParseLine(sourceCode) as LoadCommand;
+            var actualSourceOperand = actualCommand.SourceOperand as RegisterOperand;
+            var actualDestinationOperand = actualCommand.DestinationOperand as RegisterOperand;
+
+            Assert.IsNotNull(actualCommand);
+            Assert.AreEqual(sourceCode, actualCommand.SourceText);
+            Assert.AreEqual(OpCode.LD, actualCommand.OpCode);
+            Assert.IsNotNull(actualSourceOperand);
+            Assert.AreEqual(Register.C, actualSourceOperand.Register);
+            Assert.IsNotNull(actualDestinationOperand);
+            Assert.AreEqual(Register.B, actualDestinationOperand.Register);
         }
     }
 }

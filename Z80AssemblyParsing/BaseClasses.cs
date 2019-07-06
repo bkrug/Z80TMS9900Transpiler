@@ -38,7 +38,11 @@ namespace Z80AssemblyParsing
 
         public string SourceText { get; }
         public abstract OpCode OpCode { get; }
-        public string Label { get; }
+        public string Label { get; private set; }
+        internal void SetLabel(string label)
+        {
+            Label = label;
+        }
     }
 
     public enum OpCode

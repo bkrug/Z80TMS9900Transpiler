@@ -27,23 +27,32 @@ namespace Z80AssemblyParsing.Parsing
         {
             var hasLabel = line[0] != ' ' && line[0] != '\t';
             var parts = line.Split(' ').Where(p => !string.IsNullOrEmpty(p)).ToList();
-            if (hasLabel)
+            string foundLabel = null;
+            if (hasLabel) {
+                foundLabel = parts.First().TrimEnd(':');
                 parts = parts.Skip(1).ToList();
+            }
             if (!Enum.TryParse<OpCode>(parts[0], ignoreCase: true, result: out var opCode))
                 throw new Exception("Invalid OpCode");
             var operandPart = string.Join("", parts.Skip(1));
             var operands = operandPart.Split(',').Select(s => s.Trim()).Where(s => !String.IsNullOrEmpty(s)).ToList();
+            Command generatedCommand;
             switch(operands.Count)
             {
                 case 0:
-                    return GetCommandWithoutOperands(line, opCode);
+                    generatedCommand = GetCommandWithoutOperands(line, opCode);
+                    break;
                 case 1:
-                    return GetCommandWithOneOperand(line, opCode, operands[0]);
+                    generatedCommand = GetCommandWithOneOperand(line, opCode, operands[0]);
+                    break;
                 case 2:
-                    return GetCommandWithTwoOperands(line, opCode, operands);
+                    generatedCommand = GetCommandWithTwoOperands(line, opCode, operands);
+                    break;
                 default:
                     throw new Exception("Invalid list of operands");
             }
+            generatedCommand.SetLabel(foundLabel);
+            return generatedCommand;
         }
 
         private Command GetCommandWithoutOperands(string line, OpCode opCode)
@@ -96,14 +105,14 @@ namespace Z80AssemblyParsing.Parsing
                 {
                     if (TryByteParse(operandString, out var immediateNumber))
                         return new ImmediateOperand(immediateNumber);
-                    if (Enum.GetNames(typeof(Register)).Contains(operandString) && Enum.TryParse<Register>(operandString, out var register))
+                    if (Enum.GetNames(typeof(Register)).Contains(operandString.ToUpper()) && Enum.TryParse<Register>(operandString, true, out var register))
                         return new RegisterOperand(register);
                 }
                 if (expectedSize != OperandSize.EightBit)
                 {
                     if (TryUShortParse(operandString, out var immediate16BitNumber))
                         return new ImmediateExtendedOperand(immediate16BitNumber);
-                    if (Enum.GetNames(typeof(ExtendedRegister)).Contains(operandString) && Enum.TryParse<ExtendedRegister>(operandString, out var extendedRegister))
+                    if (Enum.GetNames(typeof(ExtendedRegister)).Contains(operandString.ToUpper()) && Enum.TryParse<ExtendedRegister>(operandString, true, out var extendedRegister))
                         return new RegisterExtendedOperand(extendedRegister);
                 }
                 if (IsValidLabel(operandString))

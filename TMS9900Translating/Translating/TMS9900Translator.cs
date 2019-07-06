@@ -4,6 +4,7 @@ using TmsCommand = TMS9900Translating.Command;
 using Z80Command = Z80AssemblyParsing.Command;
 using Z80Register = Z80AssemblyParsing.Register;
 using Z80ExtendedRegister = Z80AssemblyParsing.ExtendedRegister;
+using System.Linq;
 
 namespace TMS9900Translating.Translating
 {
@@ -40,6 +41,18 @@ namespace TMS9900Translating.Translating
         }
 
         public IEnumerable<TmsCommand> Translate(Z80Command sourceCommand)
+        {
+            var commands = GetTmsCommands(sourceCommand);
+            var i = 0;
+            foreach(var currCommand in commands)
+            {
+                if (i++ == 0)
+                    currCommand.SetLabel(sourceCommand.Label);
+                yield return currCommand;
+            }
+        }
+
+        private IEnumerable<TmsCommand> GetTmsCommands(Z80Command sourceCommand)
         {
             if (sourceCommand is Z80AssemblyParsing.Commands.LoadCommand loadCommand)
                 return new LoadCommandTranslator(_mapCollection, _afterthoughAccumulator).Translate(loadCommand);

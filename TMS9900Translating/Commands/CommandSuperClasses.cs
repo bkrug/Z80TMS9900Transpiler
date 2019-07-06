@@ -8,7 +8,6 @@ namespace TMS9900Translating.Commands
     public abstract class CommandWithNoOperands : Command
     {
         public CommandWithNoOperands(Z80Command sourceCommand) : base(sourceCommand) { }
-        //TODO: Add logic for including the source command's label
         public override string CommandText => GetLabelPart() + " " + GetOpCodePart(false);
     }
 

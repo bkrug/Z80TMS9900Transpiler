@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using TMS9900Translating.Commands;
-using TMS9900Translating.Operands;
 
 namespace TMS9900Translating.Translating
 {
@@ -22,31 +19,37 @@ namespace TMS9900Translating.Translating
 
         public IEnumerable<string> Translate(IEnumerable<string> z80AssemblyCode)
         {
-            var firstPassResults = DoFirstPass(z80AssemblyCode);
-            return DoSecondPass(firstPassResults);
+            EvaluateLabeledAddresses(z80AssemblyCode);
+            return CreateTms9900Commands(z80AssemblyCode);
         }
 
-        private IEnumerable<Command> DoFirstPass(IEnumerable<string> z80AssemblyCode)
+        private void EvaluateLabeledAddresses(IEnumerable<string> z80AssemblyCode)
         {
-            foreach (var z80Command in z80AssemblyCode)
-                foreach (var tmsLine in _translator.Translate(_parser.ParseLine(z80Command)))
-                    yield return tmsLine;
-        }
-
-        private IEnumerable<string> DoSecondPass(IEnumerable<Command> tms9900Code)
-        {
-            //Enumerate the list once
-            foreach (var tmsLine in tms9900Code) { }
-            //Enumerate a second time
-            foreach (var tmsLine in tms9900Code)
+            foreach (var z80Line in z80AssemblyCode)
             {
-                if (_afterthoughAccumulator.LabelsBranchedTo.Contains(tmsLine.Label))
+                //Take note that of labels that mark the beginning of a routine.
+                //At the beginning of each routine, the translator will need to insert commands to store the return address to the stack.
+                var parsedZ80Command = _parser.ParseLine(z80Line);
+                if (parsedZ80Command is Z80AssemblyParsing.Commands.UnconditionalCallCommand z80callCommand)
+                    if (z80callCommand.Operand is Z80AssemblyParsing.Operands.LabeledAddressWithoutParenthesisOperand labeledAddressOperand)
+                        _afterthoughAccumulator.AddLabelToBranchTo(labeledAddressOperand.AddressLabel);
+            }
+        }
+
+        private IEnumerable<string> CreateTms9900Commands(IEnumerable<string> z80AssemblyCode)
+        {
+            foreach (var z80Command in z80AssemblyCode) { 
+                foreach (var tmsLine in _translator.Translate(_parser.ParseLine(z80Command)))
                 {
-                    foreach (var extraCodeLine in _translator.StoreReturnAddressToStack(tmsLine.Label))
-                        yield return extraCodeLine.CommandText;
-                    tmsLine.SetLabel("");
+                    if (_afterthoughAccumulator.LabelsBranchedTo.Contains(tmsLine.Label))
+                    {
+                        //At the beginning of the routine, insert commands that store the return address to the stack.
+                        foreach (var extraCodeLine in _translator.StoreReturnAddressToStack(tmsLine.Label))
+                            yield return extraCodeLine.CommandText;
+                        tmsLine.SetLabel("");
+                    }
+                    yield return tmsLine.CommandText;
                 }
-                yield return tmsLine.CommandText;
             }
         }
     }

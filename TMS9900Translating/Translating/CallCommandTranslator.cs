@@ -17,7 +17,6 @@ namespace TMS9900Translating.Translating
             {
                 var destinationOperand = GetOperand(callCommand.Operand, false);
                 yield return new BranchLinkCommand(callCommand, destinationOperand);
-                _afterthoughAccumulator.AddLabelToBranchTo(labeledOperand.DisplayValue);
             }
             else
             {

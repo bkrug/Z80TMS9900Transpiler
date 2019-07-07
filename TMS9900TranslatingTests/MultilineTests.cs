@@ -41,7 +41,7 @@ pointA: ld hl,256
                 {
                 });
             var translator = new TMS9900MultilineTranslator(new Z80LineParser(), singleLineTranslator, new LabelHighlighter());
-            var tmsCodeList = translator.Translate(z80CodeList);
+            var tmsCodeList = translator.Translate(z80CodeList).Select(c => c.CommandText);
             var expected = @"start  DECT R3
        MOV  R11,*R3
        MOVB *R13,R5

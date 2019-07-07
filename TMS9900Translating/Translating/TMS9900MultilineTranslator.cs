@@ -17,10 +17,10 @@ namespace TMS9900Translating.Translating
             _afterthoughAccumulator = afterthoughAccumulator;
         }
 
-        public IEnumerable<string> Translate(IEnumerable<string> z80AssemblyCode)
+        public IEnumerable<Command> Translate(IEnumerable<string> z80AssemblyCode)
         {
             EvaluateLabeledAddresses(z80AssemblyCode);
-            return CreateTms9900Commands(z80AssemblyCode).Select(c => c.CommandText);
+            return CreateTms9900Commands(z80AssemblyCode);
         }
 
         private void EvaluateLabeledAddresses(IEnumerable<string> z80AssemblyCode)

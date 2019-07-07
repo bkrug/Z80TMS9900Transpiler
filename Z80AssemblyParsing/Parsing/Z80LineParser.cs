@@ -25,19 +25,12 @@ namespace Z80AssemblyParsing.Parsing
 
         public Command ParseLine(string line)
         {
-            var hasLabel = line[0] != ' ' && line[0] != '\t';
-            var parts = line.Split(' ').Where(p => !string.IsNullOrEmpty(p)).ToList();
-            string foundLabel = null;
-            if (hasLabel) {
-                foundLabel = parts.First().TrimEnd(':');
-                parts = parts.Skip(1).ToList();
-            }
-            if (!Enum.TryParse<OpCode>(parts[0], ignoreCase: true, result: out var opCode))
-                throw new Exception("Invalid OpCode");
-            var operandPart = string.Join("", parts.Skip(1));
+            if (Comment.LineIsComment(line))
+                return new Comment(line);
+            GetCommandLineParts(line, out string foundLabel, out OpCode opCode, out string operandPart);
             var operands = operandPart.Split(',').Select(s => s.Trim()).Where(s => !String.IsNullOrEmpty(s)).ToList();
             Command generatedCommand;
-            switch(operands.Count)
+            switch (operands.Count)
             {
                 case 0:
                     generatedCommand = GetCommandWithoutOperands(line, opCode);
@@ -53,6 +46,21 @@ namespace Z80AssemblyParsing.Parsing
             }
             generatedCommand.SetLabel(foundLabel);
             return generatedCommand;
+        }
+
+        private static void GetCommandLineParts(string line, out string foundLabel, out OpCode opCode, out string operandPart)
+        {
+            var hasLabel = line[0] != ' ' && line[0] != '\t';
+            var parts = line.Split(' ').Where(p => !string.IsNullOrEmpty(p)).ToList();
+            foundLabel = null;
+            if (hasLabel)
+            {
+                foundLabel = parts.First().TrimEnd(':');
+                parts = parts.Skip(1).ToList();
+            }
+            if (!Enum.TryParse<OpCode>(parts[0], ignoreCase: true, result: out opCode))
+                throw new Exception("Invalid OpCode");
+            operandPart = string.Join("", parts.Skip(1));
         }
 
         private Command GetCommandWithoutOperands(string line, OpCode opCode)

@@ -20,7 +20,7 @@ namespace TMS9900Translating.Translating
         public IEnumerable<string> Translate(IEnumerable<string> z80AssemblyCode)
         {
             EvaluateLabeledAddresses(z80AssemblyCode);
-            return CreateTms9900Commands(z80AssemblyCode);
+            return CreateTms9900Commands(z80AssemblyCode).Select(c => c.CommandText);
         }
 
         private void EvaluateLabeledAddresses(IEnumerable<string> z80AssemblyCode)
@@ -36,7 +36,7 @@ namespace TMS9900Translating.Translating
             }
         }
 
-        private IEnumerable<string> CreateTms9900Commands(IEnumerable<string> z80AssemblyCode)
+        private IEnumerable<Command> CreateTms9900Commands(IEnumerable<string> z80AssemblyCode)
         {
             foreach (var z80Command in z80AssemblyCode) { 
                 foreach (var tmsLine in _translator.Translate(_parser.ParseLine(z80Command)))
@@ -45,10 +45,10 @@ namespace TMS9900Translating.Translating
                     {
                         //At the beginning of the routine, insert commands that store the return address to the stack.
                         foreach (var extraCodeLine in _translator.StoreReturnAddressToStack(tmsLine.Label))
-                            yield return extraCodeLine.CommandText;
+                            yield return extraCodeLine;
                         tmsLine.SetLabel("");
                     }
-                    yield return tmsLine.CommandText;
+                    yield return tmsLine;
                 }
             }
         }

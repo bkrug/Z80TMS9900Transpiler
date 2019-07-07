@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Z80toTMS9900console": {
+      "commandName": "Project",
+      "commandLineArgs": "\"F:\\Test\\Z80SourceExample.z80.asm\" \"F:\\Test\\TMS9900ResultExample.tms.asm\""
+    }
+  }
+}

@@ -17,6 +17,7 @@ namespace TMS9900Translating.Translating
             _afterthoughAccumulator = afterthoughAccumulator;
         }
 
+        /// <param name="z80AssemblyCode">This list of strings shall be enumerated twice. If you are reading text from a file, the enumerator needs to move the the beginning of the file every time it is called.</param>
         public IEnumerable<Command> Translate(IEnumerable<string> z80AssemblyCode)
         {
             EvaluateLabeledAddresses(z80AssemblyCode);

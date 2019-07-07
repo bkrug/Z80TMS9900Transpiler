@@ -69,6 +69,8 @@ namespace TMS9900Translating.Translating
                 return new ReturnCommandTranslator(_mapCollection).Translate(unconditionalReturnCommand);
             if (sourceCommand is Z80Commands.Comment comment)
                 return new CommentTranslator(_mapCollection).Translate(comment);
+            if (sourceCommand is Z80Commands.UnparsableLine unparsableLine)
+                return new UnparsableTranslator(_mapCollection).Translate(unparsableLine);
             else
                 throw new Exception("This command has not been implemented yet.");
         }

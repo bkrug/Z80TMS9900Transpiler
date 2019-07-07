@@ -271,6 +271,26 @@ namespace TMS9900TranslatingTests
         }
 
         [Test]
+        public void Load8Bit_MoveByte_FromIndirectRegisterToRegister_ToAccumulator_NoLowByte()
+        {
+            var z80SourceCommand = "    ld      a,(hl)";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
+                {
+                    (Z80SourceRegister.A, WorkspaceRegister.R4),
+                    (Z80SourceRegister.H, WorkspaceRegister.R6),
+                    (Z80SourceRegister.L, WorkspaceRegister.R6)
+                },
+                new List<MemoryMapElement>()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(1, tmsCommand.Count);
+            Assert.AreEqual("       MOVB *R6,R4", tmsCommand[0].CommandText);
+        }
+
+        [Test]
         public void Load8Bit_MoveByte_FromRegisterToIndirectRegister_NonIndexedIsLowByte()
         {
             var z80SourceCommand = "    ld   (HL),E";

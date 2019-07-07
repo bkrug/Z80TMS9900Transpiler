@@ -25,7 +25,7 @@ namespace Z80AssemblyParsing.Parsing
 
         public Command ParseLine(string line)
         {
-            if (Comment.LineIsComment(line))
+            if (Comment.LineIsComment(line) || line == string.Empty)
                 return new Comment(line);
             if (!GetCommandLineParts(line, out string foundLabel, out OpCode opCode, out string operandPart, out Command errorCommand))
                 return errorCommand;
@@ -136,7 +136,7 @@ namespace Z80AssemblyParsing.Parsing
             else
             {
                 var operandWithoutParens = operandString.TrimStart('(').TrimEnd(')');
-                if (Enum.TryParse<ExtendedRegister>(operandWithoutParens, out var extendedRegister))
+                if (Enum.TryParse<ExtendedRegister>(operandWithoutParens, true, out var extendedRegister))
                     return new IndirectRegisterOperand(extendedRegister);
                 if (TryUShortParse(operandWithoutParens, out var memoryAddress))
                     return new ExtendedAddressOperand(memoryAddress);

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace TMS9900Translating
 {
-    public class AfterthoughAccumulator
+    public class LabelHighlighter
     {
         private HashSet<string> _labelsBranchedTo = new HashSet<string>();
 

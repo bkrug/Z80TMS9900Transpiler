@@ -40,7 +40,7 @@ pointA: ld hl,256
                 new List<MemoryMapElement>()
                 {
                 });
-            var translator = new TMS9900MultilineTranslator(new Z80LineParser(), singleLineTranslator, new AfterthoughAccumulator());
+            var translator = new TMS9900MultilineTranslator(new Z80LineParser(), singleLineTranslator, new LabelHighlighter());
             var tmsCodeList = translator.Translate(z80CodeList);
             var expected = @"start  DECT R3
        MOV  R11,*R3

@@ -14,7 +14,7 @@ namespace TMS9900TranslatingTests
         {
             var z80SourceCommand = "    call 48A1h";
             var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
-            var accumulator = new AfterthoughAccumulator();
+            var accumulator = new LabelHighlighter();
             var translator = new TMS9900Translator(
                 new List<(Z80SourceRegister, WorkspaceRegister)>(),
                 new List<MemoryMapElement>()
@@ -31,7 +31,7 @@ namespace TMS9900TranslatingTests
         {
             var z80SourceCommand = "    call otherRoutine";
             var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
-            var accumulator = new AfterthoughAccumulator();
+            var accumulator = new LabelHighlighter();
             var translator = new TMS9900Translator(
                 new List<(Z80SourceRegister, WorkspaceRegister)>(),
                 new List<MemoryMapElement>()
@@ -47,7 +47,7 @@ namespace TMS9900TranslatingTests
         {
             var z80SourceCommand = "    call otherRoutine";
             var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
-            var accumulator = new AfterthoughAccumulator();
+            var accumulator = new LabelHighlighter();
             var translator = new TMS9900Translator(
                 new List<(Z80SourceRegister, WorkspaceRegister)>(),
                 new List<MemoryMapElement>()

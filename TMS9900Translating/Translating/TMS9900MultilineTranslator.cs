@@ -6,11 +6,11 @@ namespace TMS9900Translating.Translating
 {
     public class TMS9900MultilineTranslator
     {
-        private AfterthoughAccumulator _afterthoughAccumulator;
+        private LabelHighlighter _afterthoughAccumulator;
         private TMS9900Translator _translator;
         private Z80AssemblyParsing.Parsing.Z80LineParser _parser;
 
-        public TMS9900MultilineTranslator(Z80AssemblyParsing.Parsing.Z80LineParser parser, TMS9900Translator translator, AfterthoughAccumulator afterthoughAccumulator)
+        public TMS9900MultilineTranslator(Z80AssemblyParsing.Parsing.Z80LineParser parser, TMS9900Translator translator, LabelHighlighter afterthoughAccumulator)
         {
             _parser = parser;
             _translator = translator;

@@ -27,7 +27,8 @@ namespace Z80AssemblyParsing.Parsing
         {
             if (Comment.LineIsComment(line))
                 return new Comment(line);
-            GetCommandLineParts(line, out string foundLabel, out OpCode opCode, out string operandPart);
+            if (!GetCommandLineParts(line, out string foundLabel, out OpCode opCode, out string operandPart, out Command errorCommand))
+                return errorCommand;
             var operands = operandPart.Split(',').Select(s => s.Trim()).Where(s => !String.IsNullOrEmpty(s)).ToList();
             Command generatedCommand;
             switch (operands.Count)
@@ -48,8 +49,9 @@ namespace Z80AssemblyParsing.Parsing
             return generatedCommand;
         }
 
-        private static void GetCommandLineParts(string line, out string foundLabel, out OpCode opCode, out string operandPart)
+        private static bool GetCommandLineParts(string line, out string foundLabel, out OpCode opCode, out string operandPart, out Command errorCommand)
         {
+            errorCommand = null;
             var hasLabel = line[0] != ' ' && line[0] != '\t';
             var parts = line.Split(' ').Where(p => !string.IsNullOrEmpty(p)).ToList();
             foundLabel = null;
@@ -59,8 +61,13 @@ namespace Z80AssemblyParsing.Parsing
                 parts = parts.Skip(1).ToList();
             }
             if (!Enum.TryParse<OpCode>(parts[0], ignoreCase: true, result: out opCode))
-                throw new Exception("Invalid OpCode");
+            {
+                errorCommand = new UnparsableLine(line, "Invalid OpCode");
+                operandPart = null;
+                return false;
+            }
             operandPart = string.Join("", parts.Skip(1));
+            return true;
         }
 
         private Command GetCommandWithoutOperands(string line, OpCode opCode)

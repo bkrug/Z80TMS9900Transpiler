@@ -13,7 +13,7 @@ namespace TMS9900TranslatingTests
     public class CommentTranslationTests
     {
         [Test]
-        public void MultilineTests_StoreReturnValueToStackPointer()
+        public void CommentTranslationTests_NormalComment()
         {
             var z80SourceCommand = ";;; This is the most important subroutine in the code.";
             var z80Command = new Z80LineParser().ParseLine(z80SourceCommand);

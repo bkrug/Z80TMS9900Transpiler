@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using TmsCommand = TMS9900Translating.Command;
 using Z80Command = Z80AssemblyParsing.Command;
+using Z80Commands = Z80AssemblyParsing.Commands;
 using Z80Register = Z80AssemblyParsing.Register;
 using Z80ExtendedRegister = Z80AssemblyParsing.ExtendedRegister;
 using TMS9900Translating.Commands;
@@ -54,18 +55,20 @@ namespace TMS9900Translating.Translating
 
         private IEnumerable<TmsCommand> GetTmsCommands(Z80Command sourceCommand)
         {
-            if (sourceCommand is Z80AssemblyParsing.Commands.LoadCommand loadCommand)
+            if (sourceCommand is Z80Commands.LoadCommand loadCommand)
                 return new LoadCommandTranslator(_mapCollection).Translate(loadCommand);
-            if (sourceCommand is Z80AssemblyParsing.Commands.AddCommand addCommand)
+            if (sourceCommand is Z80Commands.AddCommand addCommand)
                 return new AddCommandTranslator(_mapCollection).Translate(addCommand);
-            if (sourceCommand is Z80AssemblyParsing.Commands.PushCommand pushCommand)
+            if (sourceCommand is Z80Commands.PushCommand pushCommand)
                 return new PushCommandTranslator(_mapCollection).Translate(pushCommand);
-            if (sourceCommand is Z80AssemblyParsing.Commands.PopCommand popCommand)
+            if (sourceCommand is Z80Commands.PopCommand popCommand)
                 return new PopCommandTranslator(_mapCollection).Translate(popCommand);
-            if (sourceCommand is Z80AssemblyParsing.Commands.UnconditionalCallCommand unconditCallCommand)
+            if (sourceCommand is Z80Commands.UnconditionalCallCommand unconditCallCommand)
                 return new CallCommandTranslator(_mapCollection).Translate(unconditCallCommand);
-            if (sourceCommand is Z80AssemblyParsing.Commands.UnconditionalReturnCommand unconditionalReturnCommand)
+            if (sourceCommand is Z80Commands.UnconditionalReturnCommand unconditionalReturnCommand)
                 return new ReturnCommandTranslator(_mapCollection).Translate(unconditionalReturnCommand);
+            if (sourceCommand is Z80Commands.Comment comment)
+                return new CommentTranslator(_mapCollection).Translate(comment);
             else
                 throw new Exception("This command has not been implemented yet.");
         }

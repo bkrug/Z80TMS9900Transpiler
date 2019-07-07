@@ -6,14 +6,13 @@ namespace TMS9900Translating.Translating
 {
     public class CallCommandTranslator : CommandTranslator<Z80AssemblyParsing.Commands.UnconditionalCallCommand>
     {
-        public CallCommandTranslator(MapCollection mapCollection, AfterthoughAccumulator afterthoughAccumulator)
-            : base(mapCollection, afterthoughAccumulator)
+        public CallCommandTranslator(MapCollection mapCollection) : base(mapCollection)
         {
         }
 
         public override IEnumerable<TmsCommand> Translate(Z80AssemblyParsing.Commands.UnconditionalCallCommand callCommand)
         {
-            if (callCommand.Operand is Z80AssemblyParsing.Operands.LabeledAddressWithoutParenthesisOperand labeledOperand)
+            if (callCommand.Operand is Z80AssemblyParsing.Operands.LabeledAddressWithoutParenthesisOperand)
             {
                 var destinationOperand = GetOperand(callCommand.Operand, false);
                 yield return new BranchLinkCommand(callCommand, destinationOperand);

@@ -4,8 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TMS9900Translating;
-using TMS9900Translating.Commands;
 using TMS9900Translating.Translating;
+using Z80AssemblyParsing.Parsing;
 
 namespace TMS9900TranslatingTests
 {
@@ -26,10 +26,7 @@ pointA: ld hl,256
         pop af
         ret";
             var z80CodeList = z80code.Split(Environment.NewLine);
-            var afterthoughAcumulator = new AfterthoughAccumulator();
-            var translator = new TMS9900MultilineTranslator(
-                new Z80AssemblyParsing.Parsing.Z80LineParser(),
-                new TMS9900Translator(new List<(Z80SourceRegister, WorkspaceRegister)>()
+            var singleLineTranslator = new TMS9900Translator(new List<(Z80SourceRegister, WorkspaceRegister)>()
                 {
                     (Z80SourceRegister.IX, WorkspaceRegister.R1),
                     (Z80SourceRegister.IY, WorkspaceRegister.R2),
@@ -42,10 +39,8 @@ pointA: ld hl,256
                 },
                 new List<MemoryMapElement>()
                 {
-                },
-                afterthoughAcumulator),
-                afterthoughAcumulator
-                );
+                });
+            var translator = new TMS9900MultilineTranslator(new Z80LineParser(), singleLineTranslator, new AfterthoughAccumulator());
             var tmsCodeList = translator.Translate(z80CodeList);
             var expected = @"start  DECT R3
        MOV  R11,*R3

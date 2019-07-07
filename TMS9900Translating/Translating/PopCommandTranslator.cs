@@ -8,8 +8,7 @@ namespace TMS9900Translating.Translating
 {
     public class PopCommandTranslator : CommandTranslator<Z80AssemblyParsing.Commands.PopCommand>
     {
-        public PopCommandTranslator(MapCollection mapCollection, AfterthoughAccumulator afterthoughAccumulator)
-            : base(mapCollection, afterthoughAccumulator)
+        public PopCommandTranslator(MapCollection mapCollection) : base(mapCollection)
         {
         }
 

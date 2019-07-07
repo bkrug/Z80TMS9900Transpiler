@@ -14,15 +14,13 @@ namespace TMS9900Translating.Translating
         protected Dictionary<Z80Register, WorkspaceRegister> _registerMap => _mapCollection.RegisterMap;
         protected Dictionary<Z80ExtendedRegister, WorkspaceRegister> _extendedRegisterMap => _mapCollection.ExtendedRegisterMap;
         protected List<MemoryMapElement> _memoryMap => _mapCollection.MemoryMap;
-        protected AfterthoughAccumulator _afterthoughAccumulator;
         private MapCollection _mapCollection;
         private static List<Z80ExtendedRegister> _unsplitableRegisters = new List<Z80ExtendedRegister>() { Z80ExtendedRegister.IX, Z80ExtendedRegister.IY, Z80ExtendedRegister.SP };
         private static List<Z80Register> _lastRegisterInPair = new List<Z80Register>() { Z80Register.C, Z80Register.E, Z80Register.L };
 
-        public CommandTranslator(MapCollection mapCollection, AfterthoughAccumulator afterthoughAccumulator)
+        public CommandTranslator(MapCollection mapCollection)
         {
             _mapCollection = mapCollection;
-            _afterthoughAccumulator = afterthoughAccumulator;
         }
 
         public abstract IEnumerable<TmsCommand> Translate(T loadCommand);

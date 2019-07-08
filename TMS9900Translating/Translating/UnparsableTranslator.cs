@@ -12,7 +12,7 @@ namespace TMS9900Translating.Translating
 
         public override IEnumerable<TmsCommand> Translate(Z80AssemblyParsing.Commands.UnparsableLine unparsableLine)
         {
-            yield return new UntranslateableComment(unparsableLine, " Untranslatable -- " + unparsableLine.ErrorMessage + ":" + unparsableLine.SourceText);
+            yield return new UntranslateableComment(unparsableLine, " Unparsable -- " + unparsableLine.ErrorMessage + ":" + unparsableLine.SourceText);
         }
     }
 }

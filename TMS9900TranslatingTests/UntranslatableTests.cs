@@ -26,7 +26,7 @@ namespace TMS9900TranslatingTests
             var tmsCommand = translator.Translate(z80Command).ToList();
 
             Assert.AreEqual(1, tmsCommand.Count);
-            Assert.AreEqual("! Untranslatable -- Invalid OpCode:       SAD  (hl),de", tmsCommand[0].CommandText);
+            Assert.AreEqual("! Unparsable -- Invalid OpCode:       SAD  (hl),de", tmsCommand[0].CommandText);
         }
     }
 }

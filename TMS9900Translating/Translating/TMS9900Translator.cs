@@ -69,6 +69,8 @@ namespace TMS9900Translating.Translating
                 return new ReturnCommandTranslator(_mapCollection).Translate(unconditionalReturnCommand);
             if (sourceCommand is Z80Commands.Comment comment)
                 return new CommentTranslator(_mapCollection).Translate(comment);
+            if (sourceCommand is Z80Commands.BlankLine blankLine)
+                return new BlankLineTranslator(_mapCollection).Translate(blankLine);
             if (sourceCommand is Z80Commands.UnparsableLine unparsableLine)
                 return new UnparsableTranslator(_mapCollection).Translate(unparsableLine);
             else

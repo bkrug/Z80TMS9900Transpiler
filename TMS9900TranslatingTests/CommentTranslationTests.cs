@@ -28,5 +28,39 @@ namespace TMS9900TranslatingTests
             Assert.AreEqual(1, tmsCommand.Count);
             Assert.AreEqual("' This is the most important subroutine in the code.", tmsCommand[0].CommandText);
         }
+
+        [Test]
+        public void BlankLineTranslationTests_BlankLine()
+        {
+            var z80SourceCommand = "   ";
+            var z80Command = new Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
+                {
+                },
+                new List<MemoryMapElement>()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(1, tmsCommand.Count);
+            Assert.AreEqual("", tmsCommand[0].CommandText);
+        }
+
+        [Test]
+        public void BlankLineTranslationTests_JustLabel()
+        {
+            var z80SourceCommand = "contin:  ";
+            var z80Command = new Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
+                {
+                },
+                new List<MemoryMapElement>()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(1, tmsCommand.Count);
+            Assert.AreEqual("contin", tmsCommand[0].CommandText);
+        }
     }
 }

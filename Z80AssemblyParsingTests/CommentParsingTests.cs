@@ -47,5 +47,39 @@ namespace Z80AssemblyParsingTests
             Assert.AreEqual(sourceCode, actualCommand.SourceText);
             Assert.AreEqual("This is a comment", actualCommand.CommentText);
         }
+
+        [Test]
+        public void CommentParingTests_BlankLine()
+        {
+            var sourceCode = "      ";
+
+            var parser = new Z80LineParser();
+            var actualCommand = parser.ParseLine(sourceCode) as BlankLine;
+
+            Assert.IsNotNull(actualCommand);
+        }
+
+        [Test]
+        public void CommentParingTests_EmptyLine()
+        {
+            var sourceCode = string.Empty;
+
+            var parser = new Z80LineParser();
+            var actualCommand = parser.ParseLine(sourceCode) as BlankLine;
+
+            Assert.IsNotNull(actualCommand);
+        }
+
+        [Test]
+        public void CommentParingTests_JustLabel()
+        {
+            var sourceCode = "routine4:     ";
+
+            var parser = new Z80LineParser();
+            var actualCommand = parser.ParseLine(sourceCode) as BlankLine;
+
+            Assert.IsNotNull(actualCommand);
+            Assert.AreEqual("routine4", actualCommand.Label);
+        }
     }
 }

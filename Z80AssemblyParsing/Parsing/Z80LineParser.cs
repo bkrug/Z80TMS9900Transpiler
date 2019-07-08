@@ -25,7 +25,9 @@ namespace Z80AssemblyParsing.Parsing
 
         public Command ParseLine(string line)
         {
-            if (Comment.LineIsComment(line) || line == string.Empty)
+            if (string.IsNullOrWhiteSpace(line))
+                return new BlankLine(line);
+            if (Comment.LineIsComment(line))
                 return new Comment(line);
             if (!GetCommandLineParts(line, out string foundLabel, out OpCode opCode, out string operandPart, out Command errorCommand))
                 return errorCommand;
@@ -59,6 +61,14 @@ namespace Z80AssemblyParsing.Parsing
             {
                 foundLabel = parts.First().TrimEnd(':');
                 parts = parts.Skip(1).ToList();
+                if (!parts.Any())
+                {
+                    errorCommand = new BlankLine(line);
+                    errorCommand.SetLabel(foundLabel);
+                    opCode = OpCode.INVALID;
+                    operandPart = null;
+                    return false;
+                }
             }
             if (!Enum.TryParse<OpCode>(parts[0], ignoreCase: true, result: out opCode))
             {

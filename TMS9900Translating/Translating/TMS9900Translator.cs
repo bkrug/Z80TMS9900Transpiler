@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TmsCommand = TMS9900Translating.Command;
 using Z80Command = Z80AssemblyParsing.Command;
 using Z80Commands = Z80AssemblyParsing.Commands;
+using Z80Ops = Z80AssemblyParsing.OpCode;
 using Z80Register = Z80AssemblyParsing.Register;
 using Z80ExtendedRegister = Z80AssemblyParsing.ExtendedRegister;
 using TMS9900Translating.Commands;
@@ -17,7 +18,7 @@ namespace TMS9900Translating.Translating
         private Dictionary<Z80ExtendedRegister, WorkspaceRegister> _extendedRegisterMap => _mapCollection.ExtendedRegisterMap;
         private List<MemoryMapElement> _memoryMap => _mapCollection.MemoryMap;
         private MapCollection _mapCollection;
-        private static HashSet<Z80AssemblyParsing.OpCode> _unsupportedZ80Opcodes = new HashSet<Z80AssemblyParsing.OpCode>() { Z80AssemblyParsing.OpCode.DI };
+        private static HashSet<Z80Ops> _unsupportedZ80Opcodes = new HashSet<Z80Ops>() { Z80Ops.DI, Z80Ops.IM };
 
         public TMS9900Translator(List<(Z80SourceRegister, WorkspaceRegister)> registerMap, List<MemoryMapElement> memoryMap)
         {

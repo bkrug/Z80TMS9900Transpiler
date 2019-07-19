@@ -74,5 +74,21 @@ namespace Z80AssemblyParsingTests
             Assert.IsNotNull(actualOperand);
             Assert.AreEqual("overThere", actualOperand.AddressLabel);
         }
+
+        [Test]
+        public void SingleOperandParsing_InterruptMode()
+        {
+            var sourceCode = "      IM   1";
+
+            var parser = new Z80LineParser();
+            var actualCommand = parser.ParseLine(sourceCode) as InterruptModeCommand;
+            var actualOperand = actualCommand.Operand as ImmediateOperand;
+
+            Assert.IsNotNull(actualCommand);
+            Assert.AreEqual(sourceCode, actualCommand.SourceText);
+            Assert.AreEqual(OpCode.IM, actualCommand.OpCode);
+            Assert.IsNotNull(actualOperand);
+            Assert.AreEqual(1, actualOperand.ImmediateValue);
+        }
     }
 }

@@ -13,15 +13,26 @@ namespace TMS9900Translating.Translating
 
         public override IEnumerable<TmsCommand> Translate(Z80AssemblyParsing.Commands.AndCommand andCommand)
         {
-            var sourceOperand = GetOperand(andCommand.Operand, true);
-            if (sourceOperand is ImmediateTmsOperand)
-                yield return new AndImmediateCommand(andCommand, sourceOperand, new RegisterTmsOperand(_registerMap[Z80AssemblyParsing.Register.A]));
-            if (sourceOperand is RegisterTmsOperand || sourceOperand is IndirectRegisterTmsOperand)
+            var regZeroOperand = new RegisterTmsOperand(WorkspaceRegister.R0);
+            if (andCommand.Operand is Z80AssemblyParsing.Operands.IndirectRegisterOperand
+                && MustUnifyRegisterPairs(andCommand.Operand, out var copyFromOperand, out var copyToOperand, out var unifiedOperand))
             {
-                var regZeroOperand = new RegisterTmsOperand(WorkspaceRegister.R0);
-                yield return new MoveByteCommand(andCommand, sourceOperand, regZeroOperand);
+                yield return new MoveByteCommand(andCommand, copyFromOperand, copyToOperand);
+                yield return new MoveByteCommand(andCommand, unifiedOperand, regZeroOperand);
                 yield return new InvertCommand(andCommand, regZeroOperand);
                 yield return new SetZerosCorrespondingCommand(andCommand, regZeroOperand, new RegisterTmsOperand(_registerMap[Z80AssemblyParsing.Register.A]));
+            }
+            else
+            {
+                var sourceOperand = GetOperand(andCommand.Operand, true);
+                if (sourceOperand is ImmediateTmsOperand)
+                    yield return new AndImmediateCommand(andCommand, sourceOperand, new RegisterTmsOperand(_registerMap[Z80AssemblyParsing.Register.A]));
+                if (sourceOperand is RegisterTmsOperand || sourceOperand is IndirectRegisterTmsOperand)
+                {
+                    yield return new MoveByteCommand(andCommand, sourceOperand, regZeroOperand);
+                    yield return new InvertCommand(andCommand, regZeroOperand);
+                    yield return new SetZerosCorrespondingCommand(andCommand, regZeroOperand, new RegisterTmsOperand(_registerMap[Z80AssemblyParsing.Register.A]));
+                }
             }
         }
     }

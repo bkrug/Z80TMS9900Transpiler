@@ -92,5 +92,50 @@ namespace TMS9900TranslatingTests
             Assert.AreEqual("       INV  R0", tmsCommand[1].CommandText);
             Assert.AreEqual("       SZC  R0,R7", tmsCommand[2].CommandText);
         }
+
+        [Test]
+        public void Logical_And_IndirectAddress_UnifiedRegister()
+        {
+            var z80SourceCommand = "    AND  (HL)";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
+                {
+                    (Z80SourceRegister.A, WorkspaceRegister.R7),
+                    (Z80SourceRegister.H, WorkspaceRegister.R9),
+                    (Z80SourceRegister.L, WorkspaceRegister.R9),
+                },
+                new List<MemoryMapElement>()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(3, tmsCommand.Count);
+            Assert.AreEqual("       MOVB *R9,R0", tmsCommand[0].CommandText);
+            Assert.AreEqual("       INV  R0", tmsCommand[1].CommandText);
+            Assert.AreEqual("       SZC  R0,R7", tmsCommand[2].CommandText);
+        }
+
+        [Test]
+        public void Logical_And_IndirectAddress_SeparatedRegisters()
+        {
+            var z80SourceCommand = "    AND  (HL)";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
+                {
+                    (Z80SourceRegister.A, WorkspaceRegister.R7),
+                    (Z80SourceRegister.H, WorkspaceRegister.R4),
+                    (Z80SourceRegister.L, WorkspaceRegister.R9),
+                },
+                new List<MemoryMapElement>()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(4, tmsCommand.Count);
+            Assert.AreEqual("       MOVB R9,*R15", tmsCommand[0].CommandText);
+            Assert.AreEqual("       MOVB *R4,R0", tmsCommand[1].CommandText);
+            Assert.AreEqual("       INV  R0", tmsCommand[2].CommandText);
+            Assert.AreEqual("       SZC  R0,R7", tmsCommand[3].CommandText);
+        }
     }
 }

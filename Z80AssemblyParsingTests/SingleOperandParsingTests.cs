@@ -90,5 +90,54 @@ namespace Z80AssemblyParsingTests
             Assert.IsNotNull(actualOperand);
             Assert.AreEqual(1, actualOperand.ImmediateValue);
         }
+
+        [Test]
+        public void SingleOperandParsing_AndRegister()
+        {
+            var sourceCode = "      AND  C";
+
+            var parser = new Z80LineParser();
+            var actualCommand = parser.ParseLine(sourceCode) as AndCommand;
+            var actualOperand = actualCommand.Operand as RegisterOperand;
+
+            Assert.IsNotNull(actualCommand);
+            Assert.AreEqual(sourceCode, actualCommand.SourceText);
+            Assert.AreEqual(OpCode.AND, actualCommand.OpCode);
+            Assert.IsNotNull(actualOperand);
+            Assert.AreEqual(Register.C, actualOperand.Register);
+        }
+
+        [Test]
+        public void SingleOperandParsing_AndImmediate()
+        {
+            var sourceCode = "      AND  5Ch";
+
+            var parser = new Z80LineParser();
+            var actualCommand = parser.ParseLine(sourceCode) as AndCommand;
+            var actualOperand = actualCommand.Operand as ImmediateOperand;
+
+            Assert.IsNotNull(actualCommand);
+            Assert.AreEqual(sourceCode, actualCommand.SourceText);
+            Assert.AreEqual(OpCode.AND, actualCommand.OpCode);
+            Assert.IsNotNull(actualOperand);
+            Assert.AreEqual(0x5C, actualOperand.ImmediateValue);
+        }
+
+
+        [Test]
+        public void SingleOperandParsing_AndIndirectAddress()
+        {
+            var sourceCode = "      AND  (HL)";
+
+            var parser = new Z80LineParser();
+            var actualCommand = parser.ParseLine(sourceCode) as AndCommand;
+            var actualOperand = actualCommand.Operand as IndirectRegisterOperand;
+
+            Assert.IsNotNull(actualCommand);
+            Assert.AreEqual(sourceCode, actualCommand.SourceText);
+            Assert.AreEqual(OpCode.AND, actualCommand.OpCode);
+            Assert.IsNotNull(actualOperand);
+            Assert.AreEqual(ExtendedRegister.HL, actualOperand.Register);
+        }
     }
 }

@@ -105,6 +105,8 @@ namespace Z80AssemblyParsing.Parsing
                     return new UnconditionalCallCommand(line, GetAddressOperandWithoutParenthesis(operandString));
                 case OpCode.IM:
                     return new InterruptModeCommand(line, GetOperand(operandString));
+                case OpCode.AND:
+                    return new AndCommand(line, GetOperand(operandString));
                 default:
                     throw new Exception($"OpCode {opCode} does not accept one operand");
             }

@@ -45,7 +45,7 @@ namespace TMS9900Translating
 
     public enum OpCode
     {
-        Comment, MOV, MOVB, LI, A, AB, AI, DECT, BL, RT
+        Comment, MOV, MOVB, LI, A, AB, AI, DECT, BL, RT, ANDI, SZC, SOC, INV
     }
 
     public enum OperandSize

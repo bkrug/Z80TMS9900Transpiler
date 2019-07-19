@@ -1,0 +1,28 @@
+﻿using System.Collections.Generic;
+using TMS9900Translating.Commands;
+using TMS9900Translating.Operands;
+using TmsCommand = TMS9900Translating.Command;
+
+namespace TMS9900Translating.Translating
+{
+    public class AndCommandTranslator : CommandTranslator<Z80AssemblyParsing.Commands.AndCommand>
+    {
+        public AndCommandTranslator(MapCollection mapCollection) : base(mapCollection)
+        {
+        }
+
+        public override IEnumerable<TmsCommand> Translate(Z80AssemblyParsing.Commands.AndCommand andCommand)
+        {
+            var sourceOperand = GetOperand(andCommand.Operand, true);
+            if (sourceOperand is ImmediateTmsOperand)
+                yield return new AndImmediateCommand(andCommand, sourceOperand, new RegisterTmsOperand(_registerMap[Z80AssemblyParsing.Register.A]));
+            if (sourceOperand is RegisterTmsOperand || sourceOperand is IndirectRegisterTmsOperand)
+            {
+                var regZeroOperand = new RegisterTmsOperand(WorkspaceRegister.R0);
+                yield return new MoveByteCommand(andCommand, sourceOperand, regZeroOperand);
+                yield return new InvertCommand(andCommand, regZeroOperand);
+                yield return new SetZerosCorrespondingCommand(andCommand, regZeroOperand, new RegisterTmsOperand(_registerMap[Z80AssemblyParsing.Register.A]));
+            }
+        }
+    }
+}

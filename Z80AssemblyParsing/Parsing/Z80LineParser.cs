@@ -86,6 +86,8 @@ namespace Z80AssemblyParsing.Parsing
             {
                 case OpCode.RET:
                     return new UnconditionalReturnCommand(line);
+                case OpCode.DI:
+                    return new DisableInterruptCommand(line);
                 default:
                     throw new Exception($"OpCode {opCode} does not accept one operand");
             }

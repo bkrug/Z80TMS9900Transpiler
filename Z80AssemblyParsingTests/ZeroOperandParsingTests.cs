@@ -23,5 +23,18 @@ namespace Z80AssemblyParsingTests
             Assert.AreEqual(sourceCode, actualCommand.SourceText);
             Assert.AreEqual(OpCode.RET, actualCommand.OpCode);
         }
+
+        [Test]
+        public void ZeroOperandParsing_DisableInterrupt()
+        {
+            var sourceCode = "      di";
+
+            var parser = new Z80LineParser();
+            var actualCommand = parser.ParseLine(sourceCode) as DisableInterruptCommand;
+
+            Assert.IsNotNull(actualCommand);
+            Assert.AreEqual(sourceCode, actualCommand.SourceText);
+            Assert.AreEqual(OpCode.DI, actualCommand.OpCode);
+        }
     }
 }

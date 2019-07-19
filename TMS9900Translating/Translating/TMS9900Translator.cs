@@ -17,6 +17,7 @@ namespace TMS9900Translating.Translating
         private Dictionary<Z80ExtendedRegister, WorkspaceRegister> _extendedRegisterMap => _mapCollection.ExtendedRegisterMap;
         private List<MemoryMapElement> _memoryMap => _mapCollection.MemoryMap;
         private MapCollection _mapCollection;
+        private static HashSet<Z80AssemblyParsing.OpCode> _unsupportedZ80Opcodes = new HashSet<Z80AssemblyParsing.OpCode>() { Z80AssemblyParsing.OpCode.DI };
 
         public TMS9900Translator(List<(Z80SourceRegister, WorkspaceRegister)> registerMap, List<MemoryMapElement> memoryMap)
         {
@@ -71,6 +72,8 @@ namespace TMS9900Translating.Translating
                 return new CommentTranslator(_mapCollection).Translate(comment);
             if (sourceCommand is Z80Commands.BlankLine blankLine)
                 return new BlankLineTranslator(_mapCollection).Translate(blankLine);
+            if (_unsupportedZ80Opcodes.Contains(sourceCommand.OpCode))
+                return new UntranslatableTranslator(_mapCollection).Translate(sourceCommand);
             if (sourceCommand is Z80Commands.UnparsableLine unparsableLine)
                 return new UnparsableTranslator(_mapCollection).Translate(unparsableLine);
             else

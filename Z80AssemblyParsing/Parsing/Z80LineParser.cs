@@ -88,8 +88,12 @@ namespace Z80AssemblyParsing.Parsing
                     return new UnconditionalReturnCommand(line);
                 case OpCode.DI:
                     return new DisableInterruptCommand(line);
+                case OpCode.RRCA:
+                    return new RotateRightCarryCommand(line);
+                case OpCode.RRA:
+                    return new RotateRightCommand(line);
                 default:
-                    throw new Exception($"OpCode {opCode} does not accept one operand");
+                    throw new Exception($"OpCode {opCode} is not a command that can omit an operand.");
             }
         }
 

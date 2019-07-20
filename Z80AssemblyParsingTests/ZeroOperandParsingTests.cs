@@ -36,5 +36,31 @@ namespace Z80AssemblyParsingTests
             Assert.AreEqual(sourceCode, actualCommand.SourceText);
             Assert.AreEqual(OpCode.DI, actualCommand.OpCode);
         }
+
+        [Test]
+        public void ZeroOperandParsing_RRCA()
+        {
+            var sourceCode = "      RRCA";
+
+            var parser = new Z80LineParser();
+            var actualCommand = parser.ParseLine(sourceCode) as RotateRightCarryCommand;
+
+            Assert.IsNotNull(actualCommand);
+            Assert.AreEqual(sourceCode, actualCommand.SourceText);
+            Assert.AreEqual(OpCode.RRCA, actualCommand.OpCode);
+        }
+
+        [Test]
+        public void ZeroOperandParsing_RRA()
+        {
+            var sourceCode = "      rra";
+
+            var parser = new Z80LineParser();
+            var actualCommand = parser.ParseLine(sourceCode) as RotateRightCommand;
+
+            Assert.IsNotNull(actualCommand);
+            Assert.AreEqual(sourceCode, actualCommand.SourceText);
+            Assert.AreEqual(OpCode.RRA, actualCommand.OpCode);
+        }
     }
 }

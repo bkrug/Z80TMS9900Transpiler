@@ -15,9 +15,8 @@ namespace Z80AssemblyParsingTests
             var sourceCode = "      SAD  (hl),de";
             
             var parser = new Z80LineParser();
-            var actualCommand = parser.ParseLine(sourceCode) as UnparsableLine;
+            var actualCommand = AssertExtension.IsCorrectCommandType<UnparsableLine>(parser.ParseLine(sourceCode));
 
-            Assert.IsNotNull(actualCommand);
             Assert.AreEqual(sourceCode, actualCommand.SourceText);
             Assert.AreEqual("Invalid OpCode", actualCommand.ErrorMessage);
         }

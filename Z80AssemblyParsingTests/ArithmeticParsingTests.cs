@@ -17,16 +17,13 @@ namespace Z80AssemblyParsingTests
             var sourceCode = "      ADD  A,0x47";
             
             var parser = new Z80LineParser("0x", "");
-            var actualCommand = parser.ParseLine(sourceCode) as AddCommand;
-            var actualSourceOperand = actualCommand.SourceOperand as ImmediateOperand;
-            var actualDestinationOperand = actualCommand.DestinationOperand as RegisterOperand;
+            var actualCommand = AssertExtension.IsCorrectCommandType<AddCommand>(parser.ParseLine(sourceCode));
+            var actualSourceOperand = AssertExtension.IsCorrectOperandType<ImmediateOperand>(actualCommand.SourceOperand);
+            var actualDestinationOperand = AssertExtension.IsCorrectOperandType<RegisterOperand>(actualCommand.DestinationOperand);
 
-            Assert.IsNotNull(actualCommand);
             Assert.AreEqual(sourceCode, actualCommand.SourceText);
             Assert.AreEqual(OpCode.ADD, actualCommand.OpCode);
-            Assert.IsNotNull(actualSourceOperand);
             Assert.AreEqual(0x47, actualSourceOperand.ImmediateValue);
-            Assert.IsNotNull(actualDestinationOperand);
             Assert.AreEqual(Register.A, actualDestinationOperand.Register);
         }
     }

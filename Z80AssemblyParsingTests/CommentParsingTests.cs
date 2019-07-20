@@ -15,9 +15,8 @@ namespace Z80AssemblyParsingTests
             var sourceCode = ";This is a comment";
             
             var parser = new Z80LineParser();
-            var actualCommand = parser.ParseLine(sourceCode) as Comment;
+            var actualCommand = AssertExtension.IsCorrectCommandType<Comment>(parser.ParseLine(sourceCode));
 
-            Assert.IsNotNull(actualCommand);
             Assert.AreEqual(sourceCode, actualCommand.SourceText);
             Assert.AreEqual("This is a comment", actualCommand.CommentText);
         }
@@ -28,9 +27,8 @@ namespace Z80AssemblyParsingTests
             var sourceCode = ";;;This is a comment";
 
             var parser = new Z80LineParser();
-            var actualCommand = parser.ParseLine(sourceCode) as Comment;
+            var actualCommand = AssertExtension.IsCorrectCommandType<Comment>(parser.ParseLine(sourceCode));
 
-            Assert.IsNotNull(actualCommand);
             Assert.AreEqual(sourceCode, actualCommand.SourceText);
             Assert.AreEqual("This is a comment", actualCommand.CommentText);
         }
@@ -41,9 +39,8 @@ namespace Z80AssemblyParsingTests
             var sourceCode = "      ;This is a comment";
 
             var parser = new Z80LineParser();
-            var actualCommand = parser.ParseLine(sourceCode) as Comment;
+            var actualCommand = AssertExtension.IsCorrectCommandType<Comment>(parser.ParseLine(sourceCode));
 
-            Assert.IsNotNull(actualCommand);
             Assert.AreEqual(sourceCode, actualCommand.SourceText);
             Assert.AreEqual("This is a comment", actualCommand.CommentText);
         }
@@ -54,9 +51,7 @@ namespace Z80AssemblyParsingTests
             var sourceCode = "      ";
 
             var parser = new Z80LineParser();
-            var actualCommand = parser.ParseLine(sourceCode) as BlankLine;
-
-            Assert.IsNotNull(actualCommand);
+            AssertExtension.IsCorrectCommandType<BlankLine>(parser.ParseLine(sourceCode));
         }
 
         [Test]
@@ -65,9 +60,7 @@ namespace Z80AssemblyParsingTests
             var sourceCode = string.Empty;
 
             var parser = new Z80LineParser();
-            var actualCommand = parser.ParseLine(sourceCode) as BlankLine;
-
-            Assert.IsNotNull(actualCommand);
+            AssertExtension.IsCorrectCommandType<BlankLine>(parser.ParseLine(sourceCode));
         }
 
         [Test]
@@ -76,9 +69,8 @@ namespace Z80AssemblyParsingTests
             var sourceCode = "routine4:     ";
 
             var parser = new Z80LineParser();
-            var actualCommand = parser.ParseLine(sourceCode) as BlankLine;
+            var actualCommand = AssertExtension.IsCorrectCommandType<BlankLine>(parser.ParseLine(sourceCode));
 
-            Assert.IsNotNull(actualCommand);
             Assert.AreEqual("routine4", actualCommand.Label);
         }
     }

@@ -1,9 +1,6 @@
-using NUnit;
 using NUnit.Framework;
-using System;
 using Z80AssemblyParsing;
 using Z80AssemblyParsing.Commands;
-using Z80AssemblyParsing.Operands;
 using Z80AssemblyParsing.Parsing;
 
 namespace Z80AssemblyParsingTests
@@ -17,9 +14,8 @@ namespace Z80AssemblyParsingTests
             var sourceCode = "      RET";
             
             var parser = new Z80LineParser();
-            var actualCommand = parser.ParseLine(sourceCode) as UnconditionalReturnCommand;
+            var actualCommand = AssertExtension.IsCorrectCommandType<UnconditionalReturnCommand>(parser.ParseLine(sourceCode));
 
-            Assert.IsNotNull(actualCommand);
             Assert.AreEqual(sourceCode, actualCommand.SourceText);
             Assert.AreEqual(OpCode.RET, actualCommand.OpCode);
         }
@@ -30,9 +26,8 @@ namespace Z80AssemblyParsingTests
             var sourceCode = "      di";
 
             var parser = new Z80LineParser();
-            var actualCommand = parser.ParseLine(sourceCode) as DisableInterruptCommand;
+            var actualCommand = AssertExtension.IsCorrectCommandType<DisableInterruptCommand>(parser.ParseLine(sourceCode));
 
-            Assert.IsNotNull(actualCommand);
             Assert.AreEqual(sourceCode, actualCommand.SourceText);
             Assert.AreEqual(OpCode.DI, actualCommand.OpCode);
         }
@@ -43,9 +38,8 @@ namespace Z80AssemblyParsingTests
             var sourceCode = "      RRCA";
 
             var parser = new Z80LineParser();
-            var actualCommand = parser.ParseLine(sourceCode) as RotateRightCarryCommand;
+            var actualCommand = AssertExtension.IsCorrectCommandType<RotateRightCarryCommand>(parser.ParseLine(sourceCode));
 
-            Assert.IsNotNull(actualCommand);
             Assert.AreEqual(sourceCode, actualCommand.SourceText);
             Assert.AreEqual(OpCode.RRCA, actualCommand.OpCode);
         }
@@ -56,9 +50,8 @@ namespace Z80AssemblyParsingTests
             var sourceCode = "      rra";
 
             var parser = new Z80LineParser();
-            var actualCommand = parser.ParseLine(sourceCode) as RotateRightCommand;
+            var actualCommand = AssertExtension.IsCorrectCommandType<RotateRightCommand>(parser.ParseLine(sourceCode));
 
-            Assert.IsNotNull(actualCommand);
             Assert.AreEqual(sourceCode, actualCommand.SourceText);
             Assert.AreEqual(OpCode.RRA, actualCommand.OpCode);
         }

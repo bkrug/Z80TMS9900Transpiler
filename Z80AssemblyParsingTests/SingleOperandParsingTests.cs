@@ -17,13 +17,11 @@ namespace Z80AssemblyParsingTests
             var sourceCode = "      PUSH HL";
             
             var parser = new Z80LineParser();
-            var actualCommand = parser.ParseLine(sourceCode) as PushCommand;
-            var actualOperand = actualCommand.Operand as RegisterExtendedOperand;
+            var actualCommand = AssertExtension.IsCorrectCommandType<PushCommand>(parser.ParseLine(sourceCode));
+            var actualOperand = AssertExtension.IsCorrectOperandType<RegisterExtendedOperand>(actualCommand.Operand);
 
-            Assert.IsNotNull(actualCommand);
             Assert.AreEqual(sourceCode, actualCommand.SourceText);
             Assert.AreEqual(OpCode.PUSH, actualCommand.OpCode);
-            Assert.IsNotNull(actualOperand);
             Assert.AreEqual(ExtendedRegister.HL, actualOperand.Register);
         }
 
@@ -33,13 +31,11 @@ namespace Z80AssemblyParsingTests
             var sourceCode = "      POP  AF";
 
             var parser = new Z80LineParser();
-            var actualCommand = parser.ParseLine(sourceCode) as PopCommand;
-            var actualOperand = actualCommand.Operand as RegisterExtendedOperand;
+            var actualCommand = AssertExtension.IsCorrectCommandType<PopCommand>(parser.ParseLine(sourceCode));
+            var actualOperand = AssertExtension.IsCorrectOperandType<RegisterExtendedOperand>(actualCommand.Operand);
 
-            Assert.IsNotNull(actualCommand);
             Assert.AreEqual(sourceCode, actualCommand.SourceText);
             Assert.AreEqual(OpCode.POP, actualCommand.OpCode);
-            Assert.IsNotNull(actualOperand);
             Assert.AreEqual(ExtendedRegister.AF, actualOperand.Register);
         }
 
@@ -49,13 +45,11 @@ namespace Z80AssemblyParsingTests
             var sourceCode = "      CALL 45B2h";
 
             var parser = new Z80LineParser();
-            var actualCommand = parser.ParseLine(sourceCode) as UnconditionalCallCommand;
-            var actualOperand = actualCommand.Operand as AddressWithoutParenthesisOperand;
+            var actualCommand = AssertExtension.IsCorrectCommandType<UnconditionalCallCommand>(parser.ParseLine(sourceCode));
+            var actualOperand = AssertExtension.IsCorrectOperandType<AddressWithoutParenthesisOperand>(actualCommand.Operand);
 
-            Assert.IsNotNull(actualCommand);
             Assert.AreEqual(sourceCode, actualCommand.SourceText);
             Assert.AreEqual(OpCode.CALL, actualCommand.OpCode);
-            Assert.IsNotNull(actualOperand);
             Assert.AreEqual(0x45b2, actualOperand.MemoryAddress);
         }
 
@@ -65,13 +59,11 @@ namespace Z80AssemblyParsingTests
             var sourceCode = "      CALL overThere";
 
             var parser = new Z80LineParser();
-            var actualCommand = parser.ParseLine(sourceCode) as UnconditionalCallCommand;
-            var actualOperand = actualCommand.Operand as LabeledAddressWithoutParenthesisOperand;
+            var actualCommand = AssertExtension.IsCorrectCommandType<UnconditionalCallCommand>(parser.ParseLine(sourceCode));
+            var actualOperand = AssertExtension.IsCorrectOperandType<LabeledAddressWithoutParenthesisOperand>(actualCommand.Operand);
 
-            Assert.IsNotNull(actualCommand);
             Assert.AreEqual(sourceCode, actualCommand.SourceText);
             Assert.AreEqual(OpCode.CALL, actualCommand.OpCode);
-            Assert.IsNotNull(actualOperand);
             Assert.AreEqual("overThere", actualOperand.AddressLabel);
         }
 
@@ -81,13 +73,11 @@ namespace Z80AssemblyParsingTests
             var sourceCode = "      IM   1";
 
             var parser = new Z80LineParser();
-            var actualCommand = parser.ParseLine(sourceCode) as InterruptModeCommand;
-            var actualOperand = actualCommand.Operand as ImmediateOperand;
+            var actualCommand = AssertExtension.IsCorrectCommandType<InterruptModeCommand>(parser.ParseLine(sourceCode));
+            var actualOperand = AssertExtension.IsCorrectOperandType<ImmediateOperand>(actualCommand.Operand);
 
-            Assert.IsNotNull(actualCommand);
             Assert.AreEqual(sourceCode, actualCommand.SourceText);
             Assert.AreEqual(OpCode.IM, actualCommand.OpCode);
-            Assert.IsNotNull(actualOperand);
             Assert.AreEqual(1, actualOperand.ImmediateValue);
         }
 
@@ -97,13 +87,11 @@ namespace Z80AssemblyParsingTests
             var sourceCode = "      AND  C";
 
             var parser = new Z80LineParser();
-            var actualCommand = parser.ParseLine(sourceCode) as AndCommand;
-            var actualOperand = actualCommand.Operand as RegisterOperand;
+            var actualCommand = AssertExtension.IsCorrectCommandType<AndCommand>(parser.ParseLine(sourceCode));
+            var actualOperand = AssertExtension.IsCorrectOperandType<RegisterOperand>(actualCommand.Operand);
 
-            Assert.IsNotNull(actualCommand);
             Assert.AreEqual(sourceCode, actualCommand.SourceText);
             Assert.AreEqual(OpCode.AND, actualCommand.OpCode);
-            Assert.IsNotNull(actualOperand);
             Assert.AreEqual(Register.C, actualOperand.Register);
         }
 
@@ -113,13 +101,11 @@ namespace Z80AssemblyParsingTests
             var sourceCode = "      AND  5Ch";
 
             var parser = new Z80LineParser();
-            var actualCommand = parser.ParseLine(sourceCode) as AndCommand;
-            var actualOperand = actualCommand.Operand as ImmediateOperand;
+            var actualCommand = AssertExtension.IsCorrectCommandType<AndCommand>(parser.ParseLine(sourceCode));
+            var actualOperand = AssertExtension.IsCorrectOperandType<ImmediateOperand>(actualCommand.Operand);
 
-            Assert.IsNotNull(actualCommand);
             Assert.AreEqual(sourceCode, actualCommand.SourceText);
             Assert.AreEqual(OpCode.AND, actualCommand.OpCode);
-            Assert.IsNotNull(actualOperand);
             Assert.AreEqual(0x5C, actualOperand.ImmediateValue);
         }
 
@@ -130,13 +116,11 @@ namespace Z80AssemblyParsingTests
             var sourceCode = "      AND  (HL)";
 
             var parser = new Z80LineParser();
-            var actualCommand = parser.ParseLine(sourceCode) as AndCommand;
-            var actualOperand = actualCommand.Operand as IndirectRegisterOperand;
+            var actualCommand = AssertExtension.IsCorrectCommandType<AndCommand>(parser.ParseLine(sourceCode));
+            var actualOperand = AssertExtension.IsCorrectOperandType<IndirectRegisterOperand>(actualCommand.Operand);
 
-            Assert.IsNotNull(actualCommand);
             Assert.AreEqual(sourceCode, actualCommand.SourceText);
             Assert.AreEqual(OpCode.AND, actualCommand.OpCode);
-            Assert.IsNotNull(actualOperand);
             Assert.AreEqual(ExtendedRegister.HL, actualOperand.Register);
         }
     }

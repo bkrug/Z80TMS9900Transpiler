@@ -154,7 +154,7 @@ namespace TMS9900TranslatingTests
             var tmsCommand = translator.Translate(z80Command).ToList();
 
             Assert.AreEqual(2, tmsCommand.Count);
-            Assert.AreEqual("       MOVB *R12,R5", tmsCommand[0].CommandText);
+            Assert.AreEqual("       MOVB R5,*R12", tmsCommand[0].CommandText);
             Assert.AreEqual("       SRC  R5,>0001", tmsCommand[1].CommandText);
         }
     }

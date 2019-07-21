@@ -16,7 +16,7 @@ namespace TMS9900Translating.Translating
             var registerOperand = new RegisterTmsOperand(_registerMap[Z80AssemblyParsing.Register.A]);
             var indirectRegisterOperand = new IndirectRegisterTmsOperand(WorkspaceRegister.R12);
             var oneBitOperand = new ImmediateTmsOperand(1);
-            yield return new MoveByteCommand(rotateRightCarryCommand, indirectRegisterOperand, registerOperand);
+            yield return new MoveByteCommand(rotateRightCarryCommand, registerOperand, indirectRegisterOperand);
             yield return new ShiftRightCircularCommand(rotateRightCarryCommand, oneBitOperand, registerOperand);
         }
     }

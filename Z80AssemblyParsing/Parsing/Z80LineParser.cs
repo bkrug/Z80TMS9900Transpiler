@@ -111,6 +111,10 @@ namespace Z80AssemblyParsing.Parsing
                     return new InterruptModeCommand(line, GetOperand(operandString));
                 case OpCode.AND:
                     return new AndCommand(line, GetOperand(operandString));
+                case OpCode.INC:
+                    return new IncrementCommand(line, GetOperand(operandString));
+                case OpCode.DEC:
+                    return new DecrementCommand(line, GetOperand(operandString));
                 default:
                     throw new Exception($"OpCode {opCode} does not accept one operand");
             }

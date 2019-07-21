@@ -123,5 +123,61 @@ namespace Z80AssemblyParsingTests
             Assert.AreEqual(OpCode.AND, actualCommand.OpCode);
             Assert.AreEqual(ExtendedRegister.HL, actualOperand.Register);
         }
+
+        [Test]
+        public void SingleOperandParsing_Increment_Register()
+        {
+            var sourceCode = "      INC  C";
+
+            var parser = new Z80LineParser();
+            var actualCommand = AssertExtension.IsCorrectCommandType<IncrementCommand>(parser.ParseLine(sourceCode));
+            var actualOperand = AssertExtension.IsCorrectOperandType<RegisterOperand>(actualCommand.Operand);
+
+            Assert.AreEqual(sourceCode, actualCommand.SourceText);
+            Assert.AreEqual(OpCode.INC, actualCommand.OpCode);
+            Assert.AreEqual(Register.C, actualOperand.Register);
+        }
+
+        [Test]
+        public void SingleOperandParsing_Increment_IndirectRegister()
+        {
+            var sourceCode = "      INC  (HL)";
+
+            var parser = new Z80LineParser();
+            var actualCommand = AssertExtension.IsCorrectCommandType<IncrementCommand>(parser.ParseLine(sourceCode));
+            var actualOperand = AssertExtension.IsCorrectOperandType<IndirectRegisterOperand>(actualCommand.Operand);
+
+            Assert.AreEqual(sourceCode, actualCommand.SourceText);
+            Assert.AreEqual(OpCode.INC, actualCommand.OpCode);
+            Assert.AreEqual(ExtendedRegister.HL, actualOperand.Register);
+        }
+
+        [Test]
+        public void SingleOperandParsing_Decrement_Register()
+        {
+            var sourceCode = "      DEC  E";
+
+            var parser = new Z80LineParser();
+            var actualCommand = AssertExtension.IsCorrectCommandType<DecrementCommand>(parser.ParseLine(sourceCode));
+            var actualOperand = AssertExtension.IsCorrectOperandType<RegisterOperand>(actualCommand.Operand);
+
+            Assert.AreEqual(sourceCode, actualCommand.SourceText);
+            Assert.AreEqual(OpCode.DEC, actualCommand.OpCode);
+            Assert.AreEqual(Register.E, actualOperand.Register);
+        }
+
+        [Test]
+        public void SingleOperandParsing_Decrement_IndirectRegister()
+        {
+            var sourceCode = "      DEC  (HL)";
+
+            var parser = new Z80LineParser();
+            var actualCommand = AssertExtension.IsCorrectCommandType<DecrementCommand>(parser.ParseLine(sourceCode));
+            var actualOperand = AssertExtension.IsCorrectOperandType<IndirectRegisterOperand>(actualCommand.Operand);
+
+            Assert.AreEqual(sourceCode, actualCommand.SourceText);
+            Assert.AreEqual(OpCode.DEC, actualCommand.OpCode);
+            Assert.AreEqual(ExtendedRegister.HL, actualOperand.Register);
+        }
     }
 }

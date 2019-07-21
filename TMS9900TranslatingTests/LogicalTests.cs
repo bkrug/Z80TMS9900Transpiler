@@ -137,5 +137,25 @@ namespace TMS9900TranslatingTests
             Assert.AreEqual("       INV  R0", tmsCommand[2].CommandText);
             Assert.AreEqual("       SZC  R0,R7", tmsCommand[3].CommandText);
         }
+
+
+        [Test]
+        public void Logical_RotateRightCarry()
+        {
+            var z80SourceCommand = "    rrca";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
+                {
+                    (Z80SourceRegister.A, WorkspaceRegister.R5)
+                },
+                new List<MemoryMapElement>()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(2, tmsCommand.Count);
+            Assert.AreEqual("       MOVB *R12,R5", tmsCommand[0].CommandText);
+            Assert.AreEqual("       SRC  R5,>0001", tmsCommand[1].CommandText);
+        }
     }
 }

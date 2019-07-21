@@ -71,6 +71,8 @@ namespace TMS9900Translating.Translating
                 return new ReturnCommandTranslator(_mapCollection).Translate(unconditionalReturnCommand);
             if (sourceCommand is Z80Commands.AndCommand andCommand)
                 return new AndCommandTranslator(_mapCollection).Translate(andCommand);
+            if (sourceCommand is Z80Commands.RotateRightCarryCommand rotateRightCarryCommand)
+                return new RotateRightCommandTranslator(_mapCollection).Translate(rotateRightCarryCommand);
             if (sourceCommand is Z80Commands.Comment comment)
                 return new CommentTranslator(_mapCollection).Translate(comment);
             if (sourceCommand is Z80Commands.BlankLine blankLine)

@@ -15,7 +15,11 @@ namespace TMS9900Translating.Translating
         public override IEnumerable<TmsCommand> Translate(Z80AssemblyParsing.Commands.IncrementCommand incrementCommand)
         {
             var memoryOperand = new LabeledAddressTmsOperand("ONE");
-            if (MustUnifyRegisterPairs(incrementCommand.Operand, out var copyFromOperand, out var copyToOperand, out var unifiedOperand))
+            if (incrementCommand.Operand is Z80AssemblyParsing.Operands.RegisterExtendedOperand extendedRegister && extendedRegister.Register == Z80ExtendedRegister.HL)
+            {
+                yield return new UntranslateableComment(incrementCommand, "'INC HL' is not a valid command on the Z80 processor. Did you mean 'INC (HL)'?");
+            }
+            else if (MustUnifyRegisterPairs(incrementCommand.Operand, out var copyFromOperand, out var copyToOperand, out var unifiedOperand))
             {
                 yield return new MoveByteCommand(incrementCommand, copyFromOperand, copyToOperand);
                 yield return new AddByteCommand(incrementCommand, memoryOperand, unifiedOperand);

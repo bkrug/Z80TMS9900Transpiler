@@ -73,6 +73,10 @@ namespace TMS9900Translating.Translating
                 return new AndCommandTranslator(_mapCollection).Translate(andCommand);
             if (sourceCommand is Z80Commands.RotateRightCarryCommand rotateRightCarryCommand)
                 return new RotateRightCommandTranslator(_mapCollection).Translate(rotateRightCarryCommand);
+            if (sourceCommand is Z80Commands.IncrementCommand incrementCommand)
+                return new IncrementCommandTranslator(_mapCollection).Translate(incrementCommand);
+            if (sourceCommand is Z80Commands.DecrementCommand decrementCommand)
+                return new DecrementCommandTranslator(_mapCollection).Translate(decrementCommand);
             if (sourceCommand is Z80Commands.Comment comment)
                 return new CommentTranslator(_mapCollection).Translate(comment);
             if (sourceCommand is Z80Commands.BlankLine blankLine)

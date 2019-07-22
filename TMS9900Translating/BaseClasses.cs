@@ -19,7 +19,7 @@ namespace TMS9900Translating
 
         public Z80Command SourceCommand { get; }
         public abstract OpCode OpCode { get; }
-        public string Label { get; private set; }
+        public string Label { get; internal set; }
         public abstract string CommandText { get; }
 
         internal void SetLabel(string label)

@@ -150,9 +150,6 @@ namespace TMS9900TranslatingTests
             Assert.AreEqual("INC002", tmsCommand[5].CommandText);
         }
 
-
-
-
         [Test]
         public void Decrement_Register_SeparatedPair()
         {

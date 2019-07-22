@@ -8,7 +8,6 @@ using Z80Register = Z80AssemblyParsing.Register;
 using Z80ExtendedRegister = Z80AssemblyParsing.ExtendedRegister;
 using TMS9900Translating.Commands;
 using TMS9900Translating.Operands;
-using TMS9900Translating;
 
 namespace TMS9900Translating.Translating
 {

@@ -108,6 +108,52 @@ namespace TMS9900TranslatingTests
         }
 
         [Test]
+        public void Increment_ExtendedRegister_UnifiedPair()
+        {
+            var z80SourceCommand = "    INC  HL";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
+                {
+                    (Z80SourceRegister.H, WorkspaceRegister.R6),
+                    (Z80SourceRegister.L, WorkspaceRegister.R6)
+                },
+                new List<MemoryMapElement>()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(1, tmsCommand.Count);
+            Assert.AreEqual("       INC  R6", tmsCommand[0].CommandText);
+        }
+
+        [Test]
+        public void Increment_ExtendedRegister_SeparatedPair()
+        {
+            var z80SourceCommand = "    INC  HL";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
+                {
+                    (Z80SourceRegister.H, WorkspaceRegister.R7),
+                    (Z80SourceRegister.L, WorkspaceRegister.R6)
+                },
+                new List<MemoryMapElement>()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(6, tmsCommand.Count);
+            Assert.AreEqual("       AB   @ONE,R6", tmsCommand[0].CommandText);
+            Assert.AreEqual("       JNC  INC001", tmsCommand[1].CommandText);
+            Assert.AreEqual("       AB   @ONE,R7", tmsCommand[2].CommandText);
+            Assert.AreEqual("       JMP  INC002", tmsCommand[3].CommandText);
+            Assert.AreEqual("INC001 MOVB R7,R7", tmsCommand[4].CommandText, "If there is no carry, lets set all the other status bits correctly.");
+            Assert.AreEqual("INC002", tmsCommand[5].CommandText);
+        }
+
+
+
+
+        [Test]
         public void Decrement_Register_SeparatedPair()
         {
             var z80SourceCommand = "    DEC  B";
@@ -201,6 +247,49 @@ namespace TMS9900TranslatingTests
 
             Assert.AreEqual(1, tmsCommand.Count);
             Assert.AreEqual("       SB   @ONE,*R6", tmsCommand[0].CommandText);
+        }
+
+        [Test]
+        public void Decrement_ExtendedRegister_UnifiedPair()
+        {
+            var z80SourceCommand = "    dec  HL";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
+                {
+                    (Z80SourceRegister.H, WorkspaceRegister.R6),
+                    (Z80SourceRegister.L, WorkspaceRegister.R6)
+                },
+                new List<MemoryMapElement>()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(1, tmsCommand.Count);
+            Assert.AreEqual("       DEC  R6", tmsCommand[0].CommandText);
+        }
+
+        [Test]
+        public void Decrement_ExtendedRegister_SeparatedPair()
+        {
+            var z80SourceCommand = "    dec  HL";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
+                {
+                    (Z80SourceRegister.H, WorkspaceRegister.R7),
+                    (Z80SourceRegister.L, WorkspaceRegister.R6)
+                },
+                new List<MemoryMapElement>()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(6, tmsCommand.Count);
+            Assert.AreEqual("       SB   @ONE,R6", tmsCommand[0].CommandText);
+            Assert.AreEqual("       JNC  DEC001", tmsCommand[1].CommandText);
+            Assert.AreEqual("       SB   @ONE,R7", tmsCommand[2].CommandText);
+            Assert.AreEqual("       JMP  DEC002", tmsCommand[3].CommandText);
+            Assert.AreEqual("DEC001 MOVB R7,R7", tmsCommand[4].CommandText, "If there is no carry, lets set all the other status bits correctly.");
+            Assert.AreEqual("DEC002", tmsCommand[5].CommandText);
         }
     }
 }

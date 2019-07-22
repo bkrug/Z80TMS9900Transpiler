@@ -15,19 +15,36 @@ namespace TMS9900Translating.Translating
         public override IEnumerable<TmsCommand> Translate(Z80AssemblyParsing.Commands.IncrementCommand incrementCommand)
         {
             var memoryOperand = new LabeledAddressTmsOperand("ONE");
-            if (incrementCommand.Operand is Z80AssemblyParsing.Operands.RegisterExtendedOperand extendedRegister && extendedRegister.Register == Z80ExtendedRegister.HL)
+            if (MustUnifyRegisterPairs(incrementCommand.Operand, out var lowByteRegister, out var copyToOperand, out var highByteRegister))
             {
-                yield return new UntranslateableComment(incrementCommand, "'INC HL' is not a valid command on the Z80 processor. Did you mean 'INC (HL)'?");
+                if (incrementCommand.Operand.OperandSize == Z80AssemblyParsing.OperandSize.EightBit)
+                {
+                    yield return new MoveByteCommand(incrementCommand, lowByteRegister, copyToOperand);
+                    yield return new AddByteCommand(incrementCommand, memoryOperand, highByteRegister);
+                }
+                else
+                {
+                    yield return new AddByteCommand(incrementCommand, memoryOperand, lowByteRegister);
+                    yield return new JumpIfNoCarryCommand(incrementCommand, new LabeledAddressWithoutAmpTmsOperand("INC001"));
+                    yield return new AddByteCommand(incrementCommand, memoryOperand, highByteRegister);
+                    yield return new JumpCommand(incrementCommand, new LabeledAddressWithoutAmpTmsOperand("INC002"));
+                    var moveByteCommand = new MoveByteCommand(incrementCommand, highByteRegister, highByteRegister);
+                    moveByteCommand.SetLabel("INC001");
+                    yield return moveByteCommand;
+                    var blankLine = new BlankLineInTms(incrementCommand);
+                    blankLine.SetLabel("INC002");
+                    yield return blankLine;
+                }
             }
-            else if (MustUnifyRegisterPairs(incrementCommand.Operand, out var copyFromOperand, out var copyToOperand, out var unifiedOperand))
-            {
-                yield return new MoveByteCommand(incrementCommand, copyFromOperand, copyToOperand);
-                yield return new AddByteCommand(incrementCommand, memoryOperand, unifiedOperand);
-            }
-            else
+            else if (incrementCommand.Operand.OperandSize == Z80AssemblyParsing.OperandSize.EightBit)
             {
                 var destinationOperand = GetOperand(incrementCommand.Operand, true);
                 yield return new AddByteCommand(incrementCommand, memoryOperand, destinationOperand);
+            }
+            else
+            {
+                var destinationOperand = GetOperand(incrementCommand.Operand, false);
+                yield return new IncrementCommand(incrementCommand, destinationOperand);
             }
         }
     }

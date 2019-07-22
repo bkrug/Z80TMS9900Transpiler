@@ -54,36 +54,35 @@ namespace TMS9900Translating.Translating
             }
         }
 
+        private Dictionary<Type, Type> _commandToTranslatorDictionary = new Dictionary<Type, Type>()
+        {
+            { typeof(Z80Commands.LoadCommand), typeof(LoadCommandTranslator) },
+            { typeof(Z80Commands.AddCommand), typeof(AddCommandTranslator) },
+            { typeof(Z80Commands.PushCommand), typeof(PushCommandTranslator) },
+            { typeof(Z80Commands.PopCommand), typeof(PopCommandTranslator) },
+            { typeof(Z80Commands.UnconditionalCallCommand), typeof(CallCommandTranslator) },
+            { typeof(Z80Commands.UnconditionalReturnCommand), typeof(ReturnCommandTranslator) },
+            { typeof(Z80Commands.AndCommand), typeof(AndCommandTranslator) },
+            { typeof(Z80Commands.RotateRightCarryCommand), typeof(RotateRightCommandTranslator) },
+            { typeof(Z80Commands.IncrementCommand), typeof(IncrementCommandTranslator) },
+            { typeof(Z80Commands.DecrementCommand), typeof(DecrementCommandTranslator) },
+            { typeof(Z80Commands.Comment), typeof(CommentTranslator) },
+            { typeof(Z80Commands.BlankLine), typeof(BlankLineTranslator) },
+            { typeof(Z80Commands.UnparsableLine), typeof(UnparsableTranslator) }
+        };
+
         private IEnumerable<TmsCommand> GetTmsCommands(Z80Command sourceCommand)
         {
-            if (sourceCommand is Z80Commands.LoadCommand loadCommand)
-                return new LoadCommandTranslator(_mapCollection).Translate(loadCommand);
-            if (sourceCommand is Z80Commands.AddCommand addCommand)
-                return new AddCommandTranslator(_mapCollection).Translate(addCommand);
-            if (sourceCommand is Z80Commands.PushCommand pushCommand)
-                return new PushCommandTranslator(_mapCollection).Translate(pushCommand);
-            if (sourceCommand is Z80Commands.PopCommand popCommand)
-                return new PopCommandTranslator(_mapCollection).Translate(popCommand);
-            if (sourceCommand is Z80Commands.UnconditionalCallCommand unconditCallCommand)
-                return new CallCommandTranslator(_mapCollection).Translate(unconditCallCommand);
-            if (sourceCommand is Z80Commands.UnconditionalReturnCommand unconditionalReturnCommand)
-                return new ReturnCommandTranslator(_mapCollection).Translate(unconditionalReturnCommand);
-            if (sourceCommand is Z80Commands.AndCommand andCommand)
-                return new AndCommandTranslator(_mapCollection).Translate(andCommand);
-            if (sourceCommand is Z80Commands.RotateRightCarryCommand rotateRightCarryCommand)
-                return new RotateRightCommandTranslator(_mapCollection).Translate(rotateRightCarryCommand);
-            if (sourceCommand is Z80Commands.IncrementCommand incrementCommand)
-                return new IncrementCommandTranslator(_mapCollection).Translate(incrementCommand);
-            if (sourceCommand is Z80Commands.DecrementCommand decrementCommand)
-                return new DecrementCommandTranslator(_mapCollection).Translate(decrementCommand);
-            if (sourceCommand is Z80Commands.Comment comment)
-                return new CommentTranslator(_mapCollection).Translate(comment);
-            if (sourceCommand is Z80Commands.BlankLine blankLine)
-                return new BlankLineTranslator(_mapCollection).Translate(blankLine);
+            var sourceCommandType = sourceCommand.GetType();
+            if (_commandToTranslatorDictionary.ContainsKey(sourceCommandType))
+            {
+                var translatorType = _commandToTranslatorDictionary[sourceCommandType];
+                var translatorInstance = Activator.CreateInstance(translatorType, new object [] { _mapCollection });
+                var method = translatorType.GetMethod("Translate");
+                return (IEnumerable<TmsCommand>)method.Invoke(translatorInstance, new object[1] { sourceCommand });
+            }
             if (_unsupportedZ80Opcodes.Contains(sourceCommand.OpCode))
                 return new UntranslatableTranslator(_mapCollection).Translate(sourceCommand);
-            if (sourceCommand is Z80Commands.UnparsableLine unparsableLine)
-                return new UnparsableTranslator(_mapCollection).Translate(unparsableLine);
             else
                 throw new Exception("This command has not been implemented yet.");
         }

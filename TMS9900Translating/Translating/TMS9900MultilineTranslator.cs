@@ -38,17 +38,23 @@ namespace TMS9900Translating.Translating
 
                 //Take note of every label in the z80 code
                 if (!string.IsNullOrWhiteSpace(parsedZ80Command.Label))
-                    _labelHighlighter.LabelsFromZ80Code.TryAdd(parsedZ80Command.Label, new LabelContainer(parsedZ80Command.Label));
+                    TryAdd(parsedZ80Command.Label);
                 if (parsedZ80Command is Z80AssemblyParsing.Commands.CommandWithOneOperand oneOperandCommand 
                     && oneOperandCommand.Operand is Z80AssemblyParsing.Operands.LabeledOperand labeledOperand)
-                    _labelHighlighter.LabelsFromZ80Code.TryAdd(labeledOperand.Label, new LabelContainer(labeledOperand.Label));
+                    TryAdd(labeledOperand.Label);
                 if (parsedZ80Command is Z80AssemblyParsing.Commands.CommandWithTwoOperands twoOperandCommand) {
                     if (twoOperandCommand.SourceOperand is Z80AssemblyParsing.Operands.LabeledOperand labeledSourceOperand)
-                        _labelHighlighter.LabelsFromZ80Code.TryAdd(labeledSourceOperand.Label, new LabelContainer(labeledSourceOperand.Label));
+                        TryAdd(labeledSourceOperand.Label);
                     if (twoOperandCommand.DestinationOperand is Z80AssemblyParsing.Operands.LabeledOperand labeledDestinationOperand)
-                        _labelHighlighter.LabelsFromZ80Code.TryAdd(labeledDestinationOperand.Label, new LabelContainer(labeledDestinationOperand.Label));
+                        TryAdd(labeledDestinationOperand.Label);
                 }
             }
+        }
+
+        private void TryAdd(string label)
+        {
+            if (!_labelHighlighter.LabelsFromZ80Code.Contains(label))
+                _labelHighlighter.LabelsFromZ80Code.Add(label);
         }
 
         private IEnumerable<Command> CreateTms9900Commands(IEnumerable<string> z80AssemblyCode)

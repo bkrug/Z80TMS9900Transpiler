@@ -26,7 +26,7 @@ namespace TMS9900Translating.Translating
 
         public override IEnumerable<TmsCommand> Translate(Z80T crementCommand)
         {
-            var memoryOperand = new LabeledAddressTmsOperand(_labelHighlighter.OneByteLabel, _labelHighlighter, true);
+            var memoryOperand = new LabeledAddressTmsOperand(_labelHighlighter.OneByteLabel);
             if (MustUnifyRegisterPairs(crementCommand.Operand, out var lowByteRegister, out var copyToOperand, out var highByteRegister))
             {
                 if (crementCommand.Operand.OperandSize == Z80AssemblyParsing.OperandSize.EightBit)
@@ -38,9 +38,9 @@ namespace TMS9900Translating.Translating
                 {
                     SetLabels();
                     yield return (MathByteT)Activator.CreateInstance(typeof(MathByteT), new object[] { crementCommand, memoryOperand, lowByteRegister });
-                    yield return new JumpIfNoCarryCommand(crementCommand, new LabeledAddressWithoutAmpTmsOperand(JumpLabel1, _labelHighlighter, true));
+                    yield return new JumpIfNoCarryCommand(crementCommand, new LabeledAddressWithoutAmpTmsOperand(JumpLabel1));
                     yield return (MathByteT)Activator.CreateInstance(typeof(MathByteT), new object[] { crementCommand, memoryOperand, highByteRegister });
-                    yield return new JumpCommand(crementCommand, new LabeledAddressWithoutAmpTmsOperand(JumpLabel2, _labelHighlighter, true));
+                    yield return new JumpCommand(crementCommand, new LabeledAddressWithoutAmpTmsOperand(JumpLabel2));
                     yield return new MoveByteCommand(crementCommand, highByteRegister, highByteRegister)
                     {
                         Label = JumpLabel1

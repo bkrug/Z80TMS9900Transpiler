@@ -2,8 +2,7 @@
 {
     public class LabeledAddressWithoutAmpTmsOperand : LabelOperand
     {
-        public LabeledAddressWithoutAmpTmsOperand(string label, LabelHighlighter labelHighlighter, bool labelComesFromTranslator = false)
-            : base(label, labelHighlighter, labelComesFromTranslator)
+        public LabeledAddressWithoutAmpTmsOperand(string label) : base(label)
         {
         }
 

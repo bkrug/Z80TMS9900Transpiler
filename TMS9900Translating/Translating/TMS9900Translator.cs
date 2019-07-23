@@ -50,11 +50,8 @@ namespace TMS9900Translating.Translating
             var i = 0;
             foreach (var currCommand in commands)
             {
-                if (i++ == 0 && !string.IsNullOrWhiteSpace(sourceCommand.Label))
-                {
+                if (i++ == 0)
                     currCommand.SetLabel(sourceCommand.Label);
-                    LabelHighlighter.LabelsFromZ80Code.TryAdd(sourceCommand.Label, new LabelContainer(sourceCommand.Label));
-                }
                 yield return currCommand;
             }
         }

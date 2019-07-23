@@ -8,8 +8,7 @@ namespace TMS9900Translating
     public class LabelHighlighter
     {
         private HashSet<string> _labelsBranchedTo = new HashSet<string>();
-        public ConcurrentDictionary<string, LabelContainer> LabelsFromZ80Code { get; } = new ConcurrentDictionary<string, LabelContainer>(StringComparer.InvariantCultureIgnoreCase);
-        public ConcurrentDictionary<string, LabelContainer> LabelsFromTranslators { get; } = new ConcurrentDictionary<string, LabelContainer>(StringComparer.InvariantCultureIgnoreCase);
+        public HashSet<string> LabelsFromZ80Code { get; } = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
         public IReadOnlyCollection<string> LabelsBranchedTo => _labelsBranchedTo;
         private int _nextInc = 0;
         private int _nextDec = 0;
@@ -31,13 +30,12 @@ namespace TMS9900Translating
         {
             _nextInc = 0;
             _nextDec = 0;
-            LabelsFromTranslators.Clear();               
         }
 
         public string GetNextIncLabel()
         {
             var incLabel = string.Empty;
-            while (LabelsFromZ80Code.ContainsKey(incLabel) || incLabel == string.Empty)
+            while (LabelsFromZ80Code.Contains(incLabel) || incLabel == string.Empty)
             {
                 var nextInc = ++_nextInc;
                 incLabel = "INC" + new string('0', 2 - (int)Math.Log10(nextInc)) + nextInc.ToString();
@@ -48,7 +46,7 @@ namespace TMS9900Translating
         public string GetNextDecLabel()
         {
             var decLabel = string.Empty;
-            while (LabelsFromZ80Code.ContainsKey(decLabel) || decLabel == string.Empty)
+            while (LabelsFromZ80Code.Contains(decLabel) || decLabel == string.Empty)
             {
                 var nextDec = ++_nextDec;
                 decLabel = "DEC" + new string('0', 2 - (int)Math.Log10(nextDec)) + nextDec.ToString();
@@ -58,10 +56,10 @@ namespace TMS9900Translating
 
         public string GetLabelUnusedByZ80(string sourceLabel)
         {
-            if (!LabelsFromZ80Code.ContainsKey(sourceLabel))
+            if (!LabelsFromZ80Code.Contains(sourceLabel))
                 return sourceLabel;
             sourceLabel = sourceLabel + new string('0', 6 - sourceLabel.Length);
-            while (LabelsFromZ80Code.ContainsKey(sourceLabel))
+            while (LabelsFromZ80Code.Contains(sourceLabel))
             {
                 StringIncrementer.Increment(sourceLabel);
             }

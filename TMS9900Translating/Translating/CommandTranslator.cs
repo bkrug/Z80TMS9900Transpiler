@@ -90,7 +90,7 @@ namespace TMS9900Translating.Translating
                 return new ImmediateTmsOperand(immediateExtendedOperand.ImmediateValue);
 
             if (sourceOperand is Z80Operands.LabeledImmediateOperand labeledImmediateOperand)
-                return new LabeledImmediateTmsOperand(labeledImmediateOperand.Label, _labelHighlighter, labelComesFromTranslator: false, multiplyByHex100: eightBitOperation);
+                return new LabeledImmediateTmsOperand(labeledImmediateOperand.Label, multiplyByHex100: eightBitOperation);
 
             if (sourceOperand is Z80Operands.ExtendedAddressOperand addressOperand)
                 return new AddressTmsOperand(addressOperand.MemoryAddress);
@@ -99,10 +99,10 @@ namespace TMS9900Translating.Translating
                 return new AddressTmsOperand(addressWithoutParenthesisOperand.MemoryAddress);
 
             if (sourceOperand is Z80Operands.LabeledAddressOperand labeledAddressOperand)
-                return new LabeledAddressTmsOperand(labeledAddressOperand.Label, _labelHighlighter);
+                return new LabeledAddressTmsOperand(labeledAddressOperand.Label);
 
             if (sourceOperand is Z80Operands.LabeledAddressWithoutParenthesisOperand labeledImmediateWithoutParenthesisOperand)
-                return new LabeledAddressTmsOperand(labeledImmediateWithoutParenthesisOperand.AddressLabel, _labelHighlighter);
+                return new LabeledAddressTmsOperand(labeledImmediateWithoutParenthesisOperand.AddressLabel);
 
             if (sourceOperand is Z80Operands.IndirectRegisterOperand indirectOperand)
                 return new IndirectRegisterTmsOperand(GetWsRegisterWhereRegisterPairIsMappedToSameRegister(indirectOperand.Register));

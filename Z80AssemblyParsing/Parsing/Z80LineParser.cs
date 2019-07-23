@@ -130,6 +130,8 @@ namespace Z80AssemblyParsing.Parsing
                     return new LoadCommand(line, sourceOperand, desinationOperand);
                 case OpCode.ADD:
                     return new AddCommand(line, sourceOperand, desinationOperand);
+                case OpCode.OUT:
+                    return new OutCommand(line, sourceOperand, desinationOperand);
                 default:
                     throw new Exception($"OpCode {opCode} does not accept two operands");
             }
@@ -160,8 +162,10 @@ namespace Z80AssemblyParsing.Parsing
             else
             {
                 var operandWithoutParens = operandString.TrimStart('(').TrimEnd(')');
-                if (Enum.TryParse<ExtendedRegister>(operandWithoutParens, true, out var extendedRegister))
+                if (Enum.GetNames(typeof(ExtendedRegister)).Contains(operandWithoutParens.ToUpper()) && Enum.TryParse<ExtendedRegister>(operandWithoutParens, true, out var extendedRegister))
                     return new IndirectRegisterOperand(extendedRegister);
+                if (Enum.GetNames(typeof(Register)).Contains(operandWithoutParens.ToUpper()) && Enum.TryParse<Register>(operandWithoutParens, true, out var register))
+                    return new IndirectShortRegOperand(register);
                 if (TryUShortParse(operandWithoutParens, out var memoryAddress))
                     return new ExtendedAddressOperand(memoryAddress);
                 if (IsValidLabel(operandWithoutParens))

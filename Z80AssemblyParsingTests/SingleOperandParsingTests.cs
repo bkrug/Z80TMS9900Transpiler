@@ -15,7 +15,7 @@ namespace Z80AssemblyParsingTests
         public void SingleOperandParsing_PushCommand()
         {
             var sourceCode = "      PUSH HL";
-            
+
             var parser = new Z80LineParser();
             var actualCommand = AssertExtension.IsCorrectCommandType<PushCommand>(parser.ParseLine(sourceCode));
             var actualOperand = AssertExtension.IsCorrectOperandType<RegisterExtendedOperand>(actualCommand.Operand);

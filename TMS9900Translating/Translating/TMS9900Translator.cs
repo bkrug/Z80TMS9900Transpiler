@@ -17,7 +17,7 @@ namespace TMS9900Translating.Translating
         private Dictionary<Z80ExtendedRegister, WorkspaceRegister> _extendedRegisterMap => _mapCollection.ExtendedRegisterMap;
         private List<MemoryMapElement> _memoryMap => _mapCollection.MemoryMap;
         private MapCollection _mapCollection;
-        private static HashSet<Z80Ops> _unsupportedZ80Opcodes = new HashSet<Z80Ops>() { Z80Ops.DI, Z80Ops.IM };
+        private static HashSet<Z80Ops> _unsupportedZ80Opcodes = new HashSet<Z80Ops>() { Z80Ops.DI, Z80Ops.IM, Z80Ops.OUT };
         public LabelHighlighter LabelHighlighter { get; private set; }
 
         public TMS9900Translator(List<(Z80SourceRegister, WorkspaceRegister)> registerMap, List<MemoryMapElement> memoryMap, LabelHighlighter labelHighlighter)

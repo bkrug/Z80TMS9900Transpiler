@@ -143,5 +143,17 @@ DEC005
             }
 
         }
+
+        [Test]
+        public void StringIncrementerTests()
+        {
+            Assert.AreEqual("000001", StringIncrementer.Increment("000000"));
+            Assert.AreEqual("00000A", StringIncrementer.Increment("000009"));
+            Assert.AreEqual("000010", StringIncrementer.Increment("00000Z"));
+            Assert.AreEqual("000010", StringIncrementer.Increment("00000z"));
+            Assert.AreEqual("00000f", StringIncrementer.Increment("00000e"));
+            Assert.AreEqual("48aB8c", StringIncrementer.Increment("48aB8b"));
+            Assert.AreEqual("9QS000", StringIncrementer.Increment("9QRZzZ"));
+        }
     }
 }

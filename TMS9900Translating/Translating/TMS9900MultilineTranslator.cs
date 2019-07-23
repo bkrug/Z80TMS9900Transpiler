@@ -6,22 +6,23 @@ namespace TMS9900Translating.Translating
 {
     public class TMS9900MultilineTranslator
     {
-        private LabelHighlighter _afterthoughAccumulator;
+        private LabelHighlighter _labelHighlighter;
         private TMS9900Translator _translator;
         private Z80AssemblyParsing.Parsing.Z80LineParser _parser;
 
-        public TMS9900MultilineTranslator(Z80AssemblyParsing.Parsing.Z80LineParser parser, TMS9900Translator translator, LabelHighlighter afterthoughAccumulator)
+        public TMS9900MultilineTranslator(Z80AssemblyParsing.Parsing.Z80LineParser parser, TMS9900Translator translator)
         {
             _parser = parser;
             _translator = translator;
-            _afterthoughAccumulator = afterthoughAccumulator;
+            _labelHighlighter = translator.LabelHighlighter;
         }
 
         /// <param name="z80AssemblyCode">This list of strings shall be enumerated twice. If you are reading text from a file, the enumerator needs to move the the beginning of the file every time it is called.</param>
         public IEnumerable<Command> Translate(IEnumerable<string> z80AssemblyCode)
         {
             EvaluateLabeledAddresses(z80AssemblyCode);
-            return CreateTms9900Commands(z80AssemblyCode);
+            var commands = CreateTms9900Commands(z80AssemblyCode);
+            return commands;
         }
 
         private void EvaluateLabeledAddresses(IEnumerable<string> z80AssemblyCode)
@@ -33,16 +34,30 @@ namespace TMS9900Translating.Translating
                 var parsedZ80Command = _parser.ParseLine(z80Line);
                 if (parsedZ80Command is Z80AssemblyParsing.Commands.UnconditionalCallCommand z80callCommand)
                     if (z80callCommand.Operand is Z80AssemblyParsing.Operands.LabeledAddressWithoutParenthesisOperand labeledAddressOperand)
-                        _afterthoughAccumulator.AddLabelToBranchTo(labeledAddressOperand.AddressLabel);
+                        _labelHighlighter.AddLabelToBranchTo(labeledAddressOperand.AddressLabel);
+
+                //Take note of every label in the z80 code
+                if (!string.IsNullOrWhiteSpace(parsedZ80Command.Label))
+                    _labelHighlighter.LabelsFromZ80Code.TryAdd(parsedZ80Command.Label, new LabelContainer(parsedZ80Command.Label));
+                if (parsedZ80Command is Z80AssemblyParsing.Commands.CommandWithOneOperand oneOperandCommand 
+                    && oneOperandCommand.Operand is Z80AssemblyParsing.Operands.LabeledOperand labeledOperand)
+                    _labelHighlighter.LabelsFromZ80Code.TryAdd(labeledOperand.Label, new LabelContainer(labeledOperand.Label));
+                if (parsedZ80Command is Z80AssemblyParsing.Commands.CommandWithTwoOperands twoOperandCommand) {
+                    if (twoOperandCommand.SourceOperand is Z80AssemblyParsing.Operands.LabeledOperand labeledSourceOperand)
+                        _labelHighlighter.LabelsFromZ80Code.TryAdd(labeledSourceOperand.Label, new LabelContainer(labeledSourceOperand.Label));
+                    if (twoOperandCommand.DestinationOperand is Z80AssemblyParsing.Operands.LabeledOperand labeledDestinationOperand)
+                        _labelHighlighter.LabelsFromZ80Code.TryAdd(labeledDestinationOperand.Label, new LabelContainer(labeledDestinationOperand.Label));
+                }
             }
         }
 
         private IEnumerable<Command> CreateTms9900Commands(IEnumerable<string> z80AssemblyCode)
         {
+            _labelHighlighter.ResetForEnumeration();
             foreach (var z80Command in z80AssemblyCode) { 
                 foreach (var tmsLine in _translator.Translate(_parser.ParseLine(z80Command)))
                 {
-                    if (_afterthoughAccumulator.LabelsBranchedTo.Contains(tmsLine.Label))
+                    if (_labelHighlighter.LabelsBranchedTo.Contains(tmsLine.Label))
                     {
                         //At the beginning of the routine, insert commands that store the return address to the stack.
                         foreach (var extraCodeLine in _translator.StoreReturnAddressToStack(tmsLine.Label))

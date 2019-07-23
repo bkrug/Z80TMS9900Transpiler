@@ -6,7 +6,7 @@ namespace TMS9900Translating.Translating
 {
     public class UntranslatableTranslator : CommandTranslator<Z80AssemblyParsing.Command>
     {
-        public UntranslatableTranslator(MapCollection mapCollection) : base(mapCollection)
+        public UntranslatableTranslator(MapCollection mapCollection, LabelHighlighter labelHighlighter) : base(mapCollection, labelHighlighter)
         {
         }
 

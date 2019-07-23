@@ -18,8 +18,9 @@ namespace TMS9900Translating.Translating
         private List<MemoryMapElement> _memoryMap => _mapCollection.MemoryMap;
         private MapCollection _mapCollection;
         private static HashSet<Z80Ops> _unsupportedZ80Opcodes = new HashSet<Z80Ops>() { Z80Ops.DI, Z80Ops.IM };
+        public LabelHighlighter LabelHighlighter { get; private set; }
 
-        public TMS9900Translator(List<(Z80SourceRegister, WorkspaceRegister)> registerMap, List<MemoryMapElement> memoryMap)
+        public TMS9900Translator(List<(Z80SourceRegister, WorkspaceRegister)> registerMap, List<MemoryMapElement> memoryMap, LabelHighlighter labelHighlighter)
         {
             _mapCollection = new MapCollection()
             {
@@ -40,6 +41,7 @@ namespace TMS9900Translating.Translating
                     _extendedRegisterMap.Add(key, sourceReg.Item2);
                 }
             });
+            LabelHighlighter = labelHighlighter;
         }
 
         public IEnumerable<TmsCommand> Translate(Z80Command sourceCommand)
@@ -48,8 +50,11 @@ namespace TMS9900Translating.Translating
             var i = 0;
             foreach (var currCommand in commands)
             {
-                if (i++ == 0)
+                if (i++ == 0 && !string.IsNullOrWhiteSpace(sourceCommand.Label))
+                {
                     currCommand.SetLabel(sourceCommand.Label);
+                    LabelHighlighter.LabelsFromZ80Code.TryAdd(sourceCommand.Label, new LabelContainer(sourceCommand.Label));
+                }
                 yield return currCommand;
             }
         }
@@ -77,12 +82,12 @@ namespace TMS9900Translating.Translating
             if (_commandToTranslatorDictionary.ContainsKey(sourceCommandType))
             {
                 var translatorType = _commandToTranslatorDictionary[sourceCommandType];
-                var translatorInstance = Activator.CreateInstance(translatorType, new object [] { _mapCollection });
+                var translatorInstance = Activator.CreateInstance(translatorType, new object [] { _mapCollection, LabelHighlighter });
                 var method = translatorType.GetMethod("Translate");
                 return (IEnumerable<TmsCommand>)method.Invoke(translatorInstance, new object[1] { sourceCommand });
             }
             if (_unsupportedZ80Opcodes.Contains(sourceCommand.OpCode))
-                return new UntranslatableTranslator(_mapCollection).Translate(sourceCommand);
+                return new UntranslatableTranslator(_mapCollection, LabelHighlighter).Translate(sourceCommand);
             else
                 throw new Exception("This command has not been implemented yet.");
         }

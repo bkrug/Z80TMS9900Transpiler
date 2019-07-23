@@ -7,7 +7,7 @@ namespace TMS9900Translating.Translating
 {
     public class ReturnCommandTranslator : CommandTranslator<Z80AssemblyParsing.Commands.UnconditionalReturnCommand>
     {
-        public ReturnCommandTranslator(MapCollection mapCollection) : base(mapCollection)
+        public ReturnCommandTranslator(MapCollection mapCollection, LabelHighlighter labelHighlighter) : base(mapCollection, labelHighlighter)
         {
         }
 

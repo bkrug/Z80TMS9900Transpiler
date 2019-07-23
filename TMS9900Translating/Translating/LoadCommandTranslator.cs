@@ -6,7 +6,7 @@ using TmsCommand = TMS9900Translating.Command;
 namespace TMS9900Translating.Translating
 {
     public class LoadCommandTranslator : CommandTranslator<Z80AssemblyParsing.Commands.LoadCommand> {
-        public LoadCommandTranslator(MapCollection mapCollection) : base(mapCollection)
+        public LoadCommandTranslator(MapCollection mapCollection, LabelHighlighter labelHighlighter) : base(mapCollection, labelHighlighter)
         {
         }
 

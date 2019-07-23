@@ -7,7 +7,7 @@ namespace TMS9900Translating.Translating
 {
     public class AddCommandTranslator : CommandTranslator<Z80AssemblyParsing.Commands.AddCommand>
     {
-        public AddCommandTranslator(MapCollection mapCollection) : base(mapCollection)
+        public AddCommandTranslator(MapCollection mapCollection, LabelHighlighter labelHighlighter) : base(mapCollection, labelHighlighter)
         {
         }
 

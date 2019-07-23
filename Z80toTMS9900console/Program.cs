@@ -42,8 +42,9 @@ namespace Z80toTMS9900console
                 },
                 new List<MemoryMapElement>()
                 {
-                });
-            return new TMS9900MultilineTranslator(new Z80LineParser(), singleLineTranslator, new LabelHighlighter());
+                },
+                new LabelHighlighter());
+            return new TMS9900MultilineTranslator(new Z80LineParser(), singleLineTranslator);
         }
 
         static IEnumerable<string> GetZ80sourceCode(StreamReader reader)

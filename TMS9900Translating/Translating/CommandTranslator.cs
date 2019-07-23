@@ -17,10 +17,12 @@ namespace TMS9900Translating.Translating
         private MapCollection _mapCollection;
         private static List<Z80ExtendedRegister> _unsplitableRegisters = new List<Z80ExtendedRegister>() { Z80ExtendedRegister.IX, Z80ExtendedRegister.IY, Z80ExtendedRegister.SP };
         private static List<Z80Register> _lastRegisterInPair = new List<Z80Register>() { Z80Register.C, Z80Register.E, Z80Register.L };
+        protected readonly LabelHighlighter _labelHighlighter;
 
-        public CommandTranslator(MapCollection mapCollection)
+        public CommandTranslator(MapCollection mapCollection, LabelHighlighter labelHighlighter)
         {
             _mapCollection = mapCollection;
+            _labelHighlighter = labelHighlighter;
         }
 
         public abstract IEnumerable<TmsCommand> Translate(T loadCommand);
@@ -88,7 +90,7 @@ namespace TMS9900Translating.Translating
                 return new ImmediateTmsOperand(immediateExtendedOperand.ImmediateValue);
 
             if (sourceOperand is Z80Operands.LabeledImmediateOperand labeledImmediateOperand)
-                return new LabeledImmediateTmsOperand(labeledImmediateOperand.Label, multiplyByHex100: eightBitOperation);
+                return new LabeledImmediateTmsOperand(labeledImmediateOperand.Label, _labelHighlighter, labelComesFromTranslator: false, multiplyByHex100: eightBitOperation);
 
             if (sourceOperand is Z80Operands.ExtendedAddressOperand addressOperand)
                 return new AddressTmsOperand(addressOperand.MemoryAddress);
@@ -97,10 +99,10 @@ namespace TMS9900Translating.Translating
                 return new AddressTmsOperand(addressWithoutParenthesisOperand.MemoryAddress);
 
             if (sourceOperand is Z80Operands.LabeledAddressOperand labeledAddressOperand)
-                return new LabeledAddressTmsOperand(labeledAddressOperand.Label);
+                return new LabeledAddressTmsOperand(labeledAddressOperand.Label, _labelHighlighter);
 
             if (sourceOperand is Z80Operands.LabeledAddressWithoutParenthesisOperand labeledImmediateWithoutParenthesisOperand)
-                return new LabeledAddressTmsOperand(labeledImmediateWithoutParenthesisOperand.AddressLabel);
+                return new LabeledAddressTmsOperand(labeledImmediateWithoutParenthesisOperand.AddressLabel, _labelHighlighter);
 
             if (sourceOperand is Z80Operands.IndirectRegisterOperand indirectOperand)
                 return new IndirectRegisterTmsOperand(GetWsRegisterWhereRegisterPairIsMappedToSameRegister(indirectOperand.Register));

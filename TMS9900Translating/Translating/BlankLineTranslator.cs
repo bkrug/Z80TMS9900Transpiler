@@ -6,7 +6,7 @@ namespace TMS9900Translating.Translating
 {
     public class BlankLineTranslator : CommandTranslator<Z80AssemblyParsing.Commands.BlankLine>
     {
-        public BlankLineTranslator(MapCollection mapCollection) : base(mapCollection)
+        public BlankLineTranslator(MapCollection mapCollection, LabelHighlighter labelHighlighter) : base(mapCollection, labelHighlighter)
         {
         }
 

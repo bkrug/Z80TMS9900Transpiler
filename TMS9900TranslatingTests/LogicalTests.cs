@@ -19,7 +19,8 @@ namespace TMS9900TranslatingTests
                 {
                     (Z80SourceRegister.A, WorkspaceRegister.R7)
                 },
-                new List<MemoryMapElement>()
+                new List<MemoryMapElement>(),
+                new LabelHighlighter()
             );
             var tmsCommand = translator.Translate(z80Command).ToList();
 
@@ -39,7 +40,8 @@ namespace TMS9900TranslatingTests
                     (Z80SourceRegister.B, WorkspaceRegister.R9),
                     (Z80SourceRegister.C, WorkspaceRegister.R8),
                 },
-                new List<MemoryMapElement>()
+                new List<MemoryMapElement>(),
+                new LabelHighlighter()
             );
             var tmsCommand = translator.Translate(z80Command).ToList();
 
@@ -61,7 +63,8 @@ namespace TMS9900TranslatingTests
                     (Z80SourceRegister.B, WorkspaceRegister.R9),
                     (Z80SourceRegister.C, WorkspaceRegister.R9),
                 },
-                new List<MemoryMapElement>()
+                new List<MemoryMapElement>(),
+                new LabelHighlighter()
             );
             var tmsCommand = translator.Translate(z80Command).ToList();
 
@@ -83,7 +86,8 @@ namespace TMS9900TranslatingTests
                     (Z80SourceRegister.B, WorkspaceRegister.R9),
                     (Z80SourceRegister.C, WorkspaceRegister.R9),
                 },
-                new List<MemoryMapElement>()
+                new List<MemoryMapElement>(),
+                new LabelHighlighter()
             );
             var tmsCommand = translator.Translate(z80Command).ToList();
 
@@ -105,7 +109,8 @@ namespace TMS9900TranslatingTests
                     (Z80SourceRegister.H, WorkspaceRegister.R9),
                     (Z80SourceRegister.L, WorkspaceRegister.R9),
                 },
-                new List<MemoryMapElement>()
+                new List<MemoryMapElement>(),
+                new LabelHighlighter()
             );
             var tmsCommand = translator.Translate(z80Command).ToList();
 
@@ -127,7 +132,8 @@ namespace TMS9900TranslatingTests
                     (Z80SourceRegister.H, WorkspaceRegister.R4),
                     (Z80SourceRegister.L, WorkspaceRegister.R9),
                 },
-                new List<MemoryMapElement>()
+                new List<MemoryMapElement>(),
+                new LabelHighlighter()
             );
             var tmsCommand = translator.Translate(z80Command).ToList();
 
@@ -149,7 +155,8 @@ namespace TMS9900TranslatingTests
                 {
                     (Z80SourceRegister.A, WorkspaceRegister.R5)
                 },
-                new List<MemoryMapElement>()
+                new List<MemoryMapElement>(),
+                new LabelHighlighter()
             );
             var tmsCommand = translator.Translate(z80Command).ToList();
 

@@ -7,7 +7,7 @@ namespace TMS9900Translating.Translating
 {
     public class RotateRightCommandTranslator : CommandTranslator<Z80AssemblyParsing.Commands.RotateRightCarryCommand>
     {
-        public RotateRightCommandTranslator(MapCollection mapCollection) : base(mapCollection)
+        public RotateRightCommandTranslator(MapCollection mapCollection, LabelHighlighter labelHighlighter) : base(mapCollection, labelHighlighter)
         {
         }
 

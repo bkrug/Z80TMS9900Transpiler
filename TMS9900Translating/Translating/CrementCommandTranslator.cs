@@ -17,16 +17,16 @@ namespace TMS9900Translating.Translating
         where MathByteT : CommandWithTwoOperands
         where CrementT : CommandWithOneOperand
     {
-        protected abstract string JumpLabel1 { get; }
-        protected abstract string JumpLabel2 { get; }
+        protected string JumpLabel1 { get; set; }
+        protected string JumpLabel2 { get; set; }
 
-        public CrementCommandTranslator(MapCollection mapCollection) : base(mapCollection)
+        public CrementCommandTranslator(MapCollection mapCollection, LabelHighlighter labelHighlighter) : base(mapCollection, labelHighlighter)
         {
         }
 
         public override IEnumerable<TmsCommand> Translate(Z80T crementCommand)
         {
-            var memoryOperand = new LabeledAddressTmsOperand("ONE");
+            var memoryOperand = new LabeledAddressTmsOperand(_labelHighlighter.OneByteLabel, _labelHighlighter, true);
             if (MustUnifyRegisterPairs(crementCommand.Operand, out var lowByteRegister, out var copyToOperand, out var highByteRegister))
             {
                 if (crementCommand.Operand.OperandSize == Z80AssemblyParsing.OperandSize.EightBit)
@@ -36,10 +36,11 @@ namespace TMS9900Translating.Translating
                 }
                 else
                 {
+                    SetLabels();
                     yield return (MathByteT)Activator.CreateInstance(typeof(MathByteT), new object[] { crementCommand, memoryOperand, lowByteRegister });
-                    yield return new JumpIfNoCarryCommand(crementCommand, new LabeledAddressWithoutAmpTmsOperand(JumpLabel1));
+                    yield return new JumpIfNoCarryCommand(crementCommand, new LabeledAddressWithoutAmpTmsOperand(JumpLabel1, _labelHighlighter, true));
                     yield return (MathByteT)Activator.CreateInstance(typeof(MathByteT), new object[] { crementCommand, memoryOperand, highByteRegister });
-                    yield return new JumpCommand(crementCommand, new LabeledAddressWithoutAmpTmsOperand(JumpLabel2));
+                    yield return new JumpCommand(crementCommand, new LabeledAddressWithoutAmpTmsOperand(JumpLabel2, _labelHighlighter, true));
                     yield return new MoveByteCommand(crementCommand, highByteRegister, highByteRegister)
                     {
                         Label = JumpLabel1
@@ -59,6 +60,20 @@ namespace TMS9900Translating.Translating
             {
                 var destinationOperand = GetOperand(crementCommand.Operand, false);
                 yield return (CrementT)Activator.CreateInstance(typeof(CrementT), new object[] { crementCommand, destinationOperand });
+            }
+        }
+
+        private void SetLabels()
+        {
+            if (typeof(CrementT) == typeof(IncrementCommand))
+            {
+                JumpLabel1 = JumpLabel1 ?? _labelHighlighter.GetNextIncLabel();
+                JumpLabel2 = JumpLabel2 ?? _labelHighlighter.GetNextIncLabel();
+            }
+            else
+            {
+                JumpLabel1 = JumpLabel1 ?? _labelHighlighter.GetNextDecLabel();
+                JumpLabel2 = JumpLabel2 ?? _labelHighlighter.GetNextDecLabel();
             }
         }
     }

@@ -1,13 +1,12 @@
 ﻿namespace TMS9900Translating.Operands
 {
-    public class LabeledAddressTmsOperand : Operand
+    public class LabeledAddressTmsOperand : LabelOperand
     {
-        public LabeledAddressTmsOperand(string label)
+        public LabeledAddressTmsOperand(string label, LabelHighlighter labelHighlighter, bool labelComesFromTranslator = false)
+            : base(label, labelHighlighter, labelComesFromTranslator)
         {
-            Label = label;
         }
 
-        public string Label { get; }
         public override string DisplayValue => "@" + Label;
     }
 }

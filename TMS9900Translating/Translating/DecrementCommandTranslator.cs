@@ -4,12 +4,8 @@ namespace TMS9900Translating.Translating
 {
     public class DecrementCommandTranslator : CrementCommandTranslator<Z80AssemblyParsing.Commands.DecrementCommand, SubtractByteCommand, DecrementCommand>
     {
-        public DecrementCommandTranslator(MapCollection mapCollection) : base(mapCollection)
+        public DecrementCommandTranslator(MapCollection mapCollection, LabelHighlighter labelHighlighter) : base(mapCollection, labelHighlighter)
         {
         }
-
-        protected override string JumpLabel1 => "DEC001";
-
-        protected override string JumpLabel2 => "DEC002";
     }
 }

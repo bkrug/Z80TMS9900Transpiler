@@ -1,13 +1,11 @@
 ﻿namespace Z80AssemblyParsing.Operands
 {
-    public class LabeledAddressOperand : Operand
+    public class LabeledAddressOperand : LabeledOperand
     {
-        public LabeledAddressOperand(string label)
+        public LabeledAddressOperand(string label) : base(label)
         {
-            Label = label;
         }
 
-        public string Label { get; }
         public override string DisplayValue => $"({Label})";
     }
 }

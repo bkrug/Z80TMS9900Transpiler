@@ -115,6 +115,8 @@ namespace Z80AssemblyParsing.Parsing
                     return new IncrementCommand(line, GetOperand(operandString));
                 case OpCode.DEC:
                     return new DecrementCommand(line, GetOperand(operandString));
+                case OpCode.DJNZ:
+                    return new DjnzCommand(line, GetAddressOperandWithoutParenthesis(operandString));
                 default:
                     throw new Exception($"OpCode {opCode} does not accept one operand");
             }

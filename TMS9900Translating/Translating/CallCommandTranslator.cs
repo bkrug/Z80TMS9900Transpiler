@@ -12,9 +12,9 @@ namespace TMS9900Translating.Translating
 
         public override IEnumerable<TmsCommand> Translate(Z80AssemblyParsing.Commands.UnconditionalCallCommand callCommand)
         {
-            if (callCommand.Operand is Z80AssemblyParsing.Operands.LabeledAddressWithoutParenthesisOperand)
+            if (callCommand.Operand is Z80AssemblyParsing.Operands.LabeledAddressWithoutParenthesisOperand labelOperand)
             {
-                var destinationOperand = GetOperand(callCommand.Operand, false);
+                var destinationOperand = new Operands.LabeledAddressTmsOperand(labelOperand.AddressLabel);
                 yield return new BranchLinkCommand(callCommand, destinationOperand);
             }
             else

@@ -102,7 +102,7 @@ namespace TMS9900Translating.Translating
                 return new LabeledAddressTmsOperand(labeledAddressOperand.Label);
 
             if (sourceOperand is Z80Operands.LabeledAddressWithoutParenthesisOperand labeledImmediateWithoutParenthesisOperand)
-                return new LabeledAddressTmsOperand(labeledImmediateWithoutParenthesisOperand.AddressLabel);
+                return new LabeledAddressWithoutAmpTmsOperand(labeledImmediateWithoutParenthesisOperand.AddressLabel);
 
             if (sourceOperand is Z80Operands.IndirectRegisterOperand indirectOperand)
                 return new IndirectRegisterTmsOperand(GetWsRegisterWhereRegisterPairIsMappedToSameRegister(indirectOperand.Register));

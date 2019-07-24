@@ -14,7 +14,6 @@ namespace TMS9900TranslatingTests
         {
             var z80SourceCommand = "    call 48A1h";
             var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
-            var accumulator = new LabelHighlighter();
             var translator = new TMS9900Translator(
                 new List<(Z80SourceRegister, WorkspaceRegister)>(),
                 new List<MemoryMapElement>(),
@@ -32,7 +31,6 @@ namespace TMS9900TranslatingTests
         {
             var z80SourceCommand = "    call otherRoutine";
             var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
-            var accumulator = new LabelHighlighter();
             var translator = new TMS9900Translator(
                 new List<(Z80SourceRegister, WorkspaceRegister)>(),
                 new List<MemoryMapElement>(),
@@ -49,7 +47,6 @@ namespace TMS9900TranslatingTests
         {
             var z80SourceCommand = "    call otherRoutine";
             var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
-            var accumulator = new LabelHighlighter();
             var translator = new TMS9900Translator(
                 new List<(Z80SourceRegister, WorkspaceRegister)>(),
                 new List<MemoryMapElement>(),
@@ -81,6 +78,46 @@ namespace TMS9900TranslatingTests
             Assert.AreEqual(2, tmsCommand.Count);
             Assert.AreEqual("       MOV  *R10+,R11", tmsCommand[0].CommandText, "pull the return address from the stack.");
             Assert.AreEqual("       RT", tmsCommand[1].CommandText);
+        }
+
+        [Test]
+        public void JumpTests_Djnz_UnifiedRegisters()
+        {
+            var z80SourceCommand = "       djnz loop4";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>() {
+                    (Z80SourceRegister.B, WorkspaceRegister.R3),
+                    (Z80SourceRegister.C, WorkspaceRegister.R3)
+                },
+                new List<MemoryMapElement>(),
+                new LabelHighlighter()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(2, tmsCommand.Count);
+            Assert.AreEqual("       SB   @ONE,R3", tmsCommand[0].CommandText, "pull the return address from the stack.");
+            Assert.AreEqual("       JNE  loop4", tmsCommand[1].CommandText);
+        }
+
+        [Test]
+        public void JumpTests_Djnz_SeparatedRegisters()
+        {
+            var z80SourceCommand = "       djnz loop4";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>() {
+                    (Z80SourceRegister.B, WorkspaceRegister.R3),
+                    (Z80SourceRegister.C, WorkspaceRegister.R4)
+                },
+                new List<MemoryMapElement>(),
+                new LabelHighlighter()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(2, tmsCommand.Count);
+            Assert.AreEqual("       SB   @ONE,R3", tmsCommand[0].CommandText, "pull the return address from the stack.");
+            Assert.AreEqual("       JNE  loop4", tmsCommand[1].CommandText);
         }
     }
 }

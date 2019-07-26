@@ -109,7 +109,6 @@ namespace Z80AssemblyParsingTests
             Assert.AreEqual(0x5C, actualOperand.ImmediateValue);
         }
 
-
         [Test]
         public void SingleOperandParsing_AndIndirectAddress()
         {
@@ -121,6 +120,48 @@ namespace Z80AssemblyParsingTests
 
             Assert.AreEqual(sourceCode, actualCommand.SourceText);
             Assert.AreEqual(OpCode.AND, actualCommand.OpCode);
+            Assert.AreEqual(ExtendedRegister.HL, actualOperand.Register);
+        }
+
+        [Test]
+        public void SingleOperandParsing_Or_Register()
+        {
+            var sourceCode = "      OR   D";
+
+            var parser = new Z80LineParser();
+            var actualCommand = AssertExtension.IsCorrectCommandType<OrCommand>(parser.ParseLine(sourceCode));
+            var actualOperand = AssertExtension.IsCorrectOperandType<RegisterOperand>(actualCommand.Operand);
+
+            Assert.AreEqual(sourceCode, actualCommand.SourceText);
+            Assert.AreEqual(OpCode.OR, actualCommand.OpCode);
+            Assert.AreEqual(Register.D, actualOperand.Register);
+        }
+
+        [Test]
+        public void SingleOperandParsing_Or_Immediate()
+        {
+            var sourceCode = "      OR   cch";
+
+            var parser = new Z80LineParser();
+            var actualCommand = AssertExtension.IsCorrectCommandType<OrCommand>(parser.ParseLine(sourceCode));
+            var actualOperand = AssertExtension.IsCorrectOperandType<ImmediateOperand>(actualCommand.Operand);
+
+            Assert.AreEqual(sourceCode, actualCommand.SourceText);
+            Assert.AreEqual(OpCode.OR, actualCommand.OpCode);
+            Assert.AreEqual(0xcc, actualOperand.ImmediateValue);
+        }
+
+        [Test]
+        public void SingleOperandParsing_Or_IndirectRegister()
+        {
+            var sourceCode = "      OR   (hl)";
+
+            var parser = new Z80LineParser();
+            var actualCommand = AssertExtension.IsCorrectCommandType<OrCommand>(parser.ParseLine(sourceCode));
+            var actualOperand = AssertExtension.IsCorrectOperandType<IndirectRegisterOperand>(actualCommand.Operand);
+
+            Assert.AreEqual(sourceCode, actualCommand.SourceText);
+            Assert.AreEqual(OpCode.OR, actualCommand.OpCode);
             Assert.AreEqual(ExtendedRegister.HL, actualOperand.Register);
         }
 

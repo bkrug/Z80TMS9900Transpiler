@@ -145,6 +145,8 @@ namespace TMS9900Translating.Translating
 
         protected WorkspaceRegister GetWsRegisterWhereRegisterPairIsMappedToSameRegister(Z80ExtendedRegister registerPair)
         {
+            if (_unsplitableRegisters.Contains(registerPair))
+                return _extendedRegisterMap[registerPair];
             if (RegisterPairIsMappedToSameWorkspaceRegister(registerPair))
                 return _registerMap[GetFirstRegisterInPair(registerPair)];
             throw new Exception($"Cannot map from {registerPair.ToString()} to a workspace register in a single operation. The Z80 registers are mapped to different TMS9900 registers.");

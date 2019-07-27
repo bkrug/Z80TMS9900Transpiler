@@ -119,5 +119,57 @@ namespace TMS9900TranslatingTests
             Assert.AreEqual("       SB   @ONE,R3", tmsCommand[0].CommandText, "pull the return address from the stack.");
             Assert.AreEqual("       JNE  loop4", tmsCommand[1].CommandText);
         }
+
+        [Test]
+        public void JumpTests_Unconditional_LabeledAddress()
+        {
+            var z80SourceCommand = "       jp   calcsc";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>(),
+                new List<MemoryMapElement>(),
+                new LabelHighlighter()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(1, tmsCommand.Count);
+            Assert.AreEqual("       B    @calcsc", tmsCommand[0].CommandText);
+        }
+
+        [Test]
+        public void JumpTests_Unconditional_Address()
+        {
+            var z80SourceCommand = "       jp   1234h";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>(),
+                new List<MemoryMapElement>(),
+                new LabelHighlighter()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(2, tmsCommand.Count);
+            Assert.AreEqual("!cannot translate a jump command if it is to a literal address", tmsCommand[0].CommandText);
+            Assert.AreEqual("!       jp   1234h", tmsCommand[1].CommandText);
+        }
+
+        [Test]
+        public void JumpTests_Unconditional_Indirect()
+        {
+            var z80SourceCommand = "       jp   (IX)";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
+                {
+                    (Z80SourceRegister.IX, WorkspaceRegister.R8)
+                },
+                new List<MemoryMapElement>(),
+                new LabelHighlighter()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(1, tmsCommand.Count);
+            Assert.AreEqual("       B    *R8", tmsCommand[0].CommandText);
+        }
     }
 }

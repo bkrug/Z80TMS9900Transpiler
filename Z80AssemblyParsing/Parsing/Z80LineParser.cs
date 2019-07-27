@@ -113,6 +113,8 @@ namespace Z80AssemblyParsing.Parsing
                     return new AndCommand(line, GetOperand(operandString));
                 case OpCode.OR:
                     return new OrCommand(line, GetOperand(operandString));
+                case OpCode.XOR:
+                    return new XorCommand(line, GetOperand(operandString));
                 case OpCode.INC:
                     return new IncrementCommand(line, GetOperand(operandString));
                 case OpCode.DEC:

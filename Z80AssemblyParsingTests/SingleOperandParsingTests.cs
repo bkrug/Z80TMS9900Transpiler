@@ -166,6 +166,48 @@ namespace Z80AssemblyParsingTests
         }
 
         [Test]
+        public void SingleOperandParsing_Xor_Register()
+        {
+            var sourceCode = "      XOR   H";
+
+            var parser = new Z80LineParser();
+            var actualCommand = AssertExtension.IsCorrectCommandType<XorCommand>(parser.ParseLine(sourceCode));
+            var actualOperand = AssertExtension.IsCorrectOperandType<RegisterOperand>(actualCommand.Operand);
+
+            Assert.AreEqual(sourceCode, actualCommand.SourceText);
+            Assert.AreEqual(OpCode.XOR, actualCommand.OpCode);
+            Assert.AreEqual(Register.H, actualOperand.Register);
+        }
+
+        [Test]
+        public void SingleOperandParsing_Xor_Immediate()
+        {
+            var sourceCode = "      XOR  8Ah";
+
+            var parser = new Z80LineParser();
+            var actualCommand = AssertExtension.IsCorrectCommandType<XorCommand>(parser.ParseLine(sourceCode));
+            var actualOperand = AssertExtension.IsCorrectOperandType<ImmediateOperand>(actualCommand.Operand);
+
+            Assert.AreEqual(sourceCode, actualCommand.SourceText);
+            Assert.AreEqual(OpCode.XOR, actualCommand.OpCode);
+            Assert.AreEqual(0x8A, actualOperand.ImmediateValue);
+        }
+
+        [Test]
+        public void SingleOperandParsing_Xor_IndirectRegister()
+        {
+            var sourceCode = "      XOR  (HL)";
+
+            var parser = new Z80LineParser();
+            var actualCommand = AssertExtension.IsCorrectCommandType<XorCommand>(parser.ParseLine(sourceCode));
+            var actualOperand = AssertExtension.IsCorrectOperandType<IndirectRegisterOperand>(actualCommand.Operand);
+
+            Assert.AreEqual(sourceCode, actualCommand.SourceText);
+            Assert.AreEqual(OpCode.XOR, actualCommand.OpCode);
+            Assert.AreEqual(ExtendedRegister.HL, actualOperand.Register);
+        }
+
+        [Test]
         public void SingleOperandParsing_Increment_Register()
         {
             var sourceCode = "      INC  C";

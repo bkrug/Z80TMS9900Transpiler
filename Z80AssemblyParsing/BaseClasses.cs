@@ -47,7 +47,7 @@ namespace Z80AssemblyParsing
 
     public enum OpCode
     {
-        INVALID, ADD, ADC, LD, POP, PUSH, LDI, LDIR, LDD, LDDR, CALL, RET, DI, IM, AND, RRCA, RRA, INC, DEC, OUT, DJNZ, OR
+        INVALID, ADD, ADC, LD, POP, PUSH, LDI, LDIR, LDD, LDDR, CALL, RET, DI, IM, AND, RRCA, RRA, INC, DEC, OUT, DJNZ, OR, XOR
     }
 
     public enum Register

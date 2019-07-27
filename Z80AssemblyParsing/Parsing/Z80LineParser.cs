@@ -92,6 +92,8 @@ namespace Z80AssemblyParsing.Parsing
                     return new RotateRightCarryCommand(line);
                 case OpCode.RRA:
                     return new RotateRightCommand(line);
+                case OpCode.NOP:
+                    return new NopCommand(line);
                 default:
                     throw new Exception($"OpCode {opCode} is not a command that can omit an operand.");
             }

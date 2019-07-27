@@ -71,6 +71,7 @@ namespace TMS9900Translating.Translating
             { typeof(Z80Commands.IncrementCommand), typeof(IncrementCommandTranslator) },
             { typeof(Z80Commands.DecrementCommand), typeof(DecrementCommandTranslator) },
             { typeof(Z80Commands.DjnzCommand), typeof(DjnzCommandTranslator) },
+            { typeof(Z80Commands.NopCommand), typeof(NopTranslator) },
             { typeof(Z80Commands.Comment), typeof(CommentTranslator) },
             { typeof(Z80Commands.BlankLine), typeof(BlankLineTranslator) },
             { typeof(Z80Commands.UnparsableLine), typeof(UnparsableTranslator) }

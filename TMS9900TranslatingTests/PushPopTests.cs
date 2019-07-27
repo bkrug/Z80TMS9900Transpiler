@@ -95,5 +95,23 @@ namespace TMS9900TranslatingTests
             Assert.AreEqual("       MOV  *R3+,R5", tmsCommand[0].CommandText);
             Assert.AreEqual("       MOVB *R14,R6", tmsCommand[1].CommandText);
         }
+
+        [Test]
+        public void Nop_Translation()
+        {
+            var z80SourceCommand = "    nop";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
+                {
+                },
+                new List<MemoryMapElement>(),
+                new LabelHighlighter()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(1, tmsCommand.Count);
+            Assert.AreEqual("       NOP", tmsCommand[0].CommandText);
+        }
     }
 }

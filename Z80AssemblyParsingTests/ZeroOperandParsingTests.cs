@@ -55,5 +55,17 @@ namespace Z80AssemblyParsingTests
             Assert.AreEqual(sourceCode, actualCommand.SourceText);
             Assert.AreEqual(OpCode.RRA, actualCommand.OpCode);
         }
+
+        [Test]
+        public void ZeroOperandParsing_NOP()
+        {
+            var sourceCode = "      nop";
+
+            var parser = new Z80LineParser();
+            var actualCommand = AssertExtension.IsCorrectCommandType<NopCommand>(parser.ParseLine(sourceCode));
+
+            Assert.AreEqual(sourceCode, actualCommand.SourceText);
+            Assert.AreEqual(OpCode.NOP, actualCommand.OpCode);
+        }
     }
 }

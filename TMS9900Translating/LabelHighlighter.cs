@@ -11,11 +11,20 @@ namespace TMS9900Translating
         private int _nextInc = 0;
         private int _nextDec = 0;
         private string _oneByteLabel;
+        private string _zeroByteLabel;
         public string OneByteLabel
         {
             get
             {
                 return (_oneByteLabel = (_oneByteLabel ?? GetLabelUnusedByZ80("ONE")));
+            }
+        }
+
+        public string ZeroByteLabel
+        {
+            get
+            {
+                return (_zeroByteLabel = (_zeroByteLabel ?? GetLabelUnusedByZ80("ZERO")));
             }
         }
 

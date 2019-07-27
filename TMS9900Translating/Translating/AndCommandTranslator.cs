@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿  using System.Collections.Generic;
 using TMS9900Translating.Commands;
 using TMS9900Translating.Operands;
 using TmsCommand = TMS9900Translating.Command;
@@ -20,7 +20,7 @@ namespace TMS9900Translating.Translating
                 yield return new MoveByteCommand(andCommand, copyFromOperand, copyToOperand);
                 yield return new MoveByteCommand(andCommand, unifiedOperand, regZeroOperand);
                 yield return new InvertCommand(andCommand, regZeroOperand);
-                yield return new SetZerosCorrespondingCommand(andCommand, regZeroOperand, new RegisterTmsOperand(_registerMap[Z80AssemblyParsing.Register.A]));
+                yield return new SetZerosCorrespondingByteCommand(andCommand, regZeroOperand, new RegisterTmsOperand(_registerMap[Z80AssemblyParsing.Register.A]));
             }
             else
             {
@@ -31,7 +31,7 @@ namespace TMS9900Translating.Translating
                 {
                     yield return new MoveByteCommand(andCommand, sourceOperand, regZeroOperand);
                     yield return new InvertCommand(andCommand, regZeroOperand);
-                    yield return new SetZerosCorrespondingCommand(andCommand, regZeroOperand, new RegisterTmsOperand(_registerMap[Z80AssemblyParsing.Register.A]));
+                    yield return new SetZerosCorrespondingByteCommand(andCommand, regZeroOperand, new RegisterTmsOperand(_registerMap[Z80AssemblyParsing.Register.A]));
                 }
             }
         }

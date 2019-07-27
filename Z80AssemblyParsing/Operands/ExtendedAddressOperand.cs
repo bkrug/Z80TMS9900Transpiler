@@ -30,10 +30,10 @@ namespace Z80AssemblyParsing.Operands
     {
         public LabeledAddressWithoutParenthesisOperand(string label)
         {
-            AddressLabel = label;
+            Label = label;
         }
 
-        public string AddressLabel { get; }
-        public override string DisplayValue => AddressLabel;
+        public string Label { get; }
+        public override string DisplayValue => Label;
     }
 }

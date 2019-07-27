@@ -107,8 +107,6 @@ namespace Z80AssemblyParsing.Parsing
                     return new PopCommand(line, GetOperand(operandString));
                 case OpCode.PUSH:
                     return new PushCommand(line, GetOperand(operandString));
-                case OpCode.CALL:
-                    return new UnconditionalCallCommand(line, GetAddressOperandWithoutParenthesis(operandString));
                 case OpCode.IM:
                     return new InterruptModeCommand(line, GetOperand(operandString));
                 case OpCode.AND:
@@ -121,8 +119,12 @@ namespace Z80AssemblyParsing.Parsing
                     return new IncrementCommand(line, GetOperand(operandString));
                 case OpCode.DEC:
                     return new DecrementCommand(line, GetOperand(operandString));
+                case OpCode.CALL:
+                    return new UnconditionalCallCommand(line, GetAddressForJumpAndCallCommands(operandString));
                 case OpCode.DJNZ:
-                    return new DjnzCommand(line, GetAddressOperandWithoutParenthesis(operandString));
+                    return new DjnzCommand(line, GetAddressForJumpAndCallCommands(operandString));
+                case OpCode.JP:
+                    return new UnconditionalJumpCommand(line, GetAddressForJumpAndCallCommands(operandString));
                 default:
                     throw new Exception($"OpCode {opCode} does not accept one operand");
             }
@@ -182,12 +184,18 @@ namespace Z80AssemblyParsing.Parsing
             throw new Exception($"Invalid operand: {operandString}");
         }
 
-        public Operand GetAddressOperandWithoutParenthesis(string operandString)
+        public Operand GetAddressForJumpAndCallCommands(string operandString)
         {
-            if (TryUShortParse(operandString, out var memoryAddress))
-                return new AddressWithoutParenthesisOperand(memoryAddress);
-            if (IsValidLabel(operandString))
-                return new LabeledAddressWithoutParenthesisOperand(operandString);
+            var operandWithoutParens = operandString.StartsWith("(") && operandString.EndsWith(")") ? operandString.TrimStart('(').TrimEnd(')') : null;
+            if (operandWithoutParens == null)
+            {
+                if (TryUShortParse(operandString, out var memoryAddress))
+                    return new AddressWithoutParenthesisOperand(memoryAddress);
+                if (IsValidLabel(operandString))
+                    return new LabeledAddressWithoutParenthesisOperand(operandString);
+            }
+            else if (Enum.GetNames(typeof(ExtendedRegister)).Contains(operandWithoutParens.ToUpper()) && Enum.TryParse<ExtendedRegister>(operandWithoutParens, true, out var extendedRegister))
+                return new IndirectRegisterOperand(extendedRegister);
             throw new Exception($"Invalid operand: {operandString}");
         }
 

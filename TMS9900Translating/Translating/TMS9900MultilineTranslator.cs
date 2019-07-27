@@ -34,7 +34,7 @@ namespace TMS9900Translating.Translating
                 var parsedZ80Command = _parser.ParseLine(z80Line);
                 if (parsedZ80Command is Z80AssemblyParsing.Commands.UnconditionalCallCommand z80callCommand)
                     if (z80callCommand.Operand is Z80AssemblyParsing.Operands.LabeledAddressWithoutParenthesisOperand labeledAddressOperand)
-                        _labelHighlighter.AddLabelToBranchTo(labeledAddressOperand.AddressLabel);
+                        _labelHighlighter.AddLabelToBranchTo(labeledAddressOperand.Label);
 
                 //Take note of every label in the z80 code
                 if (!string.IsNullOrWhiteSpace(parsedZ80Command.Label))

@@ -64,7 +64,7 @@ namespace Z80AssemblyParsingTests
 
             Assert.AreEqual(sourceCode, actualCommand.SourceText);
             Assert.AreEqual(OpCode.CALL, actualCommand.OpCode);
-            Assert.AreEqual("overThere", actualOperand.AddressLabel);
+            Assert.AreEqual("overThere", actualOperand.Label);
         }
 
         [Test]
@@ -274,7 +274,7 @@ namespace Z80AssemblyParsingTests
 
             Assert.AreEqual(sourceCode, actualCommand.SourceText);
             Assert.AreEqual(OpCode.DJNZ, actualCommand.OpCode);
-            Assert.AreEqual("loop1", actualOperand.AddressLabel);
+            Assert.AreEqual("loop1", actualOperand.Label);
         }
     }
 }

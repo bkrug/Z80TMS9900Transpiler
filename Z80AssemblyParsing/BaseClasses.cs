@@ -47,7 +47,7 @@ namespace Z80AssemblyParsing
 
     public enum OpCode
     {
-        INVALID, ADD, ADC, LD, POP, PUSH, LDI, LDIR, LDD, LDDR, CALL, RET, DI, IM, AND, RRCA, RRA, INC, DEC, OUT, DJNZ, OR, XOR, NOP
+        INVALID, ADD, ADC, LD, POP, PUSH, LDI, LDIR, LDD, LDDR, CALL, RET, DI, IM, AND, RRCA, RRA, INC, DEC, OUT, DJNZ, OR, XOR, NOP, JP, JR
     }
 
     public enum Register
@@ -58,6 +58,11 @@ namespace Z80AssemblyParsing
     public enum ExtendedRegister
     {
         None, BC, DE, HL, AF, IX, IY, SP
+    }
+
+    public enum ConditionOperands
+    {
+        NZ, Z, NC, C, PO, PE, P, M
     }
 
     public enum OperandSize

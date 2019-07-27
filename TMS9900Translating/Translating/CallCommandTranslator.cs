@@ -14,7 +14,7 @@ namespace TMS9900Translating.Translating
         {
             if (callCommand.Operand is Z80AssemblyParsing.Operands.LabeledAddressWithoutParenthesisOperand labelOperand)
             {
-                var destinationOperand = new Operands.LabeledAddressTmsOperand(labelOperand.AddressLabel);
+                var destinationOperand = new Operands.LabeledAddressTmsOperand(labelOperand.Label);
                 yield return new BranchLinkCommand(callCommand, destinationOperand);
             }
             else

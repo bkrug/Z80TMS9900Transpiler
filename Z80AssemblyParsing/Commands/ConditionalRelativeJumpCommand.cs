@@ -8,6 +8,8 @@ namespace Z80AssemblyParsing.Commands
         {
         }
 
+        public ConditionOperand ConditionOperand => SourceOperand as ConditionOperand;
+        public Operand AddressOperand => DestinationOperand;
         public override OpCode OpCode => OpCode.JR;
     }
 }

@@ -125,6 +125,8 @@ namespace Z80AssemblyParsing.Parsing
                     return new DjnzCommand(line, GetAddressForJumpAndCallCommands(operandString));
                 case OpCode.JP:
                     return new UnconditionalJumpCommand(line, GetAddressForJumpAndCallCommands(operandString));
+                case OpCode.JR:
+                    return new UnconditionalRelativeJumpCommand(line, GetAddressForJumpAndCallCommands(operandString));
                 default:
                     throw new Exception($"OpCode {opCode} does not accept one operand");
             }
@@ -144,6 +146,8 @@ namespace Z80AssemblyParsing.Parsing
                     return new OutCommand(line, sourceOperand, desinationOperand);
                 case OpCode.JP:
                     return new ConditionalJumpCommand(line, GetConditionOperand(operandStrings[0]), GetAddressForJumpAndCallCommands(operandStrings[1]));
+                case OpCode.JR:
+                    return new ConditionalRelativeJumpCommand(line, GetConditionOperand(operandStrings[0]), GetAddressForJumpAndCallCommands(operandStrings[1]));
                 default:
                     throw new Exception($"OpCode {opCode} does not accept two operands");
             }

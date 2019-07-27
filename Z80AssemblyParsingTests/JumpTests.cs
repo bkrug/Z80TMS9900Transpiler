@@ -84,5 +84,79 @@ namespace Z80AssemblyParsingTests
             Assert.AreEqual(OpCode.JP, actualCommand.OpCode);
             Assert.AreEqual(0x194F, addressOperand.MemoryAddress);
         }
+
+        [Test]
+        public void JumpRelative_Unconditional_Labeled()
+        {
+            var sourceCode = "      JR   elsewhere";
+
+            var parser = new Z80LineParser();
+            var actualCommand = AssertExtension.IsCorrectCommandType<UnconditionalRelativeJumpCommand>(parser.ParseLine(sourceCode));
+            var actualOperand = AssertExtension.IsCorrectOperandType<LabeledAddressWithoutParenthesisOperand>(actualCommand.Operand);
+
+            Assert.AreEqual(sourceCode, actualCommand.SourceText);
+            Assert.AreEqual(OpCode.JR, actualCommand.OpCode);
+            Assert.AreEqual("elsewhere", actualOperand.Label);
+        }
+
+        [Test]
+        public void JumpRelative_Unconditional_Address()
+        {
+            var sourceCode = "      JR   4210h";
+
+            var parser = new Z80LineParser();
+            var actualCommand = AssertExtension.IsCorrectCommandType<UnconditionalRelativeJumpCommand>(parser.ParseLine(sourceCode));
+            var actualOperand = AssertExtension.IsCorrectOperandType<AddressWithoutParenthesisOperand>(actualCommand.Operand);
+
+            Assert.AreEqual(sourceCode, actualCommand.SourceText);
+            Assert.AreEqual(OpCode.JR, actualCommand.OpCode);
+            Assert.AreEqual(0x4210, actualOperand.MemoryAddress);
+        }
+
+        [Test]
+        public void JumpRelative_Unconditional_IndirectRegister()
+        {
+            var sourceCode = "      JR   (IY)";
+
+            var parser = new Z80LineParser();
+            var actualCommand = AssertExtension.IsCorrectCommandType<UnconditionalRelativeJumpCommand>(parser.ParseLine(sourceCode));
+            var actualOperand = AssertExtension.IsCorrectOperandType<IndirectRegisterOperand>(actualCommand.Operand);
+
+            Assert.AreEqual(sourceCode, actualCommand.SourceText);
+            Assert.AreEqual(OpCode.JR, actualCommand.OpCode);
+            Assert.AreEqual(ExtendedRegister.IY, actualOperand.Register);
+        }
+
+        [Test]
+        public void JumpRelative_Conditional_Labeled()
+        {
+            var sourceCode = "      JR   C,hither";
+
+            var parser = new Z80LineParser();
+            var actualCommand = AssertExtension.IsCorrectCommandType<ConditionalRelativeJumpCommand>(parser.ParseLine(sourceCode));
+            var conditionOperand = AssertExtension.IsCorrectOperandType<ConditionOperand>(actualCommand.ConditionOperand);
+            var addressOperand = AssertExtension.IsCorrectOperandType<LabeledAddressWithoutParenthesisOperand>(actualCommand.AddressOperand);
+
+            Assert.AreEqual(sourceCode, actualCommand.SourceText);
+            Assert.AreEqual(JumpConditions.C, conditionOperand.Condition);
+            Assert.AreEqual(OpCode.JR, actualCommand.OpCode);
+            Assert.AreEqual("hither", addressOperand.Label);
+        }
+
+        [Test]
+        public void JumpRelative_Conditional_Address()
+        {
+            var sourceCode = "      JR   NZ,0927h";
+
+            var parser = new Z80LineParser();
+            var actualCommand = AssertExtension.IsCorrectCommandType<ConditionalRelativeJumpCommand>(parser.ParseLine(sourceCode));
+            var conditionOperand = AssertExtension.IsCorrectOperandType<ConditionOperand>(actualCommand.ConditionOperand);
+            var addressOperand = AssertExtension.IsCorrectOperandType<AddressWithoutParenthesisOperand>(actualCommand.AddressOperand);
+
+            Assert.AreEqual(sourceCode, actualCommand.SourceText);
+            Assert.AreEqual(JumpConditions.NZ, conditionOperand.Condition);
+            Assert.AreEqual(OpCode.JR, actualCommand.OpCode);
+            Assert.AreEqual(0x0927, addressOperand.MemoryAddress);
+        }
     }
 }

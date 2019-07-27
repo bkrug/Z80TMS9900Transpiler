@@ -271,6 +271,138 @@ namespace TMS9900TranslatingTests
         }
 
         [Test]
+        public void Logical_Xor_ImmediateOperand()
+        {
+            var z80SourceCommand = "    xor  34h";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
+                {
+                    (Z80SourceRegister.A, WorkspaceRegister.R2)
+                },
+                new List<MemoryMapElement>(),
+                new LabelHighlighter()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(3, tmsCommand.Count);
+            Assert.AreEqual("       LI   R0,>3400", tmsCommand[0].CommandText);
+            Assert.AreEqual("       XOR  R0,R2", tmsCommand[1].CommandText);
+            Assert.AreEqual("       MOVB R2,R2", tmsCommand[2].CommandText, "Set status bits according to an 8-bit operation, not 16-bit");
+        }
+
+        [Test]
+        public void Logical_Xor_OtherRegister_SeparateRegisters()
+        {
+            var z80SourceCommand = "    XOR  L";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
+                {
+                    (Z80SourceRegister.A, WorkspaceRegister.R2),
+                    (Z80SourceRegister.H, WorkspaceRegister.R9),
+                    (Z80SourceRegister.L, WorkspaceRegister.R10)
+                },
+                new List<MemoryMapElement>(),
+                new LabelHighlighter()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(2, tmsCommand.Count);
+            Assert.AreEqual("       XOR  R10,R2", tmsCommand[0].CommandText);
+            Assert.AreEqual("       MOVB R2,R2", tmsCommand[1].CommandText, "Set status bits according to an 8-bit operation, not 16-bit");
+        }
+
+        [Test]
+        public void Logical_Xor_OtherRegister_UnifiedRegisters1()
+        {
+            var z80SourceCommand = "    XOR  H";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
+                {
+                    (Z80SourceRegister.A, WorkspaceRegister.R4),
+                    (Z80SourceRegister.H, WorkspaceRegister.R1),
+                    (Z80SourceRegister.L, WorkspaceRegister.R1)
+                },
+                new List<MemoryMapElement>(),
+                new LabelHighlighter()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(2, tmsCommand.Count);
+            Assert.AreEqual("       XOR  R1,R4", tmsCommand[0].CommandText);
+            Assert.AreEqual("       MOVB R4,R4", tmsCommand[1].CommandText, "Set status bits according to an 8-bit operation, not 16-bit");
+        }
+
+        [Test]
+        public void Logical_Xor_OtherRegister_UnifiedRegisters2()
+        {
+            var z80SourceCommand = "    XOR  L";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
+                {
+                    (Z80SourceRegister.A, WorkspaceRegister.R4),
+                    (Z80SourceRegister.H, WorkspaceRegister.R1),
+                    (Z80SourceRegister.L, WorkspaceRegister.R1)
+                },
+                new List<MemoryMapElement>(),
+                new LabelHighlighter()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(2, tmsCommand.Count);
+            Assert.AreEqual("       XOR  *R15,R4", tmsCommand[0].CommandText);
+            Assert.AreEqual("       MOVB R4,R4", tmsCommand[1].CommandText, "Set status bits according to an 8-bit operation, not 16-bit");
+        }
+
+        [Test]
+        public void Logical_Xor_IndirectAddress_UnifiedRegister()
+        {
+            var z80SourceCommand = "    XOR  (HL)";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
+                {
+                    (Z80SourceRegister.A, WorkspaceRegister.R7),
+                    (Z80SourceRegister.H, WorkspaceRegister.R8),
+                    (Z80SourceRegister.L, WorkspaceRegister.R8),
+                },
+                new List<MemoryMapElement>(),
+                new LabelHighlighter()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(2, tmsCommand.Count);
+            Assert.AreEqual("       XOR  *R8,R7", tmsCommand[0].CommandText);
+            Assert.AreEqual("       MOVB R7,R7", tmsCommand[1].CommandText, "Set status bits according to an 8-bit operation, not 16-bit");
+        }
+
+        [Test]
+        public void Logical_Xor_IndirectAddress_SeparatedRegisters()
+        {
+            var z80SourceCommand = "    XOR  (HL)";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
+                {
+                    (Z80SourceRegister.A, WorkspaceRegister.R7),
+                    (Z80SourceRegister.H, WorkspaceRegister.R8),
+                    (Z80SourceRegister.L, WorkspaceRegister.R6),
+                },
+                new List<MemoryMapElement>(),
+                new LabelHighlighter()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(3, tmsCommand.Count);
+            Assert.AreEqual("       MOVB R6,*R15", tmsCommand[0].CommandText);
+            Assert.AreEqual("       XOR  *R8,R7", tmsCommand[1].CommandText);
+            Assert.AreEqual("       MOVB R7,R7", tmsCommand[2].CommandText, "Set status bits according to an 8-bit operation, not 16-bit");
+        }
+
+        [Test]
         public void Logical_RotateRightCarry()
         {
             var z80SourceCommand = "    rrca";

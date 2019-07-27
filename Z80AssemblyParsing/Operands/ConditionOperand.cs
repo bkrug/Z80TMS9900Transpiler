@@ -4,12 +4,12 @@ namespace Z80AssemblyParsing.Operands
 {
     public class ConditionOperand : Operand
     {
-        public ConditionOperand(ConditionOperands condition)
+        public ConditionOperand(JumpConditions condition)
         {
             Condition = condition;
         }
 
-        public ConditionOperands Condition { get; }
-        public override string DisplayValue => Enum.GetName(typeof(ConditionOperands), Condition);
+        public JumpConditions Condition { get; }
+        public override string DisplayValue => Enum.GetName(typeof(JumpConditions), Condition);
     }
 }

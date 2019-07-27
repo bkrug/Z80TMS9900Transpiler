@@ -4,9 +4,12 @@ namespace Z80AssemblyParsing.Commands
 {
     public class ConditionalJumpCommand : CommandWithTwoOperands
     {
-        public ConditionalJumpCommand(string sourceText, ConditionOperand conditionOperand, Operand destinationOperand) : base(sourceText, conditionOperand, destinationOperand)
+        public ConditionalJumpCommand(string sourceText, ConditionOperand conditionOperand, Operand addressOperand) : base(sourceText, conditionOperand, addressOperand)
         {
         }
+
+        public ConditionOperand ConditionOperand => SourceOperand as ConditionOperand;
+        public Operand AddressOperand => DestinationOperand;
 
         public override OpCode OpCode => OpCode.JP;
     }

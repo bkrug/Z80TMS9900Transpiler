@@ -60,7 +60,7 @@ namespace Z80AssemblyParsing
         None, BC, DE, HL, AF, IX, IY, SP
     }
 
-    public enum ConditionOperands
+    public enum JumpConditions
     {
         NZ, Z, NC, C, PO, PE, P, M
     }

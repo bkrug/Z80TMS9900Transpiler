@@ -142,6 +142,8 @@ namespace Z80AssemblyParsing.Parsing
                     return new AddCommand(line, sourceOperand, desinationOperand);
                 case OpCode.OUT:
                     return new OutCommand(line, sourceOperand, desinationOperand);
+                case OpCode.JP:
+                    return new ConditionalJumpCommand(line, GetConditionOperand(operandStrings[0]), GetAddressForJumpAndCallCommands(operandStrings[1]));
                 default:
                     throw new Exception($"OpCode {opCode} does not accept two operands");
             }
@@ -184,7 +186,7 @@ namespace Z80AssemblyParsing.Parsing
             throw new Exception($"Invalid operand: {operandString}");
         }
 
-        public Operand GetAddressForJumpAndCallCommands(string operandString)
+        private Operand GetAddressForJumpAndCallCommands(string operandString)
         {
             var operandWithoutParens = operandString.StartsWith("(") && operandString.EndsWith(")") ? operandString.TrimStart('(').TrimEnd(')') : null;
             if (operandWithoutParens == null)
@@ -197,6 +199,13 @@ namespace Z80AssemblyParsing.Parsing
             else if (Enum.GetNames(typeof(ExtendedRegister)).Contains(operandWithoutParens.ToUpper()) && Enum.TryParse<ExtendedRegister>(operandWithoutParens, true, out var extendedRegister))
                 return new IndirectRegisterOperand(extendedRegister);
             throw new Exception($"Invalid operand: {operandString}");
+        }
+
+        private ConditionOperand GetConditionOperand(string operandString)
+        {
+            if (Enum.TryParse<JumpConditions>(operandString, out var foundJumpCondition))
+                return new ConditionOperand(foundJumpCondition);
+            throw new Exception($"{operandString} is not a valid condition for a jump.");
         }
 
         private bool IsValidLabel(string operandString)

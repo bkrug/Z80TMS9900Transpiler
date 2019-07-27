@@ -52,5 +52,37 @@ namespace Z80AssemblyParsingTests
             Assert.AreEqual(OpCode.JP, actualCommand.OpCode);
             Assert.AreEqual(ExtendedRegister.IX, actualOperand.Register);
         }
+
+        [Test]
+        public void Jump_Conditional_Labeled()
+        {
+            var sourceCode = "      JP   NC,toplace";
+
+            var parser = new Z80LineParser();
+            var actualCommand = AssertExtension.IsCorrectCommandType<ConditionalJumpCommand>(parser.ParseLine(sourceCode));
+            var conditionOperand = AssertExtension.IsCorrectOperandType<ConditionOperand>(actualCommand.ConditionOperand);
+            var addressOperand = AssertExtension.IsCorrectOperandType<LabeledAddressWithoutParenthesisOperand>(actualCommand.AddressOperand);
+
+            Assert.AreEqual(sourceCode, actualCommand.SourceText);
+            Assert.AreEqual(JumpConditions.NC, conditionOperand.Condition);
+            Assert.AreEqual(OpCode.JP, actualCommand.OpCode);
+            Assert.AreEqual("toplace", addressOperand.Label);
+        }
+
+        [Test]
+        public void Jump_Conditional_Address()
+        {
+            var sourceCode = "      JP   PE,194Fh";
+
+            var parser = new Z80LineParser();
+            var actualCommand = AssertExtension.IsCorrectCommandType<ConditionalJumpCommand>(parser.ParseLine(sourceCode));
+            var conditionOperand = AssertExtension.IsCorrectOperandType<ConditionOperand>(actualCommand.ConditionOperand);
+            var addressOperand = AssertExtension.IsCorrectOperandType<AddressWithoutParenthesisOperand>(actualCommand.AddressOperand);
+
+            Assert.AreEqual(sourceCode, actualCommand.SourceText);
+            Assert.AreEqual(JumpConditions.PE, conditionOperand.Condition);
+            Assert.AreEqual(OpCode.JP, actualCommand.OpCode);
+            Assert.AreEqual(0x194F, addressOperand.MemoryAddress);
+        }
     }
 }

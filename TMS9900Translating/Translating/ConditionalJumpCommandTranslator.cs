@@ -30,35 +30,40 @@ namespace TMS9900Translating.Translating
                 yield return new UntranslateableComment(jumpCommand, "cannot translate a jump command if it is to a literal address");
                 yield return new UntranslateableComment(jumpCommand, jumpCommand.SourceText);
             }
-            else
+            else if (jumpCommand.ConditionOperand.Condition == Z80AssemblyParsing.JumpConditions.PO
+                || jumpCommand.ConditionOperand.Condition == Z80AssemblyParsing.JumpConditions.PE)
             {
-                if (_typesByCondition.ContainsKey(jumpCommand.ConditionOperand.Condition))
+                yield return new UntranslateableComment(jumpCommand, "jump translations on PO or PE condition are not automated.");
+                yield return new UntranslateableComment(jumpCommand, "Z80 used a single flag for Parity and Overflow, TMS9900 used two flags.");
+                yield return new UntranslateableComment(jumpCommand, "A human must decide whether to use JNO or JOP.");
+                yield return new UntranslateableComment(jumpCommand, jumpCommand.SourceText);
+            }
+            else if (_typesByCondition.ContainsKey(jumpCommand.ConditionOperand.Condition))
+            {
+                yield return GetInverseJumpCommand(jumpCommand);
+                if (unifyCommand != null)
+                    yield return unifyCommand;
+                yield return new BranchCommand(jumpCommand, destinationOperand);
+                yield return new BlankLineInTms(jumpCommand)
                 {
-                    yield return GetInverseJumpCommand(jumpCommand);
-                    if (unifyCommand != null)
-                        yield return unifyCommand;
-                    yield return new BranchCommand(jumpCommand, destinationOperand);
-                    yield return new BlankLineInTms(jumpCommand)
-                    {
-                        Label = "JMP001"
-                    };
-                }
-                else if (jumpCommand.ConditionOperand.Condition == Z80AssemblyParsing.JumpConditions.M)
+                    Label = "JMP001"
+                };
+            }
+            else if (jumpCommand.ConditionOperand.Condition == Z80AssemblyParsing.JumpConditions.M)
+            {
+                yield return new JumpIfLessThanCommand(jumpCommand, new Operands.LabeledAddressWithoutAmpTmsOperand("JMP001"));
+                yield return new JumpCommand(jumpCommand, new Operands.LabeledAddressWithoutAmpTmsOperand("JMP002"));
+                yield return new BlankLineInTms(jumpCommand)
                 {
-                    yield return new JumpIfLessThanCommand(jumpCommand, new Operands.LabeledAddressWithoutAmpTmsOperand("JMP001"));
-                    yield return new JumpCommand(jumpCommand, new Operands.LabeledAddressWithoutAmpTmsOperand("JMP002"));
-                    yield return new BlankLineInTms(jumpCommand)
-                    {
-                        Label = "JMP001"
-                    };
-                    if (unifyCommand != null)
-                        yield return unifyCommand;
-                    yield return new BranchCommand(jumpCommand, destinationOperand);
-                    yield return new BlankLineInTms(jumpCommand)
-                    {
-                        Label = "JMP002"
-                    };
-                }
+                    Label = "JMP001"
+                };
+                if (unifyCommand != null)
+                    yield return unifyCommand;
+                yield return new BranchCommand(jumpCommand, destinationOperand);
+                yield return new BlankLineInTms(jumpCommand)
+                {
+                    Label = "JMP002"
+                };
             }
         }
 

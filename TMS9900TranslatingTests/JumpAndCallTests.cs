@@ -335,5 +335,24 @@ namespace TMS9900TranslatingTests
             Assert.AreEqual("       B    *R3", tmsCommand[1].CommandText);
             Assert.AreEqual("JMP001", tmsCommand[2].CommandText);
         }
+
+        [Test]
+        public void JumpTests_Conditional_ParityOdd()
+        {
+            var z80SourceCommand = "       jp   PO,reset";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>(),
+                new List<MemoryMapElement>(),
+                new LabelHighlighter()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(4, tmsCommand.Count);
+            Assert.AreEqual("!jump translations on PO or PE condition are not automated.", tmsCommand[0].CommandText);
+            Assert.AreEqual("!Z80 used a single flag for Parity and Overflow, TMS9900 used two flags.", tmsCommand[1].CommandText);
+            Assert.AreEqual("!A human must decide whether to use JNO or JOP.", tmsCommand[2].CommandText);
+            Assert.AreEqual("!       jp   PO,reset", tmsCommand[3].CommandText);
+        }
     }
 }

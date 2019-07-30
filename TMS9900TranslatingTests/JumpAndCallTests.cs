@@ -191,7 +191,7 @@ namespace TMS9900TranslatingTests
         }
 
         [Test]
-        public void JumpTests_Conditional_Address()
+        public void JumpTests_Conditional_Equal_Address()
         {
             var z80SourceCommand = "       jp   Z,1234h";
             var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
@@ -386,6 +386,94 @@ namespace TMS9900TranslatingTests
             Assert.AreEqual(2, tmsCommand.Count);
             Assert.AreEqual("!cannot translate a jump command if it is to a literal address", tmsCommand[0].CommandText);
             Assert.AreEqual("!       jr   1234h", tmsCommand[1].CommandText);
+        }
+
+        [Test]
+        public void JumpTests_Relative_Conditional_Equal_LabeledAddress()
+        {
+            var z80SourceCommand = "       jr   Z,btnprs";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>(),
+                new List<MemoryMapElement>(),
+                new LabelHighlighter()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(1, tmsCommand.Count);
+            Assert.AreEqual("       JEQ  btnprs", tmsCommand[0].CommandText);
+        }
+
+        [Test]
+        public void JumpTests_Relative_Conditional_Equal_Address()
+        {
+            var z80SourceCommand = "       jr   Z,1234h";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>(),
+                new List<MemoryMapElement>(),
+                new LabelHighlighter()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(2, tmsCommand.Count);
+            Assert.AreEqual("!cannot translate a jump command if it is to a literal address", tmsCommand[0].CommandText);
+            Assert.AreEqual("!       jr   Z,1234h", tmsCommand[1].CommandText);
+        }
+
+        [Test]
+        public void JumpTests_Relative_Conditional_NotEqual_LabelledAddress()
+        {
+            var z80SourceCommand = "       jr   NZ,namest";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
+                {
+                    (Z80SourceRegister.IY, WorkspaceRegister.R8)
+                },
+                new List<MemoryMapElement>(),
+                new LabelHighlighter()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(1, tmsCommand.Count);
+            Assert.AreEqual("       JNE  namest", tmsCommand[0].CommandText);
+        }
+
+        [Test]
+        public void JumpTests_Relative_Conditional_Carry_LabeledAddress()
+        {
+            var z80SourceCommand = "       jr   C,btnprs";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>(),
+                new List<MemoryMapElement>(),
+                new LabelHighlighter()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(1, tmsCommand.Count);
+            Assert.AreEqual("       JOC  btnprs", tmsCommand[0].CommandText);
+        }
+
+        [Test]
+        public void JumpTests_Relative_Conditional_NoCarry_Indirect_LabeledAddress()
+        {
+            var z80SourceCommand = "       jr   NC,entprs";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
+                {
+                    (Z80SourceRegister.H, WorkspaceRegister.R4),
+                    (Z80SourceRegister.L, WorkspaceRegister.R8)
+                },
+                new List<MemoryMapElement>(),
+                new LabelHighlighter()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(1, tmsCommand.Count);
+            Assert.AreEqual("       JNC  entprs", tmsCommand[0].CommandText);
         }
     }
 }

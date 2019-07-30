@@ -354,5 +354,38 @@ namespace TMS9900TranslatingTests
             Assert.AreEqual("!A human must decide whether to use JNO or JOP.", tmsCommand[2].CommandText);
             Assert.AreEqual("!       jp   PO,reset", tmsCommand[3].CommandText);
         }
+
+        [Test]
+        public void JumpTests_Relative_Unconditional_LabeledAddress()
+        {
+            var z80SourceCommand = "       jr   calcsc";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>(),
+                new List<MemoryMapElement>(),
+                new LabelHighlighter()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(1, tmsCommand.Count);
+            Assert.AreEqual("       JMP  calcsc", tmsCommand[0].CommandText);
+        }
+
+        [Test]
+        public void JumpTests_Relative_Unconditional_Address()
+        {
+            var z80SourceCommand = "       jr   1234h";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>(),
+                new List<MemoryMapElement>(),
+                new LabelHighlighter()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(2, tmsCommand.Count);
+            Assert.AreEqual("!cannot translate a jump command if it is to a literal address", tmsCommand[0].CommandText);
+            Assert.AreEqual("!       jr   1234h", tmsCommand[1].CommandText);
+        }
     }
 }

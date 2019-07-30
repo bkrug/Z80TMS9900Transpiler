@@ -51,8 +51,8 @@ namespace TMS9900Translating.Translating
             }
             else if (jumpCommand.ConditionOperand.Condition == Z80AssemblyParsing.JumpConditions.M)
             {
-                yield return new JumpIfLessThanCommand(jumpCommand, new Operands.LabeledAddressWithoutAmpTmsOperand("JMP001"));
-                yield return new JumpCommand(jumpCommand, new Operands.LabeledAddressWithoutAmpTmsOperand("JMP002"));
+                yield return new JumpIfLessThanCommand(jumpCommand, new Operands.LabeledAddressWithoutAtTmsOperand("JMP001"));
+                yield return new JumpCommand(jumpCommand, new Operands.LabeledAddressWithoutAtTmsOperand("JMP002"));
                 yield return new BlankLineInTms(jumpCommand)
                 {
                     Label = "JMP001"
@@ -70,7 +70,7 @@ namespace TMS9900Translating.Translating
         private CommandWithOneOperand GetInverseJumpCommand(Z80AssemblyParsing.Commands.ConditionalJumpCommand jumpCommand)
         {
             var translatorType = _typesByCondition[jumpCommand.ConditionOperand.Condition];
-            var translatorInstance = (CommandWithOneOperand)Activator.CreateInstance(translatorType, new object[] { jumpCommand, new Operands.LabeledAddressWithoutAmpTmsOperand("JMP001") });
+            var translatorInstance = (CommandWithOneOperand)Activator.CreateInstance(translatorType, new object[] { jumpCommand, new Operands.LabeledAddressWithoutAtTmsOperand("JMP001") });
             return translatorInstance;
         }
 

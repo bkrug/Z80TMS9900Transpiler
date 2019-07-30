@@ -38,9 +38,9 @@ namespace TMS9900Translating.Translating
                 {
                     SetLabels();
                     yield return (MathByteT)Activator.CreateInstance(typeof(MathByteT), new object[] { crementCommand, memoryOperand, lowByteRegister });
-                    yield return new JumpIfNoCarryCommand(crementCommand, new LabeledAddressWithoutAmpTmsOperand(JumpLabel1));
+                    yield return new JumpIfNoCarryCommand(crementCommand, new LabeledAddressWithoutAtTmsOperand(JumpLabel1));
                     yield return (MathByteT)Activator.CreateInstance(typeof(MathByteT), new object[] { crementCommand, memoryOperand, highByteRegister });
-                    yield return new JumpCommand(crementCommand, new LabeledAddressWithoutAmpTmsOperand(JumpLabel2));
+                    yield return new JumpCommand(crementCommand, new LabeledAddressWithoutAtTmsOperand(JumpLabel2));
                     yield return new MoveByteCommand(crementCommand, highByteRegister, highByteRegister)
                     {
                         Label = JumpLabel1

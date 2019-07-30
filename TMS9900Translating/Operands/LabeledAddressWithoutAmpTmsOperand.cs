@@ -1,8 +1,8 @@
 ﻿namespace TMS9900Translating.Operands
 {
-    public class LabeledAddressWithoutAmpTmsOperand : LabelOperand
+    public class LabeledAddressWithoutAtTmsOperand : LabelOperand
     {
-        public LabeledAddressWithoutAmpTmsOperand(string label) : base(label)
+        public LabeledAddressWithoutAtTmsOperand(string label) : base(label)
         {
         }
 

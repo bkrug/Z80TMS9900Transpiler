@@ -198,5 +198,65 @@ namespace Z80AssemblyParsingTests
             Assert.AreEqual(OpCode.RET, actualCommand.OpCode);
             Assert.AreEqual(JumpConditions.Z, conditionOperand.Condition);
         }
+
+        [Test]
+        public void JumpTests_UnconditionalCallCommand()
+        {
+            var sourceCode = "      CALL 45B2h";
+
+            var parser = new Z80LineParser();
+            var actualCommand = AssertExtension.IsCorrectCommandType<UnconditionalCallCommand>(parser.ParseLine(sourceCode));
+            var actualOperand = AssertExtension.IsCorrectOperandType<AddressWithoutParenthesisOperand>(actualCommand.Operand);
+
+            Assert.AreEqual(sourceCode, actualCommand.SourceText);
+            Assert.AreEqual(OpCode.CALL, actualCommand.OpCode);
+            Assert.AreEqual(0x45b2, actualOperand.MemoryAddress);
+        }
+
+        [Test]
+        public void JumpTests_UnconditionalCallCommand_ToLabeledAddress()
+        {
+            var sourceCode = "      CALL overThere";
+
+            var parser = new Z80LineParser();
+            var actualCommand = AssertExtension.IsCorrectCommandType<UnconditionalCallCommand>(parser.ParseLine(sourceCode));
+            var actualOperand = AssertExtension.IsCorrectOperandType<LabeledAddressWithoutParenthesisOperand>(actualCommand.Operand);
+
+            Assert.AreEqual(sourceCode, actualCommand.SourceText);
+            Assert.AreEqual(OpCode.CALL, actualCommand.OpCode);
+            Assert.AreEqual("overThere", actualOperand.Label);
+        }
+
+        [Test]
+        public void JumpTests_ConditionalCallCommand_Address()
+        {
+            var sourceCode = "      CALL C,45B2h";
+
+            var parser = new Z80LineParser();
+            var actualCommand = AssertExtension.IsCorrectCommandType<ConditionalCallCommand>(parser.ParseLine(sourceCode));
+            var actualOperand = AssertExtension.IsCorrectOperandType<AddressWithoutParenthesisOperand>(actualCommand.DestinationOperand);
+            var conditionOperand = AssertExtension.IsCorrectOperandType<ConditionOperand>(actualCommand.ConditionOperand);
+
+            Assert.AreEqual(sourceCode, actualCommand.SourceText);
+            Assert.AreEqual(OpCode.CALL, actualCommand.OpCode);
+            Assert.AreEqual(0x45b2, actualOperand.MemoryAddress);
+            Assert.AreEqual(JumpConditions.C, conditionOperand.Condition);
+        }
+
+        [Test]
+        public void JumpTests_ConditionalCallCommand_ToLabeledAddress()
+        {
+            var sourceCode = "      CALL PO,overThere";
+
+            var parser = new Z80LineParser();
+            var actualCommand = AssertExtension.IsCorrectCommandType<ConditionalCallCommand>(parser.ParseLine(sourceCode));
+            var actualOperand = AssertExtension.IsCorrectOperandType<LabeledAddressWithoutParenthesisOperand>(actualCommand.DestinationOperand);
+            var conditionOperand = AssertExtension.IsCorrectOperandType<ConditionOperand>(actualCommand.ConditionOperand);
+
+            Assert.AreEqual(sourceCode, actualCommand.SourceText);
+            Assert.AreEqual(OpCode.CALL, actualCommand.OpCode);
+            Assert.AreEqual("overThere", actualOperand.Label);
+            Assert.AreEqual(JumpConditions.PO, conditionOperand.Condition);
+        }
     }
 }

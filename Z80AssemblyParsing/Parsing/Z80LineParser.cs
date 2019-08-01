@@ -14,6 +14,7 @@ namespace Z80AssemblyParsing.Parsing
         private string _hexSuffix;
         private Regex _hexByteRegex;
         private Regex _hexWordRegex;
+        private List<OpCode> _jumpOperations = new List<OpCode>() { OpCode.JP, OpCode.JR, OpCode.CALL, OpCode.RET, OpCode.DJNZ };
 
         public Z80LineParser(string hexPrefix = "", string hexSuffix = "h")
         {
@@ -136,22 +137,35 @@ namespace Z80AssemblyParsing.Parsing
 
         private Command GetCommandWithTwoOperands(string line, OpCode opCode, List<string> operandStrings)
         {
-            var desinationOperand = GetOperand(operandStrings[0]);
-            var sourceOperand = GetOperand(operandStrings[1], desinationOperand.OperandSize);
-            switch (opCode)
+            if (_jumpOperations.Contains(opCode))
             {
-                case OpCode.LD:
-                    return new LoadCommand(line, sourceOperand, desinationOperand);
-                case OpCode.ADD:
-                    return new AddCommand(line, sourceOperand, desinationOperand);
-                case OpCode.OUT:
-                    return new OutCommand(line, sourceOperand, desinationOperand);
-                case OpCode.JP:
-                    return new ConditionalJumpCommand(line, GetConditionOperand(operandStrings[0]), GetAddressForJumpAndCallCommands(operandStrings[1]));
-                case OpCode.JR:
-                    return new ConditionalRelativeJumpCommand(line, GetConditionOperand(operandStrings[0]), GetAddressForJumpAndCallCommands(operandStrings[1]));
-                default:
-                    throw new Exception($"OpCode {opCode} does not accept two operands");
+                switch (opCode)
+                {
+                    case OpCode.JP:
+                        return new ConditionalJumpCommand(line, GetConditionOperand(operandStrings[0]), GetAddressForJumpAndCallCommands(operandStrings[1]));
+                    case OpCode.JR:
+                        return new ConditionalRelativeJumpCommand(line, GetConditionOperand(operandStrings[0]), GetAddressForJumpAndCallCommands(operandStrings[1]));
+                    case OpCode.CALL:
+                        return new ConditionalCallCommand(line, GetConditionOperand(operandStrings[0]), GetAddressForJumpAndCallCommands(operandStrings[1]));
+                    default:
+                        throw new Exception($"OpCode {opCode} does not accept two operands");
+                }
+            }
+            else
+            {
+                var desinationOperand = GetOperand(operandStrings[0]);
+                var sourceOperand = GetOperand(operandStrings[1], desinationOperand.OperandSize);
+                switch (opCode)
+                {
+                    case OpCode.LD:
+                        return new LoadCommand(line, sourceOperand, desinationOperand);
+                    case OpCode.ADD:
+                        return new AddCommand(line, sourceOperand, desinationOperand);
+                    case OpCode.OUT:
+                        return new OutCommand(line, sourceOperand, desinationOperand);
+                    default:
+                        throw new Exception($"OpCode {opCode} does not accept two operands");
+                }
             }
         }
 

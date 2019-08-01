@@ -40,34 +40,6 @@ namespace Z80AssemblyParsingTests
         }
 
         [Test]
-        public void SingleOperandParsing_UnconditionalCallCommand()
-        {
-            var sourceCode = "      CALL 45B2h";
-
-            var parser = new Z80LineParser();
-            var actualCommand = AssertExtension.IsCorrectCommandType<UnconditionalCallCommand>(parser.ParseLine(sourceCode));
-            var actualOperand = AssertExtension.IsCorrectOperandType<AddressWithoutParenthesisOperand>(actualCommand.Operand);
-
-            Assert.AreEqual(sourceCode, actualCommand.SourceText);
-            Assert.AreEqual(OpCode.CALL, actualCommand.OpCode);
-            Assert.AreEqual(0x45b2, actualOperand.MemoryAddress);
-        }
-
-        [Test]
-        public void SingleOperandParsing_UnconditionalCallCommand_ToLabeledAddress()
-        {
-            var sourceCode = "      CALL overThere";
-
-            var parser = new Z80LineParser();
-            var actualCommand = AssertExtension.IsCorrectCommandType<UnconditionalCallCommand>(parser.ParseLine(sourceCode));
-            var actualOperand = AssertExtension.IsCorrectOperandType<LabeledAddressWithoutParenthesisOperand>(actualCommand.Operand);
-
-            Assert.AreEqual(sourceCode, actualCommand.SourceText);
-            Assert.AreEqual(OpCode.CALL, actualCommand.OpCode);
-            Assert.AreEqual("overThere", actualOperand.Label);
-        }
-
-        [Test]
         public void SingleOperandParsing_InterruptMode()
         {
             var sourceCode = "      IM   1";

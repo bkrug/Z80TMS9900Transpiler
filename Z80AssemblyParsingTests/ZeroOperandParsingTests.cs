@@ -9,18 +9,6 @@ namespace Z80AssemblyParsingTests
     public class ZeroOperandParsingTests
     {
         [Test]
-        public void ZeroOperandParsing_UnconditionalReturn()
-        {
-            var sourceCode = "      RET";
-            
-            var parser = new Z80LineParser();
-            var actualCommand = AssertExtension.IsCorrectCommandType<UnconditionalReturnCommand>(parser.ParseLine(sourceCode));
-
-            Assert.AreEqual(sourceCode, actualCommand.SourceText);
-            Assert.AreEqual(OpCode.RET, actualCommand.OpCode);
-        }
-
-        [Test]
         public void ZeroOperandParsing_DisableInterrupt()
         {
             var sourceCode = "      di";

@@ -262,19 +262,5 @@ namespace Z80AssemblyParsingTests
             Assert.AreEqual(OpCode.DEC, actualCommand.OpCode);
             Assert.AreEqual(ExtendedRegister.HL, actualOperand.Register);
         }
-
-        [Test]
-        public void SingleOperandParsing_DJNZ()
-        {
-            var sourceCode = "      DJNZ loop1";
-
-            var parser = new Z80LineParser();
-            var actualCommand = AssertExtension.IsCorrectCommandType<DjnzCommand>(parser.ParseLine(sourceCode));
-            var actualOperand = AssertExtension.IsCorrectOperandType<LabeledAddressWithoutParenthesisOperand>(actualCommand.Operand);
-
-            Assert.AreEqual(sourceCode, actualCommand.SourceText);
-            Assert.AreEqual(OpCode.DJNZ, actualCommand.OpCode);
-            Assert.AreEqual("loop1", actualOperand.Label);
-        }
     }
 }

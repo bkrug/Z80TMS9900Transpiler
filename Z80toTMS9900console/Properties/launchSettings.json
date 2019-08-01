@@ -2,7 +2,7 @@
   "profiles": {
     "Z80toTMS9900console": {
       "commandName": "Project",
-      "commandLineArgs": "\"F:\\Test\\ZaxxonShort.z80.asm\" \"F:\\Test\\ZaxxonShort.tms.asm\""
+      "commandLineArgs": "\"F:\\Users\\bjkrug\\Documents\\MsxEmulation\\demon_crystal\\EditedDemonCrystal.z80.asm\" \"F:\\Users\\bjkrug\\Documents\\MsxEmulation\\demon_crystal\\EditedDemonCrystal.tms.asm\""
     }
   }
 }

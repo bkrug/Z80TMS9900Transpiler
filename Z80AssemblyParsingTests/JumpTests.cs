@@ -158,5 +158,45 @@ namespace Z80AssemblyParsingTests
             Assert.AreEqual(OpCode.JR, actualCommand.OpCode);
             Assert.AreEqual(0x0927, addressOperand.MemoryAddress);
         }
+
+        [Test]
+        public void JumpTests_DJNZ()
+        {
+            var sourceCode = "      DJNZ loop1";
+
+            var parser = new Z80LineParser();
+            var actualCommand = AssertExtension.IsCorrectCommandType<DjnzCommand>(parser.ParseLine(sourceCode));
+            var actualOperand = AssertExtension.IsCorrectOperandType<LabeledAddressWithoutParenthesisOperand>(actualCommand.Operand);
+
+            Assert.AreEqual(sourceCode, actualCommand.SourceText);
+            Assert.AreEqual(OpCode.DJNZ, actualCommand.OpCode);
+            Assert.AreEqual("loop1", actualOperand.Label);
+        }
+
+        [Test]
+        public void JumpTests_UnconditionalReturn()
+        {
+            var sourceCode = "      RET";
+
+            var parser = new Z80LineParser();
+            var actualCommand = AssertExtension.IsCorrectCommandType<UnconditionalReturnCommand>(parser.ParseLine(sourceCode));
+
+            Assert.AreEqual(sourceCode, actualCommand.SourceText);
+            Assert.AreEqual(OpCode.RET, actualCommand.OpCode);
+        }
+
+        [Test]
+        public void JumpTests_ConditionalReturn()
+        {
+            var sourceCode = "      RET  Z";
+
+            var parser = new Z80LineParser();
+            var actualCommand = AssertExtension.IsCorrectCommandType<ConditionalReturnCommand>(parser.ParseLine(sourceCode));
+            var conditionOperand = AssertExtension.IsCorrectOperandType<ConditionOperand>(actualCommand.Operand);
+
+            Assert.AreEqual(sourceCode, actualCommand.SourceText);
+            Assert.AreEqual(OpCode.RET, actualCommand.OpCode);
+            Assert.AreEqual(JumpConditions.Z, conditionOperand.Condition);
+        }
     }
 }

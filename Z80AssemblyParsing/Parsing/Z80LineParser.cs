@@ -127,6 +127,8 @@ namespace Z80AssemblyParsing.Parsing
                     return new UnconditionalJumpCommand(line, GetAddressForJumpAndCallCommands(operandString));
                 case OpCode.JR:
                     return new UnconditionalRelativeJumpCommand(line, GetAddressForJumpAndCallCommands(operandString));
+                case OpCode.RET:
+                    return new ConditionalReturnCommand(line, GetConditionOperand(operandString));
                 default:
                     throw new Exception($"OpCode {opCode} does not accept one operand");
             }

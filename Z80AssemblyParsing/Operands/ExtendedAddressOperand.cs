@@ -25,15 +25,4 @@ namespace Z80AssemblyParsing.Operands
         public ushort MemoryAddress { get; }
         public override string DisplayValue => MemoryAddress.ToString();
     }
-
-    public class LabeledAddressWithoutParenthesisOperand : Operand
-    {
-        public LabeledAddressWithoutParenthesisOperand(string label)
-        {
-            Label = label;
-        }
-
-        public string Label { get; }
-        public override string DisplayValue => Label;
-    }
 }

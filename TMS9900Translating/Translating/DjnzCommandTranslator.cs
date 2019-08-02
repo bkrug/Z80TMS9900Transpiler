@@ -12,9 +12,9 @@ namespace TMS9900Translating.Translating
 
         public override IEnumerable<Command> Translate(DjnzCommand djnzCommand)
         {
-            if (djnzCommand.Operand is Z80AssemblyParsing.Operands.LabeledAddressWithoutParenthesisOperand)
+            if (djnzCommand.Operand is Z80AssemblyParsing.Operands.LabeledAddressWithoutParenthesisOperand labeledZ80Operand)
             {
-                var destinationOperand = GetOperand(djnzCommand.Operand, false);
+                var destinationOperand = new Operands.LabeledAddressWithoutAtTmsOperand(labeledZ80Operand.Label);
                 //Decrement Register B
                 foreach (var command in base.Translate(new DjnzCommand(djnzCommand.SourceText, new Z80AssemblyParsing.Operands.RegisterOperand(Z80AssemblyParsing.Register.B))))
                     yield return command;

@@ -223,7 +223,7 @@ namespace Z80AssemblyParsing.Parsing
 
         private ConditionOperand GetConditionOperand(string operandString)
         {
-            if (Enum.TryParse<JumpConditions>(operandString, out var foundJumpCondition))
+            if (Enum.TryParse<JumpConditions>(operandString, ignoreCase: true, out var foundJumpCondition))
                 return new ConditionOperand(foundJumpCondition);
             throw new Exception($"{operandString} is not a valid condition for a jump.");
         }

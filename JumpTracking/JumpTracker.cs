@@ -49,8 +49,7 @@ namespace JumpTracking
                     {
                         if (hasLabel && !BranchedLabels.Contains(command.Label))
                             BranchedLabels.Add(command.Label);
-                        var branchableLables = GetLabelsFromOperands(command);
-                        branchableLables
+                        GetLabelsFromOperands(command)
                             .Where(l => !BranchableLabels.Contains(l) && !BranchedLabels.Contains(l))
                             .ToList()
                             .ForEach(l => BranchableLabels.Add(l));

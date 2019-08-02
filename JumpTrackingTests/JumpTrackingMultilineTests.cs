@@ -91,10 +91,67 @@ lblC3  nop";
             var parser = new Z80LineParser();
             var parsedLines = sourceCode.Split(Environment.NewLine).Select(ln => parser.ParseLine(ln));
             var jumpTracker = new JumpTracker(new List<string>() { "lblB1" });
-            jumpTracker.FindJumps(parsedLines);
+            var actualCommands = jumpTracker.FindJumps(parsedLines);
+            var expectedCommands = expectedCode.Split(Environment.NewLine).Select(ln => parser.ParseLine(ln));
 
-            CollectionAssert.AreEquivalent(expectedLabels, jumpTracker.BranchedLabels);
-            Assert.IsFalse(jumpTracker.BranchableLabels.Any());
+            CollectionAssert.AreEqual(expectedCommands.Select(c => c.SourceText.TrimStart(';')), actualCommands.Select(c => c.SourceText));
+        }
+
+        [Test]
+        public void JumpTrackingTests_Comment_results2()
+        {
+            var sourceCode = @"    nop
+lblA4  nop
+       jp   nz,lblA5
+       nop
+lblA5  jp   lblA5
+       nop
+lblB2  nop
+       nop
+lblB1  nop
+       jr   nc,lblB2
+       nop
+lblB3  nop
+       jr   lblB2
+       nop
+lblC1  nop
+       nop
+lblC2  nop
+       jp   lblC1
+lblC3  nop";
+            var expectedCode = @"    nop
+; Runnable Code Begin
+lblA4  nop
+       jp   nz,lblA5
+       nop
+lblA5  jp   lblA5
+; Runnable Code End
+       nop
+lblB2  nop
+       nop
+lblB1  nop
+       jr   nc,lblB2
+       nop
+lblB3  nop
+       jr   lblB2
+       nop
+; Runnable Code Begin
+lblC1  nop
+       nop
+lblC2  nop
+       jp   lblC1
+; Runnable Code End
+lblC3  nop";
+
+            var expectedLabels = new List<string>() { "lblA4", "lblA5", "lblC1", "lblC2" };
+
+            var parser = new Z80LineParser();
+            var parsedLines = sourceCode.Split(Environment.NewLine).Select(ln => parser.ParseLine(ln));
+            var jumpTracker = new JumpTracker(new List<string>() { "lblA4", "lblC1" });
+            var actualCommands = jumpTracker.FindJumps(parsedLines);
+            var expectedCommands = expectedCode.Split(Environment.NewLine).Select(ln => parser.ParseLine(ln));
+
+            CollectionAssert.AreEqual(expectedCommands.Select(c => c.SourceText.TrimStart(';')), actualCommands.Select(c => c.SourceText));
         }
     }
 }

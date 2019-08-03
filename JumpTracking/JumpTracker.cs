@@ -28,10 +28,11 @@ namespace JumpTracking
 
         private void FindBranchableLabels(IEnumerable<Command> commands)
         {
-            var branchableLabelsPreviousLoop = BranchableLabels.ToList();
-            while (BranchableLabels.Any())
+            var removedAtLeastOneItem = true;
+            while (BranchableLabels.Any() && removedAtLeastOneItem)
             {
                 var inRunnableCode = false;
+                removedAtLeastOneItem = false;
                 foreach (var command in commands)
                 {
                     var hasLabel = !string.IsNullOrEmpty(command.Label);
@@ -41,7 +42,10 @@ namespace JumpTracking
                         {
                             inRunnableCode = true;
                             if (BranchableLabels.Contains(command.Label))
+                            {
                                 BranchableLabels.Remove(command.Label);
+                                removedAtLeastOneItem = true;
+                            }
                         }
                         else if (BranchedLabels.Contains(command.Label))
                             inRunnableCode = true;

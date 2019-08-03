@@ -196,10 +196,10 @@ lblA5  jp   lblA5
 
             var parser = new Z80LineParser();
             var parsedLines = sourceCode.Split(Environment.NewLine).Select(ln => parser.ParseLine(ln));
-            var jumpTracker = new JumpTracker(new List<string>() { "lblA4", "fakeLabel" });
+            var jumpTracker = new JumpTracker(new List<string>() { "lblA4", "labelThatWillNeverBeHit" });
             var actualCommands = jumpTracker.FindJumps(parsedLines);
 
-            CollectionAssert.AreEqual(new List<string>() { "fakeLabel" }, jumpTracker.BranchableLabels);
+            CollectionAssert.AreEqual(new List<string>() { "labelThatWillNeverBeHit" }, jumpTracker.BranchableLabels);
         }
     }
 }

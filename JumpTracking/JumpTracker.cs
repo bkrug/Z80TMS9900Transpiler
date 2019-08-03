@@ -11,8 +11,8 @@ namespace JumpTracking
     {
         public HashSet<string> BranchableLabels { get; } = new HashSet<string>();
         public HashSet<string> BranchedLabels { get; } = new HashSet<string>();
-        private List<Type> _unconditionalBranchCommands = new List<Type>() {
-            typeof(UnconditionalCallCommand), typeof(UnconditionalJumpCommand), typeof(UnconditionalRelativeJumpCommand), typeof(UnconditionalReturnCommand)
+        private List<Type> _unconditionalBranchAwayCommands = new List<Type>() {
+            typeof(UnconditionalJumpCommand), typeof(UnconditionalRelativeJumpCommand), typeof(UnconditionalReturnCommand)
         };
 
         public JumpTracker(List<string> entryLabels) {
@@ -58,7 +58,7 @@ namespace JumpTracking
                             .Where(l => !BranchableLabels.Contains(l) && !BranchedLabels.Contains(l))
                             .ToList()
                             .ForEach(l => BranchableLabels.Add(l));
-                        if (_unconditionalBranchCommands.Contains(command.GetType()))
+                        if (_unconditionalBranchAwayCommands.Contains(command.GetType()))
                             inRunnableCode = false;
                     }
                 }
@@ -101,7 +101,7 @@ namespace JumpTracking
                     if (operand is IndirectRegisterOperand indirectOperand)
                         yield return new Comment("; Indirect Address Jump");
                 yield return command;
-                if (inRunnableCode && _unconditionalBranchCommands.Contains(command.GetType()))
+                if (inRunnableCode && _unconditionalBranchAwayCommands.Contains(command.GetType()))
                 {
                     yield return new Comment("; Runnable Code End");
                     inRunnableCode = false;

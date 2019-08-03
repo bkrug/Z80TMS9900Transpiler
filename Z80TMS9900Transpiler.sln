@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JumpTracking", "JumpTrackin
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JumpTrackingTests", "JumpTrackingTests\JumpTrackingTests.csproj", "{C4F9DC09-AC99-4066-94BD-0ACF2BA784B5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JumpTrackingConsole", "JumpTrackingConsole\JumpTrackingConsole.csproj", "{3DF1B49E-2778-4EF8-B65D-86341BCEFCC3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{C4F9DC09-AC99-4066-94BD-0ACF2BA784B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C4F9DC09-AC99-4066-94BD-0ACF2BA784B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C4F9DC09-AC99-4066-94BD-0ACF2BA784B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3DF1B49E-2778-4EF8-B65D-86341BCEFCC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DF1B49E-2778-4EF8-B65D-86341BCEFCC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DF1B49E-2778-4EF8-B65D-86341BCEFCC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DF1B49E-2778-4EF8-B65D-86341BCEFCC3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

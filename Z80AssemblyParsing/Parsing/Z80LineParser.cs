@@ -96,7 +96,8 @@ namespace Z80AssemblyParsing.Parsing
                 case OpCode.NOP:
                     return new NopCommand(line);
                 default:
-                    throw new Exception($"OpCode {opCode} is not a command that can omit an operand.");
+                    return new UnparsableLine(line, "Unparsable: ");
+                    //throw new Exception($"OpCode {opCode} is not a command that can omit an operand.");
             }
         }
 
@@ -131,7 +132,8 @@ namespace Z80AssemblyParsing.Parsing
                 case OpCode.RET:
                     return new ConditionalReturnCommand(line, GetConditionOperand(operandString));
                 default:
-                    throw new Exception($"OpCode {opCode} does not accept one operand");
+                    return new UnparsableLine(line, "Unparsable: ");
+                    //throw new Exception($"OpCode {opCode} does not accept one operand");
             }
         }
 
@@ -148,7 +150,8 @@ namespace Z80AssemblyParsing.Parsing
                     case OpCode.CALL:
                         return new ConditionalCallCommand(line, GetConditionOperand(operandStrings[0]), GetAddressForJumpAndCallCommands(operandStrings[1]));
                     default:
-                        throw new Exception($"OpCode {opCode} does not accept two operands");
+                        return new UnparsableLine(line, "Unparsable: ");
+                        //throw new Exception($"OpCode {opCode} does not accept two operands");
                 }
             }
             else
@@ -164,7 +167,8 @@ namespace Z80AssemblyParsing.Parsing
                     case OpCode.OUT:
                         return new OutCommand(line, sourceOperand, desinationOperand);
                     default:
-                        throw new Exception($"OpCode {opCode} does not accept two operands");
+                        return new UnparsableLine(line, "Unparsable: ");
+                        //throw new Exception($"OpCode {opCode} does not accept two operands");
                 }
             }
         }

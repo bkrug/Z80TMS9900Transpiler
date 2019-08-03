@@ -86,15 +86,13 @@ lblC2  nop
        jp   lblC1
 lblC3  nop";
 
-            var expectedLabels = new List<string>() { "lblB1", "lblB2", "lblB3" };
-
             var parser = new Z80LineParser();
             var parsedLines = sourceCode.Split(Environment.NewLine).Select(ln => parser.ParseLine(ln));
             var jumpTracker = new JumpTracker(new List<string>() { "lblB1" });
             var actualCommands = jumpTracker.FindJumps(parsedLines);
             var expectedCommands = expectedCode.Split(Environment.NewLine).Select(ln => parser.ParseLine(ln));
 
-            CollectionAssert.AreEqual(expectedCommands.Select(c => c.SourceText.TrimStart(';')), actualCommands.Select(c => c.SourceText));
+            CollectionAssert.AreEqual(expectedCommands.Select(c => c.SourceText), actualCommands.Select(c => c.SourceText));
         }
 
         [Test]
@@ -143,15 +141,65 @@ lblC2  nop
 ; Runnable Code End
 lblC3  nop";
 
-            var expectedLabels = new List<string>() { "lblA4", "lblA5", "lblC1", "lblC2" };
-
             var parser = new Z80LineParser();
             var parsedLines = sourceCode.Split(Environment.NewLine).Select(ln => parser.ParseLine(ln));
             var jumpTracker = new JumpTracker(new List<string>() { "lblA4", "lblC1" });
             var actualCommands = jumpTracker.FindJumps(parsedLines);
             var expectedCommands = expectedCode.Split(Environment.NewLine).Select(ln => parser.ParseLine(ln));
 
-            CollectionAssert.AreEqual(expectedCommands.Select(c => c.SourceText.TrimStart(';')), actualCommands.Select(c => c.SourceText));
+            CollectionAssert.AreEqual(expectedCommands.Select(c => c.SourceText), actualCommands.Select(c => c.SourceText));
+        }
+
+        [Test]
+        public void JumpTrackingTests_Comment_IndirectAddressing()
+        {
+            var sourceCode = @"    nop
+lblA4  nop
+       jp   nz,lblA5
+       jp   pe,(hl)
+       nop
+lblA5  jp   lblA5
+       nop
+       nop";
+            var expectedCode = @"    nop
+; Runnable Code Begin
+lblA4  nop
+       jp   nz,lblA5
+; Indirect Address Jump
+       jp   pe,(hl)
+       nop
+lblA5  jp   lblA5
+; Runnable Code End
+       nop
+       nop";
+
+            var parser = new Z80LineParser();
+            var parsedLines = sourceCode.Split(Environment.NewLine).Select(ln => parser.ParseLine(ln));
+            var jumpTracker = new JumpTracker(new List<string>() { "lblA4" });
+            var actualCommands = jumpTracker.FindJumps(parsedLines);
+            var expectedCommands = expectedCode.Split(Environment.NewLine).Select(ln => parser.ParseLine(ln));
+
+            CollectionAssert.AreEqual(expectedCommands.Select(c => c.SourceText), actualCommands.Select(c => c.SourceText));
+        }
+
+        [Test]
+        public void JumpTrackingTests_Comment_AvoidInfinitLoop()
+        {
+            var sourceCode = @"    nop
+lblA4  nop
+       jp   nz,lblA5
+       jp   (hl)
+       nop
+lblA5  jp   lblA5
+       nop
+       nop";
+
+            var parser = new Z80LineParser();
+            var parsedLines = sourceCode.Split(Environment.NewLine).Select(ln => parser.ParseLine(ln));
+            var jumpTracker = new JumpTracker(new List<string>() { "lblA4", "fakeLabel" });
+            var actualCommands = jumpTracker.FindJumps(parsedLines);
+
+            CollectionAssert.AreEqual(new List<string>() { "fakeLabel" }, jumpTracker.BranchableLabels);
         }
     }
 }

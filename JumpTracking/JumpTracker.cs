@@ -28,6 +28,7 @@ namespace JumpTracking
 
         private void FindBranchableLabels(IEnumerable<Command> commands)
         {
+            var branchableLabelsPreviousLoop = BranchableLabels.ToList();
             while (BranchableLabels.Any())
             {
                 var inRunnableCode = false;
@@ -62,6 +63,12 @@ namespace JumpTracking
 
         private static List<string> GetLabelsFromOperands(Command command)
         {
+            List<Operand> operands = GetOperands(command);
+            return operands.OfType<LabeledOperand>().Select(o => o.Label).ToList();
+        }
+
+        private static List<Operand> GetOperands(Command command)
+        {
             var operands = new List<Operand>();
             if (command is CommandWithOneOperand oneOperandCommand)
             {
@@ -72,7 +79,7 @@ namespace JumpTracking
                 operands.Add(twoOperandCommand.SourceOperand);
                 operands.Add(twoOperandCommand.DestinationOperand);
             }
-            return operands.OfType<LabeledOperand>().Select(o => o.Label).ToList();
+            return operands;
         }
 
         private IEnumerable<Command> CodeWithNewLables(IEnumerable<Command> commands)
@@ -83,13 +90,16 @@ namespace JumpTracking
                 var hasLabel = !string.IsNullOrEmpty(command.Label);
                 if (hasLabel && BranchedLabels.Contains(command.Label) && !inRunnableCode)
                 {
-                    yield return new Comment(" Runnable Code Begin");
+                    yield return new Comment("; Runnable Code Begin");
                     inRunnableCode = true;
                 }
+                foreach (var operand in GetOperands(command))
+                    if (operand is IndirectRegisterOperand indirectOperand)
+                        yield return new Comment("; Indirect Address Jump");
                 yield return command;
                 if (inRunnableCode && _unconditionalBranchCommands.Contains(command.GetType()))
                 {
-                    yield return new Comment(" Runnable Code End");
+                    yield return new Comment("; Runnable Code End");
                     inRunnableCode = false;
                 }
             }

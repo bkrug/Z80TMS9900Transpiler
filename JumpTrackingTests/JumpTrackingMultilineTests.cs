@@ -201,5 +201,73 @@ lblA5  jp   lblA5
 
             CollectionAssert.AreEqual(new List<string>() { "labelThatWillNeverBeHit" }, jumpTracker.BranchableLabels);
         }
+
+        [Test]
+        public void JumpTrackingTests_IndirectAddress_NotJump()
+        {
+            var sourceCode = @"    nop
+lblA4  nop
+       jp   nz,lblA5
+       or   (hl)
+       nop
+lblA5  jp   lblA5
+       nop
+       nop";
+            var expectedCode = @"    nop
+; Runnable Code Begin
+lblA4  nop
+       jp   nz,lblA5
+       or   (hl)
+       nop
+lblA5  jp   lblA5
+; Runnable Code End
+       nop
+       nop";
+
+            var parser = new Z80LineParser();
+            var parsedLines = sourceCode.Split(Environment.NewLine).Select(ln => parser.ParseLine(ln));
+            var jumpTracker = new JumpTracker(new List<string>() { "lblA4" });
+            var actualCommands = jumpTracker.FindJumps(parsedLines);
+            var expectedCommands = expectedCode.Split(Environment.NewLine).ToList();
+
+            CollectionAssert.AreEqual(expectedCommands, actualCommands.Select(c => c.SourceText), "OR command should not be marked with a comment about indirect addrsssing because it is not a jump command.");
+        }
+
+        [Test]
+        public void JumpTrackingTests_AvoidEndingAndImmediatelyBeginningRunnableCode()
+        {
+            var sourceCode = @"    nop
+lblA4  nop
+       jp   nz,lblA6
+       or   (hl)
+       nop
+lblA5  jp   lblA5
+lblA6  nop
+       jp   nz,lblA5
+       nop
+       jmp  lblA5
+       nop";
+            var expectedCode = @"    nop
+; Runnable Code Begin
+lblA4  nop
+       jp   nz,lblA6
+       or   (hl)
+       nop
+lblA5  jp   lblA5
+lblA6  nop
+       jp   nz,lblA5
+       nop
+       jmp  lblA5
+; Runnable Code End
+       nop";
+
+            var parser = new Z80LineParser();
+            var parsedLines = sourceCode.Split(Environment.NewLine).Select(ln => parser.ParseLine(ln));
+            var jumpTracker = new JumpTracker(new List<string>() { "lblA4" });
+            var actualCommands = jumpTracker.FindJumps(parsedLines);
+            var expectedCommands = expectedCode.Split(Environment.NewLine).ToList();
+
+            CollectionAssert.AreEqual(expectedCommands, actualCommands.Select(c => c.SourceText), "There shouldn't be 'end' and 'begin' comments in between lblA5 and lblA6.");
+        }
     }
 }

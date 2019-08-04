@@ -14,6 +14,11 @@ namespace JumpTracking
         private List<Type> _unconditionalBranchAwayCommands = new List<Type>() {
             typeof(UnconditionalJumpCommand), typeof(UnconditionalRelativeJumpCommand), typeof(UnconditionalReturnCommand)
         };
+        private List<Type> _branchCommands = new List<Type>()
+        {
+            typeof(UnconditionalCallCommand), typeof(UnconditionalJumpCommand), typeof(UnconditionalRelativeJumpCommand), typeof(UnconditionalReturnCommand),
+            typeof(ConditionalCallCommand), typeof(ConditionalJumpCommand), typeof(ConditionalRelativeJumpCommand), typeof(ConditionalReturnCommand)
+        };
 
         public JumpTracker(List<string> entryLabels) {
             foreach(var label in entryLabels)
@@ -54,10 +59,11 @@ namespace JumpTracking
                     {
                         if (hasLabel && !BranchedLabels.Contains(command.Label))
                             BranchedLabels.Add(command.Label);
-                        GetLabelsFromOperands(command)
-                            .Where(l => !BranchableLabels.Contains(l) && !BranchedLabels.Contains(l))
-                            .ToList()
-                            .ForEach(l => BranchableLabels.Add(l));
+                        if (_branchCommands.Contains(command.GetType()))
+                            GetLabelsFromOperands(command)
+                                .Where(l => !BranchableLabels.Contains(l) && !BranchedLabels.Contains(l))
+                                .ToList()
+                                .ForEach(l => BranchableLabels.Add(l));
                         if (_unconditionalBranchAwayCommands.Contains(command.GetType()))
                             inRunnableCode = false;
                     }
@@ -89,6 +95,7 @@ namespace JumpTracking
         private IEnumerable<Command> CodeWithNewLables(IEnumerable<Command> commands)
         {
             var inRunnableCode = false;
+            var codeJustEnded = false;
             foreach (var command in commands)
             {
                 var hasLabel = !string.IsNullOrEmpty(command.Label);
@@ -97,14 +104,16 @@ namespace JumpTracking
                     yield return new Comment("; Runnable Code Begin");
                     inRunnableCode = true;
                 }
-                foreach (var operand in GetOperands(command))
-                    if (operand is IndirectRegisterOperand indirectOperand)
-                        yield return new Comment("; Indirect Address Jump");
+                if (inRunnableCode && _branchCommands.Contains(command.GetType()))
+                    foreach (var operand in GetOperands(command))
+                        if (operand is IndirectRegisterOperand indirectOperand)
+                            yield return new Comment("; Indirect Address Jump");
                 yield return command;
                 if (inRunnableCode && _unconditionalBranchAwayCommands.Contains(command.GetType()))
                 {
                     yield return new Comment("; Runnable Code End");
                     inRunnableCode = false;
+                    codeJustEnded = true;
                 }
             }
         }

@@ -98,20 +98,26 @@ namespace JumpTracking
             var codeJustEnded = false;
             foreach (var command in commands)
             {
-                var hasLabel = !string.IsNullOrEmpty(command.Label);
-                if (hasLabel && BranchedLabels.Contains(command.Label) && !inRunnableCode)
+                if (!string.IsNullOrEmpty(command.Label) && BranchedLabels.Contains(command.Label) && !inRunnableCode)
                 {
-                    yield return new Comment("; Runnable Code Begin");
+                    if (!codeJustEnded)
+                        yield return new Comment("; Runnable Code Begin");
                     inRunnableCode = true;
                 }
+                else if (codeJustEnded && !(command is BlankLine))
+                    yield return new Comment("; Runnable Code End");
+
                 if (inRunnableCode && _branchCommands.Contains(command.GetType()))
                     foreach (var operand in GetOperands(command))
                         if (operand is IndirectRegisterOperand indirectOperand)
                             yield return new Comment("; Indirect Address Jump");
+
                 yield return command;
+
+                if (!(command is BlankLine))
+                    codeJustEnded = false;
                 if (inRunnableCode && _unconditionalBranchAwayCommands.Contains(command.GetType()))
                 {
-                    yield return new Comment("; Runnable Code End");
                     inRunnableCode = false;
                     codeJustEnded = true;
                 }

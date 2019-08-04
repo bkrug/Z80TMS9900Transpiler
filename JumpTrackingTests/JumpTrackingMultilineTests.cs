@@ -242,10 +242,11 @@ lblA4  nop
        or   (hl)
        nop
 lblA5  jp   lblA5
+
 lblA6  nop
        jp   nz,lblA5
        nop
-       jmp  lblA5
+       jp   lblA5
        nop";
             var expectedCode = @"    nop
 ; Runnable Code Begin
@@ -254,10 +255,11 @@ lblA4  nop
        or   (hl)
        nop
 lblA5  jp   lblA5
+
 lblA6  nop
        jp   nz,lblA5
        nop
-       jmp  lblA5
+       jp   lblA5
 ; Runnable Code End
        nop";
 

@@ -92,8 +92,16 @@ namespace JumpTracking
             return operands;
         }
 
+        //SUSPECT: Least legible code in the entire solution.
         private IEnumerable<Command> CodeWithNewLables(IEnumerable<Command> commands)
         {
+            if (BranchableLabels.Any())
+            {
+                yield return new Comment("; These labels were never hit:");
+                foreach (var branchedLabel in BranchableLabels)
+                    yield return new Comment(";    " + branchedLabel);
+            }
+
             var inRunnableCode = false;
             var codeJustEnded = false;
             foreach (var command in commands)

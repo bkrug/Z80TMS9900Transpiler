@@ -193,6 +193,8 @@ lblA4  nop
 lblA5  jp   lblA5
        nop
        nop";
+            var expectedCode = @"; These labels were never hit:
+;    labelThatWillNeverBeHit";
 
             var parser = new Z80LineParser();
             var parsedLines = sourceCode.Split(Environment.NewLine).Select(ln => parser.ParseLine(ln));
@@ -200,6 +202,7 @@ lblA5  jp   lblA5
             var actualCommands = jumpTracker.FindJumps(parsedLines);
 
             CollectionAssert.AreEqual(new List<string>() { "labelThatWillNeverBeHit" }, jumpTracker.BranchableLabels);
+            CollectionAssert.AreEqual(expectedCode.Split(Environment.NewLine).ToList(), actualCommands.Take(2).Select(c => c.SourceText).ToList());
         }
 
         [Test]

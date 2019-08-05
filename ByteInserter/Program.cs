@@ -38,25 +38,28 @@ namespace ByteInserter
                                 || !int.TryParse(addresses[1].TrimEnd('h'), NumberStyles.HexNumber, CultureInfo.CurrentCulture, out var endAddress))
                                 writer.WriteLine("Wrong format:  " + textLine);
                             else
-                            {
-                                var labelAddress = startAddress;
-                                foreach (var thirtyTwoBytes in GetBytes(romReader, startAddress, endAddress, fileOffset).InSetsOf(32))
-                                {
-                                    var asciiVersion = new string(thirtyTwoBytes.Select(b => b < 0x20 || b >= 0x7F && b <= 0x9F ? '.' : (char)b).ToArray());
-                                    writer.WriteLine("; as text: " + asciiVersion);
-                                    foreach (var foundByte in thirtyTwoBytes)
-                                    {
-                                        var partOfLabel = labelAddress.ToString("X4").ToLower();
-                                        var byteAsHex = foundByte.ToString("X2");
-                                        writer.WriteLine($"l{partOfLabel}:  db      {byteAsHex}h");
-                                        ++labelAddress;
-                                    }
-                                }
-                            }
+                                WriteOutputAsDataBytes(romReader, writer, startAddress, endAddress, fileOffset);
                         }
                     }
                     else
                         writer.WriteLine(textLine);
+                }
+            }
+        }
+
+        private static void WriteOutputAsDataBytes(BinaryReader romReader, StreamWriter writer, int startAddress, int endAddress, int fileOffset)
+        {
+            var labelAddress = startAddress;
+            foreach (var thirtyTwoBytes in GetBytes(romReader, startAddress, endAddress, fileOffset).InSetsOf(32))
+            {
+                var asciiVersion = new string(thirtyTwoBytes.Select(b => b < 0x20 || b >= 0x7F && b <= 0x9F ? '.' : (char)b).ToArray());
+                writer.WriteLine("; as text: " + asciiVersion);
+                foreach (var foundByte in thirtyTwoBytes)
+                {
+                    var partOfLabel = labelAddress.ToString("X4").ToLower();
+                    var byteAsHex = foundByte.ToString("X2");
+                    writer.WriteLine($"l{partOfLabel}:  db      {byteAsHex}h");
+                    ++labelAddress;
                 }
             }
         }

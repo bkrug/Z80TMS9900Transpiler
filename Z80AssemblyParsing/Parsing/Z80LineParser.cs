@@ -204,6 +204,8 @@ namespace Z80AssemblyParsing.Parsing
                     return new IndirectShortRegOperand(register);
                 if (TryUShortParse(operandWithoutParens, out var memoryAddress))
                     return new ExtendedAddressOperand(memoryAddress);
+                if (TryDisplacementParse(operandWithoutParens, out var displacementRegister, out var displacement))
+                    return new DisplacementOperand(displacementRegister, displacement);
                 if (IsValidLabel(operandWithoutParens))
                     return new LabeledAddressOperand(operandWithoutParens);
             }
@@ -266,6 +268,19 @@ namespace Z80AssemblyParsing.Parsing
             if (ushort.TryParse(sourceString, out number))
                 return true;
             return false;
+        }
+
+        public bool TryDisplacementParse(string sourceString, out ExtendedRegister extendedRegister, out byte displacement)
+        {
+            var parts = sourceString.Split('+').Select(s => s.Trim()).ToList();
+            extendedRegister = ExtendedRegister.None;
+            displacement = 0;
+            if (parts.Count != 2)
+                return false;
+            var validRegister = Enum.GetNames(typeof(ExtendedRegister)).Contains(parts[0].ToUpper()) && Enum.TryParse(parts[0], out extendedRegister);
+            var validDecimal = byte.TryParse(parts[1], out displacement);
+            var validHex = TryByteParse(parts[1], out displacement);
+            return validRegister && (validDecimal || validHex);
         }
     }
 }

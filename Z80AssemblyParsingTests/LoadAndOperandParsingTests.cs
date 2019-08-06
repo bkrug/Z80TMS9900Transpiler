@@ -250,5 +250,39 @@ namespace Z80AssemblyParsingTests
             Assert.AreEqual(Register.C, actualSourceOperand.Register);
             Assert.AreEqual(Register.B, actualDestinationOperand.Register);
         }
+
+        [Test]
+        public void LoadParsing_IX_Displacement()
+        {
+            var sourceCode = "      LD   b,(IX+4ch)";
+
+            var parser = new Z80LineParser();
+            var actualCommand = AssertExtension.IsCorrectCommandType<LoadCommand>(parser.ParseLine(sourceCode));
+            var actualSourceOperand = AssertExtension.IsCorrectOperandType<DisplacementOperand>(actualCommand.SourceOperand);
+            var actualDestinationOperand = AssertExtension.IsCorrectOperandType<RegisterOperand>(actualCommand.DestinationOperand);
+
+            Assert.AreEqual(sourceCode, actualCommand.SourceText);
+            Assert.AreEqual(OpCode.LD, actualCommand.OpCode);
+            Assert.AreEqual(ExtendedRegister.IX, actualSourceOperand.Register);
+            Assert.AreEqual(0x4c, actualSourceOperand.Displacement);
+            Assert.AreEqual(Register.B, actualDestinationOperand.Register);
+        }
+
+        [Test]
+        public void LoadParsing_IY_Displacement()
+        {
+            var sourceCode = "      LD   (IY+72h),l";
+
+            var parser = new Z80LineParser();
+            var actualCommand = AssertExtension.IsCorrectCommandType<LoadCommand>(parser.ParseLine(sourceCode));
+            var actualSourceOperand = AssertExtension.IsCorrectOperandType<RegisterOperand>(actualCommand.SourceOperand);
+            var actualDestinationOperand = AssertExtension.IsCorrectOperandType<DisplacementOperand>(actualCommand.DestinationOperand);
+
+            Assert.AreEqual(sourceCode, actualCommand.SourceText);
+            Assert.AreEqual(OpCode.LD, actualCommand.OpCode);
+            Assert.AreEqual(Register.L, actualSourceOperand.Register);
+            Assert.AreEqual(ExtendedRegister.IY, actualDestinationOperand.Register);
+            Assert.AreEqual(0x72, actualDestinationOperand.Displacement);
+        }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace ByteInserter
+namespace ByteInserterConsole
 {
     public static class IEnumerableExtensions
     {

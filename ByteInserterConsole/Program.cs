@@ -4,7 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 
-namespace ByteInserter
+namespace ByteInserterConsole
 {
     class Program
     {

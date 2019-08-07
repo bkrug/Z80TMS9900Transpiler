@@ -20,7 +20,7 @@ namespace Z80AssemblyParsing.Parsing
         {
             _hexPrefix = hexPrefix ?? string.Empty;
             _hexSuffix = hexSuffix ?? string.Empty;
-            _hexByteRegex = new Regex(_hexPrefix + "[0-9a-f][0-9a-f]" + _hexSuffix, RegexOptions.IgnoreCase);
+            _hexByteRegex = new Regex(_hexPrefix + "[0-9a-f]?[0-9a-f]" + _hexSuffix, RegexOptions.IgnoreCase);
             _hexWordRegex = new Regex(_hexPrefix + "[0-9a-f][0-9a-f][0-9a-f][0-9a-f]" + _hexSuffix, RegexOptions.IgnoreCase);
         }
 
@@ -180,17 +180,17 @@ namespace Z80AssemblyParsing.Parsing
             {
                 if (expectedSize != OperandSize.SixteenBit)
                 {
-                    if (TryByteParse(operandString, out var immediateNumber))
-                        return new ImmediateOperand(immediateNumber);
                     if (Enum.GetNames(typeof(Register)).Contains(operandString.ToUpper()) && Enum.TryParse<Register>(operandString, true, out var register))
                         return new RegisterOperand(register);
+                    if (TryByteParse(operandString, out var immediateNumber))
+                        return new ImmediateOperand(immediateNumber);
                 }
                 if (expectedSize != OperandSize.EightBit)
                 {
-                    if (TryUShortParse(operandString, out var immediate16BitNumber))
-                        return new ImmediateExtendedOperand(immediate16BitNumber);
                     if (Enum.GetNames(typeof(ExtendedRegister)).Contains(operandString.ToUpper()) && Enum.TryParse<ExtendedRegister>(operandString, true, out var extendedRegister))
                         return new RegisterExtendedOperand(extendedRegister);
+                    if (TryUShortParse(operandString, out var immediate16BitNumber))
+                        return new ImmediateExtendedOperand(immediate16BitNumber);
                 }
                 if (IsValidLabel(operandString))
                     return new LabeledImmediateOperand(operandString);

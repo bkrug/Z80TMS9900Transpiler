@@ -284,5 +284,22 @@ namespace Z80AssemblyParsingTests
             Assert.AreEqual(ExtendedRegister.IY, actualDestinationOperand.Register);
             Assert.AreEqual(0x72, actualDestinationOperand.Displacement);
         }
+
+        [Test]
+        public void LoadParsing_IY_Displacement2()
+        {
+            var sourceCode = "      ld      (iy+00h),a";
+
+            var parser = new Z80LineParser();
+            var actualCommand = AssertExtension.IsCorrectCommandType<LoadCommand>(parser.ParseLine(sourceCode));
+            var actualSourceOperand = AssertExtension.IsCorrectOperandType<RegisterOperand>(actualCommand.SourceOperand);
+            var actualDestinationOperand = AssertExtension.IsCorrectOperandType<DisplacementOperand>(actualCommand.DestinationOperand);
+
+            Assert.AreEqual(sourceCode, actualCommand.SourceText);
+            Assert.AreEqual(OpCode.LD, actualCommand.OpCode);
+            Assert.AreEqual(Register.A, actualSourceOperand.Register);
+            Assert.AreEqual(ExtendedRegister.IY, actualDestinationOperand.Register);
+            Assert.AreEqual(0x00, actualDestinationOperand.Displacement);
+        }
     }
 }

@@ -2,7 +2,7 @@
   "profiles": {
     "ByteInserter": {
       "commandName": "Project",
-      "commandLineArgs": "\"F:\\Users\\bjkrug\\Documents\\MsxEmulation\\Carry's Great Escape\\Daidasso.jumptracking.asm\" \"F:\\Users\\bjkrug\\Documents\\MsxEmulation\\Carry's Great Escape\\Daidasso.rom\" 16384 \"F:\\Users\\bjkrug\\Documents\\MsxEmulation\\Carry's Great Escape\\Daidasso.bytesinserted.asm\""
+      "commandLineArgs": "\"F:\\Users\\bjkrug\\Documents\\MsxEmulation\\Carry's Great Escape\\Daidasso.jumptracking.asm\" \"F:\\Users\\bjkrug\\Documents\\MsxEmulation\\Carry's Great Escape\\Daidasso.rom\" 16384 \"F:\\Users\\bjkrug\\Documents\\MsxEmulation\\Carry's Great Escape\\Daidasso.bytesinserted.asm\" true"
     }
   }
 }

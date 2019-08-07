@@ -13,19 +13,26 @@ namespace ByteInserterConsole
 
         static void Main(string[] args)
         {
-            if (args.Length != 4)
+            if (args.Length != 4 && args.Length != 5)
                 throw new Exception("Required arguments are assembly-source-file rom-source-file rom-offset-in-memory assembly-output-file.");
             var z80AssemblyInputFile = args[0];
             var romInputFile = args[1];
             var fileOffset = int.Parse(args[2]);
             var z80AssemblyOutputFile = args[3];
+            var deleteNonExecuted = args.Length == 5;
             using (var reader = new StreamReader(z80AssemblyInputFile))
             using (var romReader = new BinaryReader(new FileStream(romInputFile, FileMode.Open)))
             using (var writer = new StreamWriter(z80AssemblyOutputFile))
             {
                 string textLine;
+                var inExecutedCode = false;
                 while ((textLine = reader.ReadLine()) != null)
                 {
+                    if (textLine.Equals("; Runnable Code Begin", StringComparison.OrdinalIgnoreCase))
+                        inExecutedCode = true;
+                    if (textLine.Equals("; Runnable Code End", StringComparison.OrdinalIgnoreCase))
+                        inExecutedCode = false;
+
                     var parts = textLine.Trim().Split(' ').Where(s => !string.IsNullOrEmpty(s)).ToList();
                     if (parts.Any() && parts[0].Equals("getb", StringComparison.OrdinalIgnoreCase))
                     {
@@ -37,7 +44,7 @@ namespace ByteInserterConsole
                         else
                             WriteOutputAsDataBytes(romReader, writer, startAddress, endAddress, fileOffset);
                     }
-                    else
+                    else if (!deleteNonExecuted || inExecutedCode || textLine.StartsWith(';'))
                         writer.WriteLine(textLine);
                 }
             }

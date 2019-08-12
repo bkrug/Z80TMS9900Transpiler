@@ -1,7 +1,7 @@
 # Z80TMS9900Transpiler
 Transpile Assembly code from Z80 assembly to TMS9900 assembly
 
-If this project were ever to be finished, the main goal would be to port freeware MSX software to the TI-99/4a with minimal effort.
+If this project were ever to be finished, the main goal would be to port open-source MSX software to the TI-99/4a with minimal effort.
 Part of the reason that this is thought to be feasable is that both machines use the same VDP chip. 
 Granted even if this were to work, the resulting TMS9900 code would still need to be manually inspected for possible optimizations.
 The idea is to:
@@ -64,3 +64,8 @@ See some of the "Load Immediate" unit tests in this file for examples: https://g
 
 Like in most TMS9900 assembly language programs,
 TMS Register 11 is reserved for storing the return address of a "Branch Link" operation.
+
+## Projects
+
+The projects whose name ends with the word "Console" are all executable projects.
+Z80toTMS9900console is the transpiler program that reads from Z80 assembly code and outputs TMS9900 assembly code.

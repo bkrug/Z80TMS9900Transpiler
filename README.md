@@ -41,10 +41,10 @@ In this scenario, "ld B,C" would be translated as "MOVB *R13,R5", because regist
 
 TMS workspace registers 12 through 15 have a special purpose.
 Each of them holds a memory address that corresponds to the low byte of a TMS workspace register.
-Register 12 hold an address corresponding the the low byte of whichever TMS register is mapped from Z80 register A.
-Register 13 hold an address corresponding the the low byte of whichever TMS register is mapped from Z80 register B.
-Register 14 hold an address corresponding the the low byte of whichever TMS register is mapped from Z80 register D.
-Register 15 hold an address corresponding the the low byte of whichever TMS register is mapped from Z80 register H.
+Register 12 holds an address corresponding to the low byte of whichever TMS register is mapped from Z80 register A.
+Register 13 holds an address corresponding to the low byte of whichever TMS register is mapped from Z80 register B.
+Register 14 holds an address corresponding to the low byte of whichever TMS register is mapped from Z80 register D.
+Register 15 holds an address corresponding to the low byte of whichever TMS register is mapped from Z80 register H.
 
 For example, assume that Z80 register B is mapped to TMS register 2.
 Additionally, assume that the TMS workspace is set to address >8300.
@@ -60,7 +60,7 @@ If register B is mapped to TMS register 4 when the workspace is at address >8300
 then register 13 will hold the value >8309.
 
 TMS Register 0 is reserved for different Z80 to TMS9900 translations to use.
-See some of the "Load Immediate" unit tests in this file for exmaples: https://github.com/bkrug/Z80TMS9900Transpiler/blob/master/TMS9900TranslatingTests/LoadEightBitTests.cs
+See some of the "Load Immediate" unit tests in this file for examples: https://github.com/bkrug/Z80TMS9900Transpiler/blob/master/TMS9900TranslatingTests/LoadEightBitTests.cs
 
 Like in most TMS9900 assembly language programs,
 TMS Register 11 is reserved for storing the return address of a "Branch Link" operation.

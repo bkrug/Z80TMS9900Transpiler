@@ -26,7 +26,7 @@ I downloaded a PDF copy of that document a long time ago.
 ## Register Mapping
 The code that has been written so far assumes that the Z80 registers can be mapped to TMS9900 workspace registers 1 through 10.
 The remaining TMS workspace registers have special purposes.
-Z80 registers A,B,C,D,E,H,L,IX,IY, and SP can all be mapped to a TMS register.
+Z80 registers A,B,C,D,E,H,L,IX,IY, and SP can all be mapped to any TMS register from 1 to 10.
 Z80 register F cannot currently be mapped.
 
 TMS workspace registers are 16-bit, but most Z80 registers are 8-bit.

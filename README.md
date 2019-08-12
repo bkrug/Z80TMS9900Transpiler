@@ -58,3 +58,9 @@ but TMS register 13 will hold the value >8305 in either situation.
 The value in register 13 only changes based on the mapping of register B.
 If register B is mapped to TMS register 4 when the workspace is at address >8300,
 then register 13 will hold the value >8309.
+
+TMS Register 0 is reserved for different Z80 to TMS9900 translations to use.
+See some of the "Load Immediate" unit tests in this file for exmaples: https://github.com/bkrug/Z80TMS9900Transpiler/blob/master/TMS9900TranslatingTests/LoadEightBitTests.cs
+
+Like in most TMS9900 assembly language programs,
+TMS Register 11 is reserved for storing the return address of a "Branch Link" operation.

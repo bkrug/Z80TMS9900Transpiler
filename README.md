@@ -22,3 +22,45 @@ I'm relying on internet searches and on http://map.grauw.nl/ to tell me the norm
 I'm using the TI-99/4a's Editor/Assembler manual to tell me the standards that I should follow for TMS9900 output. 
 I don't have a link to it right now.
 I downloaded a PDF copy of that document a long time ago.
+
+## Register Mapping
+The code that has been written so far assumes that the Z80 registers can be mapped to TMS9900 workspace registers 1 through 10.
+The remaining TMS workspace registers have special purposes.
+Z80 registers A,B,C,D,E,H,L,IX,IY, and SP can all be mapped to any TMS register from 1 to 10.
+Z80 register F cannot currently be mapped.
+
+TMS workspace registers are 16-bit, but most Z80 registers are 8-bit.
+Z80 register A is always mapped to the high byte of a TMS register.
+The other 8-bit registers are slightly more complex.
+The user of the transpiler is supposed to have the option of mapping registers in a Z80 register pair to separate TMS registers or to different bytes in the same TMS register.
+For instance register B and C could be mapped to the high bytes of TMS registers 2 and 3 respectively.
+In this scenario, "ld B,C" could be translated as "MOVB R3,R2"
+More often, a user would be wise to map both Z80 registers to the same TMS register.
+For example, if the chosen register is R5, then register B would be mapped to the high byte in R5 and register C would be mapped to the low byte in R5.
+In this scenario, "ld B,C" would be translated as "MOVB *R13,R5", because register 13 holds a memory address that corresponds to the low byte of register 5.
+
+TMS workspace registers 12 through 15 have a special purpose.
+Each of them holds a memory address that corresponds to the low byte of a TMS workspace register.
+Register 12 holds an address corresponding to the low byte of whichever TMS register is mapped from Z80 register A.
+Register 13 holds an address corresponding to the low byte of whichever TMS register is mapped from Z80 register B.
+Register 14 holds an address corresponding to the low byte of whichever TMS register is mapped from Z80 register D.
+Register 15 holds an address corresponding to the low byte of whichever TMS register is mapped from Z80 register H.
+
+For example, assume that Z80 register B is mapped to TMS register 2.
+Additionally, assume that the TMS workspace is set to address >8300.
+In this situation, the high byte of workspace register 2 is located at address >8304 and the low byte is located at >8305.
+Register 13 is always supposed to hold the address of the low byte of the TMS workspace register that is mapped from Z80 register B.
+So, in this example register 13 holds the value >8305.
+The value of register 13 is not affected by mapping of Z80 register C.
+In this example, register B and C can both be mapped to TMS register 2, 
+or register C can be mapped to a different TMS register,
+but TMS register 13 will hold the value >8305 in either situation.
+The value in register 13 only changes based on the mapping of register B.
+If register B is mapped to TMS register 4 when the workspace is at address >8300,
+then register 13 will hold the value >8309.
+
+TMS Register 0 is reserved for different Z80 to TMS9900 translations to use.
+See some of the "Load Immediate" unit tests in this file for examples: https://github.com/bkrug/Z80TMS9900Transpiler/blob/master/TMS9900TranslatingTests/LoadEightBitTests.cs
+
+Like in most TMS9900 assembly language programs,
+TMS Register 11 is reserved for storing the return address of a "Branch Link" operation.

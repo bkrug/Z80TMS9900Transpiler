@@ -2,7 +2,7 @@
   "profiles": {
     "Z80toTMS9900console": {
       "commandName": "Project",
-      "commandLineArgs": "\"F:\\Users\\bjkrug\\Documents\\MsxEmulation\\Carry's Great Escape\\Daidasso.bytesinserted.asm\" \"F:\\Users\\bjkrug\\Documents\\MsxEmulation\\Carry's Great Escape\\Daidasso.tms.asm\""
+      "commandLineArgs": "\"F:\\Users\\bjkrug\\Documents\\MsxEmulation\\spelunk-enemies.z80.asm\" \"F:\\Users\\bjkrug\\Documents\\MsxEmulation\\spelunk-enemies.tms9900.asm\" \"#\" \"\""
     }
   }
 }

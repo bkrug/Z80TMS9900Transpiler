@@ -40,5 +40,22 @@ namespace Z80AssemblyParsingTests
             Assert.AreEqual(Register.A, actualSourceOperand.Register);
             Assert.AreEqual(34, actualDestinationOperand.MemoryAddress);
         }
+
+        [Test]
+        public void TwoOperandParsing_OutCommand_WithComment()
+        {
+            var sourceCode = "      OUT  c,b    ; A trailing comment you are reading";
+
+            var parser = new Z80LineParser();
+            var actualCommand = AssertExtension.IsCorrectCommandType<OutCommand>(parser.ParseLine(sourceCode));
+            var actualSourceOperand = AssertExtension.IsCorrectOperandType<RegisterOperand>(actualCommand.SourceOperand);
+            var actualDestinationOperand = AssertExtension.IsCorrectOperandType<RegisterOperand>(actualCommand.DestinationOperand);
+
+            Assert.AreEqual(sourceCode, actualCommand.SourceText);
+            Assert.AreEqual(OpCode.OUT, actualCommand.OpCode);
+            Assert.AreEqual(Register.B, actualSourceOperand.Register);
+            Assert.AreEqual(Register.C, actualDestinationOperand.Register);
+            Assert.AreEqual("A trailing comment you are reading", actualCommand.TrailingComment);
+        }
     }
 }

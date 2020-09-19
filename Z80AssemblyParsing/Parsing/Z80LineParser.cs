@@ -63,7 +63,7 @@ namespace Z80AssemblyParsing.Parsing
             var hasLabel = line[0] != ' ' && line[0] != '\t';
             var commentSplit = line.Split(';').ToList();
             var withoutComment = commentSplit[0];
-            comment = commentSplit.Count() > 1 ? commentSplit[1] : string.Empty;
+            comment = commentSplit.Count() > 1 ? commentSplit[1].Trim() : string.Empty;
             var rx = new Regex(@"\s+", RegexOptions.Compiled);
             var parts = rx.Split(withoutComment).Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
             foundLabel = null;

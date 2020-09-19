@@ -34,14 +34,23 @@ namespace Z80AssemblyParsing
         public Command(string sourceText)
         {
             SourceText = sourceText;
+            TrailingComment = string.Empty;
         }
 
         public string SourceText { get; }
         public abstract OpCode OpCode { get; }
         public string Label { get; private set; }
+
+        public string TrailingComment { get; private set; }
+
         internal void SetLabel(string label)
         {
             Label = label;
+        }
+
+        internal void SetComment(string comment)
+        {
+            TrailingComment = comment;
         }
     }
 

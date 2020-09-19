@@ -55,5 +55,19 @@ namespace Z80AssemblyParsingTests
             Assert.AreEqual(sourceCode, actualCommand.SourceText);
             Assert.AreEqual(OpCode.NOP, actualCommand.OpCode);
         }
+
+        [Test]
+        public void ZeroOperandParsing_WithComment()
+        {
+            var sourceCode = "      nop    ;This is a trailing comment";
+
+            var parser = new Z80LineParser();
+            var command = parser.ParseLine(sourceCode);
+            var actualCommand = AssertExtension.IsCorrectCommandType<NopCommand>(command);
+
+            Assert.AreEqual(sourceCode, actualCommand.SourceText);
+            Assert.AreEqual(OpCode.NOP, actualCommand.OpCode);
+            Assert.AreEqual("This is a trailing comment", actualCommand.TrailingComment);
+        }
     }
 }

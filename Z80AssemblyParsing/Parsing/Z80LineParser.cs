@@ -34,7 +34,7 @@ namespace Z80AssemblyParsing.Parsing
                 return new BlankLine(line);
             if (Comment.LineIsComment(line))
                 return new Comment(line);
-            if (!GetCommandLineParts(line, out string foundLabel, out OpCode opCode, out string operandPart, out Command errorCommand))
+            if (!GetCommandLineParts(line, out string foundLabel, out OpCode opCode, out string operandPart, out string comment, out Command errorCommand))
                 return errorCommand;
             var operands = operandPart.Split(',').Select(s => s.Trim()).Where(s => !String.IsNullOrEmpty(s)).ToList();
             Command generatedCommand;
@@ -53,14 +53,19 @@ namespace Z80AssemblyParsing.Parsing
                     throw new Exception("Invalid list of operands");
             }
             generatedCommand.SetLabel(foundLabel);
+            generatedCommand.SetComment(comment);
             return generatedCommand;
         }
 
-        private static bool GetCommandLineParts(string line, out string foundLabel, out OpCode opCode, out string operandPart, out Command errorCommand)
+        private static bool GetCommandLineParts(string line, out string foundLabel, out OpCode opCode, out string operandPart, out string comment, out Command errorCommand)
         {
             errorCommand = null;
             var hasLabel = line[0] != ' ' && line[0] != '\t';
-            var parts = line.Split(' ').Where(p => !string.IsNullOrEmpty(p)).ToList();
+            var commentSplit = line.Split(';').ToList();
+            var withoutComment = commentSplit[0];
+            comment = commentSplit.Count() > 1 ? commentSplit[1] : string.Empty;
+            var rx = new Regex(@"\s+", RegexOptions.Compiled);
+            var parts = rx.Split(withoutComment).Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
             foundLabel = null;
             if (hasLabel)
             {
@@ -68,7 +73,7 @@ namespace Z80AssemblyParsing.Parsing
                 parts = parts.Skip(1).ToList();
                 if (!parts.Any())
                 {
-                    errorCommand = new BlankLine(line);
+                    errorCommand = new BlankLine(withoutComment);
                     errorCommand.SetLabel(foundLabel);
                     opCode = OpCode.INVALID;
                     operandPart = null;
@@ -77,7 +82,7 @@ namespace Z80AssemblyParsing.Parsing
             }
             if (!Enum.TryParse<OpCode>(parts[0], ignoreCase: true, result: out opCode))
             {
-                errorCommand = new UnparsableLine(line, "Invalid OpCode");
+                errorCommand = new UnparsableLine(withoutComment, "Invalid OpCode");
                 operandPart = null;
                 return false;
             }

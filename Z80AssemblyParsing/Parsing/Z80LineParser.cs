@@ -188,6 +188,8 @@ namespace Z80AssemblyParsing.Parsing
                 }
                 if (IsValidLabel(operandString))
                     return new LabeledImmediateOperand(operandString);
+                if (new Regex(@"[\+\-\*\/]", RegexOptions.IgnoreCase).IsMatch(operandString))
+                    return new CalculatedImmediateOperand(operandString, _hexParser);
             }
             else
             {

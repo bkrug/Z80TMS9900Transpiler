@@ -1,6 +1,7 @@
 using NUnit;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using Z80AssemblyParsing;
 using Z80AssemblyParsing.Commands;
 using Z80AssemblyParsing.Operands;
@@ -177,6 +178,27 @@ namespace Z80AssemblyParsingTests
             Assert.AreEqual(sourceCode, actualCommand.SourceText);
             Assert.AreEqual(OpCode.XOR, actualCommand.OpCode);
             Assert.AreEqual(ExtendedRegister.HL, actualOperand.Register);
+        }
+
+        [Test]
+        public void SingleOperandParsing_Xor_CalculatedImmediate()
+        {
+            var sourceCode = "      XOR  margin+14h";
+
+            var parser = new Z80LineParser();
+            var actualCommand = AssertExtension.IsCorrectCommandType<XorCommand>(parser.ParseLine(sourceCode));
+            var actualOperand = AssertExtension.IsCorrectOperandType<CalculatedImmediateOperand>(actualCommand.Operand);
+
+            Assert.AreEqual(sourceCode, actualCommand.SourceText);
+            Assert.AreEqual(OpCode.XOR, actualCommand.OpCode);
+            Assert.AreEqual("margin+20", actualOperand.DisplayValue);
+            var expectedClauses = new List<object>()
+            {
+                "margin",
+                MathOperator.PLUS,
+                (byte)0x14
+            };
+            CollectionAssert.AreEquivalent(expectedClauses, actualOperand.Clauses);
         }
 
         [Test]

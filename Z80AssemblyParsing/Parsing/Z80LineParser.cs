@@ -3,29 +3,18 @@ using System.Linq;
 using System.Collections.Generic;
 using Z80AssemblyParsing.Commands;
 using Z80AssemblyParsing.Operands;
-using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace Z80AssemblyParsing.Parsing
 {
     public class Z80LineParser
     {
-        private string _hexPrefix;
-        private string _hexSuffix;
-        private Regex _hexByteRegex;
-        private Regex _hexWordRegex;
-        private Regex _hexByteRegexZ;
-        private Regex _hexWordRegexZ;
         private List<OpCode> _jumpOperations = new List<OpCode>() { OpCode.JP, OpCode.JR, OpCode.CALL, OpCode.RET, OpCode.DJNZ };
+        private HexParser _hexParser;
 
         public Z80LineParser(string hexPrefix = "", string hexSuffix = "h")
         {
-            _hexPrefix = hexPrefix ?? string.Empty;
-            _hexSuffix = hexSuffix ?? string.Empty;
-            _hexByteRegex = new Regex(_hexPrefix + "[0-9a-f]?[0-9a-f]" + _hexSuffix, RegexOptions.IgnoreCase);
-            _hexByteRegexZ = new Regex(_hexPrefix + "0[0-9a-f]?[0-9a-f]" + _hexSuffix, RegexOptions.IgnoreCase);
-            _hexWordRegex = new Regex(_hexPrefix + "[0-9a-f][0-9a-f][0-9a-f][0-9a-f]" + _hexSuffix, RegexOptions.IgnoreCase);
-            _hexWordRegexZ = new Regex(_hexPrefix + "0[0-9a-f][0-9a-f][0-9a-f][0-9a-f]" + _hexSuffix, RegexOptions.IgnoreCase);
+            _hexParser = new HexParser(hexPrefix, hexSuffix);
         }
 
         public Command ParseLine(string line)
@@ -187,14 +176,14 @@ namespace Z80AssemblyParsing.Parsing
                 {
                     if (Enum.GetNames(typeof(Register)).Contains(operandString.ToUpper()) && Enum.TryParse<Register>(operandString, true, out var register))
                         return new RegisterOperand(register);
-                    if (TryByteParse(operandString, out var immediateNumber))
+                    if (_hexParser.TryByteParse(operandString, out var immediateNumber))
                         return new ImmediateOperand(immediateNumber);
                 }
                 if (expectedSize != OperandSize.EightBit)
                 {
                     if (Enum.GetNames(typeof(ExtendedRegister)).Contains(operandString.ToUpper()) && Enum.TryParse<ExtendedRegister>(operandString, true, out var extendedRegister))
                         return new RegisterExtendedOperand(extendedRegister);
-                    if (TryUShortParse(operandString, out var immediate16BitNumber))
+                    if (_hexParser.TryUShortParse(operandString, out var immediate16BitNumber))
                         return new ImmediateExtendedOperand(immediate16BitNumber);
                 }
                 if (IsValidLabel(operandString))
@@ -207,13 +196,13 @@ namespace Z80AssemblyParsing.Parsing
                     return new IndirectRegisterOperand(extendedRegister);
                 if (Enum.GetNames(typeof(Register)).Contains(operandWithoutParens.ToUpper()) && Enum.TryParse<Register>(operandWithoutParens, true, out var register))
                     return new IndirectShortRegOperand(register);
-                if (TryUShortParse(operandWithoutParens, out var memoryAddress))
+                if (_hexParser.TryUShortParse(operandWithoutParens, out var memoryAddress))
                     return new ExtendedAddressOperand(memoryAddress);
                 if (TryDisplacementParse(operandWithoutParens, out var displacementRegister, out var displacement))
                     return new DisplacementOperand(displacementRegister, displacement);
                 if (IsValidLabel(operandWithoutParens))
                     return new LabeledAddressOperand(operandWithoutParens);
-                if (TryByteParse(operandWithoutParens, out var immediateValue))
+                if (_hexParser.TryByteParse(operandWithoutParens, out var immediateValue))
                     throw new Exception("need to start parsing in and out commands");
             }
             throw new Exception($"Invalid operand: {operandString}");
@@ -224,7 +213,7 @@ namespace Z80AssemblyParsing.Parsing
             var operandWithoutParens = operandString.StartsWith("(") && operandString.EndsWith(")") ? operandString.TrimStart('(').TrimEnd(')') : null;
             if (operandWithoutParens == null)
             {
-                if (TryUShortParse(operandString, out var memoryAddress))
+                if (_hexParser.TryUShortParse(operandString, out var memoryAddress))
                     return new AddressWithoutParenthesisOperand(memoryAddress);
                 if (IsValidLabel(operandString))
                     return new LabeledAddressWithoutParenthesisOperand(operandString);
@@ -246,35 +235,8 @@ namespace Z80AssemblyParsing.Parsing
             return
                 !Enum.GetNames(typeof(Register)).Contains(operandString)
                 && !Enum.GetNames(typeof(ExtendedRegister)).Contains(operandString)
-                && !_hexWordRegex.IsMatch(operandString)
-                && !_hexByteRegex.IsMatch(operandString)
+                && !_hexParser.IsHexNumber(operandString)
                 && new Regex("[a-z][0-9a-z]*", RegexOptions.IgnoreCase).IsMatch(operandString);
-        }
-
-        public bool TryByteParse(string sourceString, out byte number)
-        {
-            if (_hexByteRegex.IsMatch(sourceString) || _hexByteRegexZ.IsMatch(sourceString))
-            {
-                var hexNoPrefixSuffix = sourceString.ToCharArray().Skip(_hexPrefix.Length).ToArray();
-                hexNoPrefixSuffix = hexNoPrefixSuffix.Take(hexNoPrefixSuffix.Length - _hexSuffix.Length).ToArray();
-                return byte.TryParse(new string(hexNoPrefixSuffix), NumberStyles.HexNumber, CultureInfo.CurrentCulture, out number);
-            }
-            if (byte.TryParse(sourceString, out number))
-                return true;
-            return false;
-        }
-
-        public bool TryUShortParse(string sourceString, out ushort number)
-        {
-            if (_hexWordRegex.IsMatch(sourceString) || _hexWordRegexZ.IsMatch(sourceString))
-            {
-                var hexNoPrefixSuffix = sourceString.ToCharArray().Skip(_hexPrefix.Length).ToArray();
-                hexNoPrefixSuffix = hexNoPrefixSuffix.Take(hexNoPrefixSuffix.Length - _hexSuffix.Length).ToArray();
-                return ushort.TryParse(new string(hexNoPrefixSuffix), NumberStyles.HexNumber, CultureInfo.CurrentCulture, out number);
-            }
-            if (ushort.TryParse(sourceString, out number))
-                return true;
-            return false;
         }
 
         public bool TryDisplacementParse(string sourceString, out ExtendedRegister extendedRegister, out byte displacement)
@@ -286,7 +248,7 @@ namespace Z80AssemblyParsing.Parsing
                 return false;
             var validRegister = Enum.GetNames(typeof(ExtendedRegister)).Contains(parts[0].ToUpper()) && Enum.TryParse(parts[0], true, out extendedRegister);
             var validDecimal = byte.TryParse(parts[1], out displacement);
-            var validHex = TryByteParse(parts[1], out displacement);
+            var validHex = _hexParser.TryByteParse(parts[1], out displacement);
             return validRegister && (validDecimal || validHex);
         }
     }

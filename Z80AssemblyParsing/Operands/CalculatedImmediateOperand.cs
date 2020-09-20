@@ -8,9 +8,12 @@ namespace Z80AssemblyParsing.Operands
 {
     public class CalculatedImmediateOperand : Operand
     {
+        public List<object> Clauses { get; }
+
+        public override string DisplayValue => string.Join(string.Empty, Clauses.Select(c => GetString(c)));
+
         public CalculatedImmediateOperand(string calculatedImmediate, HexParser hexParser)
         {
-            DisplayValue = calculatedImmediate;
             //Regex that groups operators as separate matches from non-operators
             var _regex = new Regex(@"([\+\-\*\/]|[^[\+\-\*\/]*)", RegexOptions.IgnoreCase);
             Clauses = (from Match match in _regex.Matches(calculatedImmediate)
@@ -37,8 +40,22 @@ namespace Z80AssemblyParsing.Operands
             return match.Value;
         }
 
-        public List<object> Clauses { get; }
-        public override string DisplayValue { get; }
+        private string GetString(object source)
+        {
+            switch(source)
+            {
+                case MathOperator.PLUS:
+                    return "+";
+                case MathOperator.MINUS:
+                    return "-";
+                case MathOperator.TIMES:
+                    return "*";
+                case MathOperator.DIVIDED_BY:
+                    return "/";
+                default:
+                    return source.ToString();
+            }
+        }
     }
 
     public enum MathOperator

@@ -1,7 +1,5 @@
 ﻿using NUnit.Framework;
 using System.Collections.Generic;
-using Z80AssemblyParsing;
-using Z80AssemblyParsing.Commands;
 using Z80AssemblyParsing.Operands;
 using Z80AssemblyParsing.Parsing;
 
@@ -59,6 +57,27 @@ namespace Z80AssemblyParsingTests
 
             CollectionAssert.AreEquivalent(expected, operand.Clauses);
             CollectionAssert.AreEquivalent(sourceOperand, operand.DisplayValue);
+        }
+
+        [Test]
+        public void CalculatedImmediateOperandTests_ListOfOperations()
+        {
+            var sourceOperand = "sum+32/other-0x15";
+            var parser = new HexParser("0x", string.Empty);
+            var expected = new List<object>() {
+                "sum",
+                MathOperator.PLUS,
+                (byte)32,
+                MathOperator.DIVIDED_BY,
+                "other",
+                MathOperator.MINUS,
+                (byte)0x15
+            };
+
+            var operand = new CalculatedImmediateOperand(sourceOperand, parser);
+
+            CollectionAssert.AreEquivalent(expected, operand.Clauses);
+            CollectionAssert.AreEquivalent("sum+32/other-21", operand.DisplayValue);
         }
     }
 }

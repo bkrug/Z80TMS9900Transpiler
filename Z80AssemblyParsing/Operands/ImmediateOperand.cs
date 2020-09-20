@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Text;
-
-namespace Z80AssemblyParsing.Operands
+﻿namespace Z80AssemblyParsing.Operands
 {
     public class ImmediateOperand : Operand
     {

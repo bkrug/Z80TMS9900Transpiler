@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 
 namespace Z80AssemblyParsing.Parsing
 {
-    class HexParser
+    public class HexParser
     {
         private string _hexPrefix;
         private string _hexSuffix;

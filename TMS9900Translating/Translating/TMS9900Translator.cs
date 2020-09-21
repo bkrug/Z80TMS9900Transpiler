@@ -51,7 +51,10 @@ namespace TMS9900Translating.Translating
             foreach (var currCommand in commands)
             {
                 if (i++ == 0)
+                {
                     currCommand.SetLabel(sourceCommand.Label);
+                    currCommand.SetComment(sourceCommand.TrailingComment);
+                }
                 yield return currCommand;
             }
         }

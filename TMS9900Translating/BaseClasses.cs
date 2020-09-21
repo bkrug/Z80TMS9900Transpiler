@@ -20,11 +20,25 @@ namespace TMS9900Translating
         public Z80Command SourceCommand { get; }
         public abstract OpCode OpCode { get; }
         public string Label { get; internal set; }
-        public abstract string CommandText { get; }
+        public string Comment { get; internal set; }
+        protected virtual string OpCodeAndOperandText { get; }
+        public virtual string CommandText {
+            get {
+                var commandWithoutComment = GetLabelPart() + " " + OpCodeAndOperandText;
+                return string.IsNullOrWhiteSpace(Comment)
+                    ? commandWithoutComment
+                    : commandWithoutComment.BackPadSpaces(30) + Comment;
+            } 
+        }
 
         internal void SetLabel(string label)
         {
             Label = label;
+        }
+
+        internal void SetComment(string comment)
+        {
+            Comment = comment;
         }
 
         protected string GetLabelPart()

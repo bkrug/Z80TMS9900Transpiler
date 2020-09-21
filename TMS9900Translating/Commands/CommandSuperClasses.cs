@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using Z80Command = Z80AssemblyParsing.Command;
 
 namespace TMS9900Translating.Commands
@@ -8,7 +7,7 @@ namespace TMS9900Translating.Commands
     public abstract class CommandWithNoOperands : Command
     {
         public CommandWithNoOperands(Z80Command sourceCommand) : base(sourceCommand) { }
-        public override string CommandText => GetLabelPart() + " " + GetOpCodePart(false);
+        protected override string OpCodeAndOperandText => GetOpCodePart(false);
     }
 
     public abstract class CommandWithOneOperand : Command
@@ -18,7 +17,7 @@ namespace TMS9900Translating.Commands
         }
 
         public Operand Operand { get; set; }
-        public override string CommandText => GetLabelPart() + " " + GetOpCodePart() + " " + Operand.DisplayValue;
+        protected override string OpCodeAndOperandText => GetOpCodePart() + " " + Operand.DisplayValue;
     }
 
     public abstract class CommandWithTwoOperands : Command
@@ -31,7 +30,7 @@ namespace TMS9900Translating.Commands
 
         public Operand SourceOperand { get; set; }
         public Operand DestinationOperand { get; set; }
-        public override string CommandText => GetLabelPart() + " " + GetOpCodePart() + " " + SourceOperand.DisplayValue + "," + DestinationOperand.DisplayValue;
+        protected override string OpCodeAndOperandText => GetOpCodePart() + " " + SourceOperand.DisplayValue + "," + DestinationOperand.DisplayValue;
     }
 
     public abstract class ImmediateCommand : CommandWithTwoOperands
@@ -40,10 +39,11 @@ namespace TMS9900Translating.Commands
         {
         }
 
-        public override string CommandText => GetLabelPart() + " " + GetOpCodePart() + " " + DestinationOperand.DisplayValue + "," + SourceOperand.DisplayValue;
+        protected override string OpCodeAndOperandText => GetOpCodePart() + " " + DestinationOperand.DisplayValue + "," + SourceOperand.DisplayValue;
     }
 
     public static class StringExtension {
+        //Add enough spaces to the end of a string so that it has the same length as "totalLength"
         public static string BackPadSpaces(this string givenString, int totalLength)
         {
             var requiredSpaces = totalLength - givenString.Length;

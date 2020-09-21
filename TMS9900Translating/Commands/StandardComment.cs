@@ -9,6 +9,6 @@
 
         public override OpCode OpCode => OpCode.Comment;
         public string CommentText { get; }
-        public override string CommandText => "'" + CommentText;
+        public override string CommandText => "*" + CommentText;
     }
 }

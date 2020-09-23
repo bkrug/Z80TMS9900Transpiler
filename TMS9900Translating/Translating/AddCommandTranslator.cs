@@ -18,6 +18,7 @@ namespace TMS9900Translating.Translating
             else
                 sourceOperand = GetOperand(addCommand.SourceOperand, addCommand.IsEightBitOperation);
 
+            bool sourceOperandIsImmediate = OperandIs8bitImmediate(sourceOperand);
             if (addCommand.IsEightBitOperation)
             {
                 if (MustUnifyRegisterPairs(addCommand.DestinationOperand, out var copyFromOperand2, out var copyToOperand2, out Operand destinationOperand))
@@ -25,7 +26,6 @@ namespace TMS9900Translating.Translating
                 else
                     destinationOperand = GetOperand(addCommand.DestinationOperand, addCommand.IsEightBitOperation);
 
-                var sourceOperandIsImmediate = (sourceOperand is ImmediateTmsOperand || sourceOperand is LabeledImmediateTmsOperand);
                 if (sourceOperandIsImmediate && LowerByteHasData(addCommand.DestinationOperand))
                 {
                     yield return new LoadImmediateCommand(addCommand, sourceOperand, new RegisterTmsOperand(WorkspaceRegister.R0));
@@ -43,7 +43,6 @@ namespace TMS9900Translating.Translating
                 else
                     destinationOperand = GetOperand(addCommand.DestinationOperand, addCommand.IsEightBitOperation);
 
-                var sourceOperandIsImmediate = (sourceOperand is ImmediateTmsOperand || sourceOperand is LabeledImmediateTmsOperand);
                 if (sourceOperandIsImmediate)
                     yield return new AddImmediateCommand(addCommand, sourceOperand, destinationOperand);
                 else

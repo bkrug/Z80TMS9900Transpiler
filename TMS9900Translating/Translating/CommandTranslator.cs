@@ -118,6 +118,11 @@ namespace TMS9900Translating.Translating
             throw new Exception("Not a translatable operand: " + sourceOperand.DisplayValue);
         }
 
+        protected static bool OperandIs8bitImmediate(Operand sourceOperand)
+        {
+            return (sourceOperand is ImmediateTmsOperand || sourceOperand is LabeledImmediateTmsOperand);
+        }
+
         protected bool IsMappedToLowerByte(Z80Register register, out Operand registerPointingToLowerByte)
         {
             if (_lastRegisterInPair.Contains(register))

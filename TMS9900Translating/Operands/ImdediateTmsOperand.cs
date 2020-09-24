@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Text;
-
-namespace TMS9900Translating.Operands
+﻿namespace TMS9900Translating.Operands
 {
     public class ImmediateTmsOperand : Operand
     {

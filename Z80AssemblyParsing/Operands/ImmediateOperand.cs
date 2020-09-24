@@ -1,4 +1,7 @@
-﻿namespace Z80AssemblyParsing.Operands
+﻿using System.Collections.Generic;
+using System.Linq;
+
+namespace Z80AssemblyParsing.Operands
 {
     public class ImmediateOperand : Operand
     {

@@ -86,6 +86,9 @@ namespace TMS9900Translating.Translating
                     ? new ImmediateTmsOperand((ushort)(immediateOperand.ImmediateValue * 0x100))
                     : new ImmediateTmsOperand(immediateOperand.ImmediateValue);
 
+            if (sourceOperand is Z80Operands.CalculatedImmediateOperand calculatedImmediateOperand)
+                return new CalculatedImmediateTmsOperand(calculatedImmediateOperand);
+
             if (sourceOperand is Z80Operands.ImmediateExtendedOperand immediateExtendedOperand)
                 return new ImmediateTmsOperand(immediateExtendedOperand.ImmediateValue);
 
@@ -120,7 +123,7 @@ namespace TMS9900Translating.Translating
 
         protected static bool OperandIs8bitImmediate(Operand sourceOperand)
         {
-            return sourceOperand is ImmediateTmsOperand || sourceOperand is LabeledImmediateTmsOperand;
+            return sourceOperand is ImmediateTmsOperand || sourceOperand is LabeledImmediateTmsOperand || sourceOperand is CalculatedImmediateTmsOperand;
         }
 
         protected bool IsMappedToLowerByte(Z80Register register, out Operand registerPointingToLowerByte)

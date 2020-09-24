@@ -120,7 +120,7 @@ namespace TMS9900Translating.Translating
 
         protected static bool OperandIs8bitImmediate(Operand sourceOperand)
         {
-            return (sourceOperand is ImmediateTmsOperand || sourceOperand is LabeledImmediateTmsOperand);
+            return sourceOperand is ImmediateTmsOperand || sourceOperand is LabeledImmediateTmsOperand;
         }
 
         protected bool IsMappedToLowerByte(Z80Register register, out Operand registerPointingToLowerByte)

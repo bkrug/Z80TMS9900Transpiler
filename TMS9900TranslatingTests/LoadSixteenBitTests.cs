@@ -96,6 +96,47 @@ namespace TMS9900TranslatingTests
         }
 
         [Test]
+        public void Load16Bit_LoadImmediate_OneRegisterAndCalculatedImmediate_UnifiedRegisterPair()
+        {
+            var z80SourceCommand = "    ld   BC,score*14h+128";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
+                {
+                    (Z80SourceRegister.B, WorkspaceRegister.R3),
+                    (Z80SourceRegister.C, WorkspaceRegister.R3),
+                },
+                new List<MemoryMapElement>(),
+                new LabelHighlighter()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(1, tmsCommand.Count);
+            Assert.AreEqual("       LI   R3,score*>0014+>0080", tmsCommand[0].CommandText);
+        }
+
+        [Test]
+        public void Load16Bit_LoadImmediate_OneRegisterAndCalculatedImmediate_SeparatedRegisterPair()
+        {
+            var z80SourceCommand = "    ld   HL,0x2AF*label+32";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser("0x", "").ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
+                {
+                    (Z80SourceRegister.H, WorkspaceRegister.R5),
+                    (Z80SourceRegister.L, WorkspaceRegister.R4),
+                },
+                new List<MemoryMapElement>(),
+                new LabelHighlighter()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(2, tmsCommand.Count);
+            Assert.AreEqual("       LI   R5,>02AF*label+>0020", tmsCommand[0].CommandText);
+            Assert.AreEqual("       MOVB *R15,R4", tmsCommand[1].CommandText);
+        }
+
+        [Test]
         public void Load16Bit_LoadImmediate_UsingLabel_SeparatedRegisterPair()
         {
             var z80SourceCommand = "    ld   HL,byteLabel";

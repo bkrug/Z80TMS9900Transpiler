@@ -116,7 +116,7 @@ namespace TMS9900TranslatingTests
             var tmsCommand = translator.Translate(z80Command).ToList();
 
             Assert.AreEqual(2, tmsCommand.Count);
-            Assert.AreEqual("       LI   R0,>10000->4000", tmsCommand[0].CommandText);
+            Assert.AreEqual("       LI   R0,>0100->0040*>0100", tmsCommand[0].CommandText);
             Assert.AreEqual("       MOVB R0,R2", tmsCommand[1].CommandText);
         }
 

@@ -6,9 +6,14 @@ namespace TMS9900Translating.Operands
 {
     public class CalculatedImmediateTmsOperand : Operand
     {
-        public CalculatedImmediateTmsOperand(Z80AssemblyParsing.Operands.CalculatedImmediateOperand z80operand)
+        public CalculatedImmediateTmsOperand(Z80AssemblyParsing.Operands.CalculatedImmediateOperand z80operand, bool shiftLeft)
         {
             Clauses = z80operand.Clauses.ToList();
+            if (shiftLeft)
+            {
+                Clauses.Add(Z80AssemblyParsing.Operands.MathOperator.TIMES);
+                Clauses.Add((ushort)0x100);
+            }
 
             var sb = new StringBuilder();
             Clauses.ForEach(clause => sb.Append(GetString(clause)));

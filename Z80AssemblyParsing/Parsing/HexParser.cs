@@ -19,8 +19,8 @@ namespace Z80AssemblyParsing.Parsing
             _hexSuffix = hexSuffix ?? string.Empty;
             _hexByteRegex = new Regex(_hexPrefix + "[0-9a-f]?[0-9a-f]" + _hexSuffix, RegexOptions.IgnoreCase);
             _hexByteRegexZ = new Regex(_hexPrefix + "0[0-9a-f]?[0-9a-f]" + _hexSuffix, RegexOptions.IgnoreCase);
-            _hexWordRegex = new Regex(_hexPrefix + "[0-9a-f][0-9a-f][0-9a-f][0-9a-f]" + _hexSuffix, RegexOptions.IgnoreCase);
-            _hexWordRegexZ = new Regex(_hexPrefix + "0[0-9a-f][0-9a-f][0-9a-f][0-9a-f]" + _hexSuffix, RegexOptions.IgnoreCase);
+            _hexWordRegex = new Regex(_hexPrefix + "[0-9a-f]?[0-9a-f][0-9a-f][0-9a-f]" + _hexSuffix, RegexOptions.IgnoreCase);
+            _hexWordRegexZ = new Regex(_hexPrefix + "0[0-9a-f]?[0-9a-f][0-9a-f][0-9a-f]" + _hexSuffix, RegexOptions.IgnoreCase);
         }
 
         public bool IsHexNumber(string operandString)

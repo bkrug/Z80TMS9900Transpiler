@@ -4,6 +4,7 @@ using TMS9900Translating.Commands;
 using TMS9900Translating.Operands;
 using TmsCommand = TMS9900Translating.Command;
 using CommandWithOneOperand = Z80AssemblyParsing.Commands.CommandWithOneOperand;
+using System.Linq;
 
 namespace TMS9900Translating.Translating
 {
@@ -43,6 +44,16 @@ namespace TMS9900Translating.Translating
                 {
                     if (typeof(T) == typeof(Z80AssemblyParsing.Commands.SubCommand))
                         sourceOperand = new LabeledImmediateTmsOperand("-" + labeledImmediateTmsOperand.Label, labeledImmediateTmsOperand.MultiplyByHex100);
+                    yield return new MoveByteCommand(logicCommand, zeroByte, accumulatorLowByte);
+                    yield return GetEquivCommand<TmsImmediateCommand>(logicCommand, sourceOperand, accumulatorOperand);
+                }
+                else if (sourceOperand is CalculatedImmediateTmsOperand calculatedImmediateTmsOperand)
+                {
+                    if (typeof(T) == typeof(Z80AssemblyParsing.Commands.SubCommand))
+                    {
+                        var clauses = new List<object>() { -1, Z80AssemblyParsing.Operands.MathOperator.TIMES }.Union(calculatedImmediateTmsOperand.Clauses).ToList();
+                        sourceOperand = new CalculatedImmediateTmsOperand(clauses, false);
+                    }
                     yield return new MoveByteCommand(logicCommand, zeroByte, accumulatorLowByte);
                     yield return GetEquivCommand<TmsImmediateCommand>(logicCommand, sourceOperand, accumulatorOperand);
                 }

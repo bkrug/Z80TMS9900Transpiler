@@ -6,9 +6,9 @@ namespace TMS9900Translating.Operands
 {
     public class CalculatedImmediateTmsOperand : Operand
     {
-        public CalculatedImmediateTmsOperand(Z80AssemblyParsing.Operands.CalculatedImmediateOperand z80operand, bool shiftLeft)
+        public CalculatedImmediateTmsOperand(List<object> sourceClauses, bool shiftLeft)
         {
-            Clauses = z80operand.Clauses.ToList();
+            Clauses = sourceClauses.ToList();
             if (shiftLeft)
             {
                 Clauses.Add(Z80AssemblyParsing.Operands.MathOperator.TIMES);

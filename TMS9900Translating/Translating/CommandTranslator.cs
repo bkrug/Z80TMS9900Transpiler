@@ -87,7 +87,7 @@ namespace TMS9900Translating.Translating
                     : new ImmediateTmsOperand(immediateOperand.ImmediateValue);
 
             if (sourceOperand is Z80Operands.CalculatedImmediateOperand calculatedImmediateOperand)
-                return new CalculatedImmediateTmsOperand(calculatedImmediateOperand, eightBitOperation);
+                return new CalculatedImmediateTmsOperand(calculatedImmediateOperand.Clauses, eightBitOperation);
 
             if (sourceOperand is Z80Operands.ImmediateExtendedOperand immediateExtendedOperand)
                 return new ImmediateTmsOperand(immediateExtendedOperand.ImmediateValue);

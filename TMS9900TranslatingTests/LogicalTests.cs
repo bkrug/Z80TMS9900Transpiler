@@ -490,5 +490,29 @@ namespace TMS9900TranslatingTests
             var actual = tmsCommand.Select(tc => tc.CommandText).ToList();
             CollectionAssert.AreEqual(expected, actual);
         }
+
+        [Test]
+        public void Logical_Compare_CalculatedImmediate()
+        {
+            var z80SourceCommand = "       cp 128+64";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
+                {
+                    (Z80SourceRegister.A, WorkspaceRegister.R4)
+                },
+                new List<MemoryMapElement>(),
+                new LabelHighlighter()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            var expected = new List<string>()
+            {
+                "       MOVB @ZERO,*R12",
+                "       CI   R4,>0080+>0040*>0100"
+            };
+            var actual = tmsCommand.Select(tc => tc.CommandText).ToList();
+            CollectionAssert.AreEqual(expected, actual);
+        }
     }
 }

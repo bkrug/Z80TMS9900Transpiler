@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Z80AssemblyParsing.Commands;
 using Z80AssemblyParsing.Operands;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace Z80AssemblyParsing.Parsing
 {
@@ -241,17 +242,22 @@ namespace Z80AssemblyParsing.Parsing
                 && new Regex("[a-z][0-9a-z]*", RegexOptions.IgnoreCase).IsMatch(operandString);
         }
 
-        public bool TryDisplacementParse(string sourceString, out ExtendedRegister extendedRegister, out byte displacement)
+        public bool TryDisplacementParse(string sourceString, out ExtendedRegister extendedRegister, out sbyte displacement)
         {
-            var parts = sourceString.Split('+').Select(s => s.Trim()).ToList();
-            extendedRegister = ExtendedRegister.None;
-            displacement = 0;
-            if (parts.Count != 2)
+            if (!new Regex("^(iy|ix)[+-]", RegexOptions.IgnoreCase).IsMatch(sourceString))
+            {
+                extendedRegister = ExtendedRegister.None;
+                displacement = 0;
                 return false;
-            var validRegister = Enum.GetNames(typeof(ExtendedRegister)).Contains(parts[0].ToUpper()) && Enum.TryParse(parts[0], true, out extendedRegister);
-            var validDecimal = byte.TryParse(parts[1], out displacement);
-            var validHex = _hexParser.TryByteParse(parts[1], out displacement);
-            return validRegister && (validDecimal || validHex);
+            }
+            var possibleRegister = sourceString.Substring(0, 2);
+            var possibleSign = sourceString.Substring(2, 1);
+            var possibleOffset = sourceString.Substring(3).Trim();
+            var validRegister = Enum.TryParse(possibleRegister, true, out extendedRegister);
+            var validNumber = byte.TryParse(possibleOffset, out byte unsignedDisplacement)
+                || _hexParser.TryByteParse(possibleOffset.Trim('-').Trim('+'), out unsignedDisplacement);
+            displacement = possibleSign == "+" ? (sbyte)unsignedDisplacement : (sbyte)-unsignedDisplacement;
+            return validRegister && validNumber;
         }
     }
 }

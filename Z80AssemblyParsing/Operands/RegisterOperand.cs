@@ -17,14 +17,15 @@ namespace Z80AssemblyParsing.Operands
 
     public class DisplacementOperand : Operand
     {
-        public DisplacementOperand(ExtendedRegister register, byte displacement)
+        public DisplacementOperand(ExtendedRegister register, sbyte displacement)
         {
             Register = register;
             Displacement = displacement;
         }
 
         public ExtendedRegister Register { get; }
-        public byte Displacement { get; }
-        public override string DisplayValue => $"({Enum.GetName(typeof(ExtendedRegister), Register)}+{Displacement.ToString("X2")})";
+        public sbyte Displacement { get; }
+        private string DisplacementSign => Displacement < 0 ? "-" : "+";
+        public override string DisplayValue => "(" + Enum.GetName(typeof(ExtendedRegister), Register) + DisplacementSign + Math.Abs(Displacement) + ")";
     }
 }

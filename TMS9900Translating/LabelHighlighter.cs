@@ -11,6 +11,7 @@ namespace TMS9900Translating
         private int _nextInc = 0;
         private int _nextDec = 0;
         private int _nextJump = 0;
+        private int _nextRt = 0;
         private string _oneByteLabel;
         private string _zeroByteLabel;
         public string OneByteLabel
@@ -64,13 +65,24 @@ namespace TMS9900Translating
 
         public string GetNextJumpLabel()
         {
-            var decLabel = string.Empty;
-            while (LabelsFromZ80Code.Contains(decLabel) || decLabel == string.Empty)
+            var jmpLabel = string.Empty;
+            while (LabelsFromZ80Code.Contains(jmpLabel) || jmpLabel == string.Empty)
             {
                 var nextJump = ++_nextJump;
-                decLabel = "JMP" + new string('0', 2 - (int)Math.Log10(nextJump)) + nextJump.ToString();
+                jmpLabel = "JMP" + new string('0', 2 - (int)Math.Log10(nextJump)) + nextJump.ToString();
             }
-            return decLabel;
+            return jmpLabel;
+        }
+
+        public string GetNextRtLabel()
+        {
+            var rtLabel = string.Empty;
+            while (LabelsFromZ80Code.Contains(rtLabel) || rtLabel == string.Empty)
+            {
+                var nextRt = ++_nextRt;
+                rtLabel = "RT" + new string('0', 3 - (int)Math.Log10(nextRt)) + nextRt.ToString();
+            }
+            return rtLabel;
         }
 
         public string GetLabelUnusedByZ80(string sourceLabel)

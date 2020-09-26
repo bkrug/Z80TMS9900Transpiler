@@ -3,16 +3,17 @@ using System.Collections.Generic;
 using TMS9900Translating.Commands;
 using TMS9900Translating.Operands;
 using TmsCommand = TMS9900Translating.Command;
+using ConditionalReturnCommand = Z80AssemblyParsing.Commands.ConditionalReturnCommand;
 
 namespace TMS9900Translating.Translating
 {
-    public class ConditionalReturnCommandTranslator : CommandTranslator<Z80AssemblyParsing.Commands.ConditionalReturnCommand>
+    public class ConditionalReturnCommandTranslator : CommandTranslator<ConditionalReturnCommand>
     {
         public ConditionalReturnCommandTranslator(MapCollection mapCollection, LabelHighlighter labelHighlighter) : base(mapCollection, labelHighlighter)
         {
         }
 
-        public override IEnumerable<TmsCommand> Translate(Z80AssemblyParsing.Commands.ConditionalReturnCommand returnCommand)
+        public override IEnumerable<TmsCommand> Translate(ConditionalReturnCommand returnCommand)
         {
             var stackPointerOperand = new IndirectAutoIncrementTmsOperand(_extendedRegisterMap[Z80AssemblyParsing.ExtendedRegister.SP]);
             var returnAddressRegister = new RegisterTmsOperand(WorkspaceRegister.R11);
@@ -27,35 +28,39 @@ namespace TMS9900Translating.Translating
             }
             else if (_typesByCondition.ContainsKey(returnCommand.ConditionOperand.Condition))
             {
-                yield return GetInverseJumpCommand(returnCommand);
+                var retLabel = _labelHighlighter.GetNextRtLabel();
+                yield return GetInverseJumpCommand(returnCommand, retLabel);
                 yield return new MoveCommand(returnCommand, stackPointerOperand, returnAddressRegister);
                 yield return new ReturnCommand(returnCommand);
                 yield return new BlankLineInTms(returnCommand)
                 {
-                    Label = "JMP001"
+                    Label = retLabel
                 };
             }
             else if (returnCommand.ConditionOperand.Condition == Z80AssemblyParsing.JumpConditions.M)
             {
-                yield return new JumpIfLessThanCommand(returnCommand, new Operands.LabeledAddressWithoutAtTmsOperand("JMP001"));
-                yield return new JumpCommand(returnCommand, new Operands.LabeledAddressWithoutAtTmsOperand("JMP002"));
+                var retLabel1 = _labelHighlighter.GetNextRtLabel();
+                var retLabel2 = _labelHighlighter.GetNextRtLabel();
+                yield return new JumpIfLessThanCommand(returnCommand, new LabeledAddressWithoutAtTmsOperand(retLabel1));
+                yield return new JumpCommand(returnCommand, new LabeledAddressWithoutAtTmsOperand(retLabel2));
                 yield return new BlankLineInTms(returnCommand)
                 {
-                    Label = "JMP001"
+                    Label = retLabel1
                 };
                 yield return new MoveCommand(returnCommand, stackPointerOperand, returnAddressRegister);
                 yield return new ReturnCommand(returnCommand);
                 yield return new BlankLineInTms(returnCommand)
                 {
-                    Label = "JMP002"
+                    Label = retLabel2
                 };
             }
         }
 
-        private CommandWithOneOperand GetInverseJumpCommand(Z80AssemblyParsing.Commands.ConditionalReturnCommand callCommand)
+        private CommandWithOneOperand GetInverseJumpCommand(ConditionalReturnCommand callCommand, string label)
         {
             var translatorType = _typesByCondition[callCommand.ConditionOperand.Condition];
-            var translatorInstance = (CommandWithOneOperand)Activator.CreateInstance(translatorType, new object[] { callCommand, new Operands.LabeledAddressWithoutAtTmsOperand("JMP001") });
+            var labeledOperand = new LabeledAddressWithoutAtTmsOperand(label);
+            var translatorInstance = (CommandWithOneOperand)Activator.CreateInstance(translatorType, new object[] { callCommand, labeledOperand });
             return translatorInstance;
         }
 

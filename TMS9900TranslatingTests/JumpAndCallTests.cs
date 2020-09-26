@@ -99,6 +99,49 @@ namespace TMS9900TranslatingTests
         }
 
         [Test]
+        public void Return_Conditional_PositiveSign()
+        {
+            var z80SourceCommand = "    ret  p";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>() {
+                    (Z80SourceRegister.SP, WorkspaceRegister.R9)
+                },
+                new List<MemoryMapElement>(),
+                new LabelHighlighter()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(5, tmsCommand.Count);
+            Assert.AreEqual("       JLT  JMP001", tmsCommand[0].CommandText);
+            Assert.AreEqual("       JEQ  JMP001", tmsCommand[1].CommandText);
+            Assert.AreEqual("       MOV  *R9+,R11", tmsCommand[2].CommandText, "pull the return address from the stack.");
+            Assert.AreEqual("       RT", tmsCommand[3].CommandText);
+            Assert.AreEqual("JMP001", tmsCommand[4].CommandText);
+        }
+
+        [Test]
+        public void Return_Conditional_ParityOdd()
+        {
+            var z80SourceCommand = "    ret  po";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>() {
+                    (Z80SourceRegister.SP, WorkspaceRegister.R10)
+                },
+                new List<MemoryMapElement>(),
+                new LabelHighlighter()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(4, tmsCommand.Count);
+            Assert.AreEqual("!ret translations on PO or PE condition are not automated.", tmsCommand[0].CommandText);
+            Assert.AreEqual("!Z80 used a single flag for Parity and Overflow, TMS9900 used two flags.", tmsCommand[1].CommandText);
+            Assert.AreEqual("!A human must decide whether to use JNO or JOP.", tmsCommand[2].CommandText);
+            Assert.AreEqual("!       ret  po", tmsCommand[3].CommandText);
+        }
+
+        [Test]
         public void JumpTests_Djnz_UnifiedRegisters()
         {
             var z80SourceCommand = "       djnz loop4";

@@ -421,5 +421,76 @@ namespace TMS9900TranslatingTests
             Assert.AreEqual("       MOVB R5,*R12", tmsCommand[0].CommandText);
             Assert.AreEqual("       SRC  R5,>0001", tmsCommand[1].CommandText);
         }
+
+        [Test]
+        public void Logical_Compare_CalculatedImmediate()
+        {
+            var z80SourceCommand = "    CP   c";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
+                {
+                    (Z80SourceRegister.A, WorkspaceRegister.R5),
+                    (Z80SourceRegister.B, WorkspaceRegister.R3),
+                    (Z80SourceRegister.C, WorkspaceRegister.R3)
+                },
+                new List<MemoryMapElement>(),
+                new LabelHighlighter()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(1, tmsCommand.Count);
+            Assert.AreEqual("       CB   R5,*R13", tmsCommand[0].CommandText);
+        }
+
+        [Test]
+        public void Logical_Sub_Indirect()
+        {
+            var z80SourceCommand = "    sub  (hl)";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
+                {
+                    (Z80SourceRegister.A, WorkspaceRegister.R1),
+                    (Z80SourceRegister.H, WorkspaceRegister.R2),
+                    (Z80SourceRegister.L, WorkspaceRegister.R3),
+                },
+                new List<MemoryMapElement>(),
+                new LabelHighlighter()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            var expected = new List<string>()
+            {
+                "       MOVB R3,*R15",
+                "       SB   *R2,R1"
+            };
+            var actual = tmsCommand.Select(tc => tc.CommandText).ToList();
+            CollectionAssert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public void Logical_Sub_Immediate()
+        {
+            var z80SourceCommand = "    sub  10h";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
+                {
+                    (Z80SourceRegister.A, WorkspaceRegister.R5)
+                },
+                new List<MemoryMapElement>(),
+                new LabelHighlighter()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            var expected = new List<string>()
+            {
+                "       MOVB @ZERO,*R12",
+                "       AI   R5,>F000",
+            };
+            var actual = tmsCommand.Select(tc => tc.CommandText).ToList();
+            CollectionAssert.AreEqual(expected, actual);
+        }
     }
 }

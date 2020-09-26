@@ -256,5 +256,19 @@ namespace Z80AssemblyParsingTests
             Assert.AreEqual(OpCode.DEC, actualCommand.OpCode);
             Assert.AreEqual(ExtendedRegister.HL, actualOperand.Register);
         }
+
+        [Test]
+        public void SingleOperandParsing_Subtract_NegativeImmediate()
+        {
+            var sourceCode = "      SUB  -4";
+
+            var parser = new Z80LineParser();
+            var actualCommand = AssertExtension.IsCorrectCommandType<SubCommand>(parser.ParseLine(sourceCode));
+            var actualOperand = AssertExtension.IsCorrectOperandType<ImmediateOperand>(actualCommand.Operand);
+
+            Assert.AreEqual(sourceCode, actualCommand.SourceText);
+            Assert.AreEqual(OpCode.SUB, actualCommand.OpCode);
+            Assert.AreEqual(0xFC, actualOperand.ImmediateValue);
+        }
     }
 }

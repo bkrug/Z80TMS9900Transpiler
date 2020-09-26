@@ -39,6 +39,13 @@ namespace TMS9900Translating.Translating
                     yield return new MoveByteCommand(logicCommand, zeroByte, accumulatorLowByte);
                     yield return GetEquivCommand<TmsImmediateCommand>(logicCommand, sourceOperand, accumulatorOperand);
                 }
+                else if (sourceOperand is LabeledImmediateTmsOperand labeledImmediateTmsOperand)
+                {
+                    if (typeof(T) == typeof(Z80AssemblyParsing.Commands.SubCommand))
+                        sourceOperand = new LabeledImmediateTmsOperand("-" + labeledImmediateTmsOperand.Label, labeledImmediateTmsOperand.MultiplyByHex100);
+                    yield return new MoveByteCommand(logicCommand, zeroByte, accumulatorLowByte);
+                    yield return GetEquivCommand<TmsImmediateCommand>(logicCommand, sourceOperand, accumulatorOperand);
+                }
                 else
                 {
                     yield return GetEquivCommand<TmsEquivCommand>(logicCommand, sourceOperand, accumulatorOperand);

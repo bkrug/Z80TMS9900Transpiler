@@ -41,6 +41,11 @@ namespace Z80AssemblyParsing.Parsing
             }
             if (byte.TryParse(sourceString, out number))
                 return true;
+            if (sbyte.TryParse(sourceString, out var signedByte))
+            {
+                number = (byte)(0x100 + signedByte);
+                return true;
+            }
             return false;
         }
 

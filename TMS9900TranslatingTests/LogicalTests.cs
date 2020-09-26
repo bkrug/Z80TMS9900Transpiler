@@ -423,7 +423,7 @@ namespace TMS9900TranslatingTests
         }
 
         [Test]
-        public void Logical_Compare_CalculatedImmediate()
+        public void Logical_Compare_Register()
         {
             var z80SourceCommand = "    CP   c";
             var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
@@ -441,6 +441,54 @@ namespace TMS9900TranslatingTests
 
             Assert.AreEqual(1, tmsCommand.Count);
             Assert.AreEqual("       CB   R5,*R13", tmsCommand[0].CommandText);
+        }
+
+        [Test]
+        public void Logical_Compare_Immediate()
+        {
+            var z80SourceCommand = "    cp   -4";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
+                {
+                    (Z80SourceRegister.A, WorkspaceRegister.R9)
+                },
+                new List<MemoryMapElement>(),
+                new LabelHighlighter()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            var expected = new List<string>()
+            {
+                "       MOVB @ZERO,*R12",
+                "       CI   R9,>FC00"
+            };
+            var actual = tmsCommand.Select(tc => tc.CommandText).ToList();
+            CollectionAssert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public void Logical_Compare_LabelledImmediate()
+        {
+            var z80SourceCommand = "    CP   EnemyCount";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
+                {
+                    (Z80SourceRegister.A, WorkspaceRegister.R9)
+                },
+                new List<MemoryMapElement>(),
+                new LabelHighlighter()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            var expected = new List<string>()
+            {
+                "       MOVB @ZERO,*R12",
+                "       CI   R9,EnemyCount*>100"
+            };
+            var actual = tmsCommand.Select(tc => tc.CommandText).ToList();
+            CollectionAssert.AreEqual(expected, actual);
         }
 
         [Test]

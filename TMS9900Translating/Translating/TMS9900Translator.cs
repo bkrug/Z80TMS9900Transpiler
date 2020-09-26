@@ -68,6 +68,7 @@ namespace TMS9900Translating.Translating
             { typeof(Z80Commands.PushCommand), typeof(PushCommandTranslator) },
             { typeof(Z80Commands.PopCommand), typeof(PopCommandTranslator) },
             { typeof(Z80Commands.UnconditionalCallCommand), typeof(CallCommandTranslator) },
+            { typeof(Z80Commands.ConditionalCallCommand), typeof(ConditionalCallCommandTranslator) },
             { typeof(Z80Commands.UnconditionalReturnCommand), typeof(ReturnCommandTranslator) },
             { typeof(Z80Commands.UnconditionalJumpCommand), typeof(UnconditionalJumpCommandTranslator) },
             { typeof(Z80Commands.UnconditionalRelativeJumpCommand), typeof(UnconditionalRelativeJumpCommandTranslator) },

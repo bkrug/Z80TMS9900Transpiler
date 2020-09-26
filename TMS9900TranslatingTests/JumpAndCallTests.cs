@@ -62,6 +62,24 @@ namespace TMS9900TranslatingTests
         }
 
         [Test]
+        public void Call_Conditional_NotZero_LabeledAddress()
+        {
+            var z80SourceCommand = "    call nz,myRout";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>(),
+                new List<MemoryMapElement>(),
+                new LabelHighlighter()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(3, tmsCommand.Count);
+            Assert.AreEqual("       JEQ  JMP001", tmsCommand[0].CommandText);
+            Assert.AreEqual("       BL   @myRout", tmsCommand[1].CommandText);
+            Assert.AreEqual("JMP001", tmsCommand[2].CommandText);
+        }
+
+        [Test]
         public void Return()
         {
             var z80SourceCommand = "    ret";

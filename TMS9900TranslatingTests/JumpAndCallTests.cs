@@ -112,12 +112,34 @@ namespace TMS9900TranslatingTests
             );
             var tmsCommand = translator.Translate(z80Command).ToList();
 
-            Assert.AreEqual(5, tmsCommand.Count);
+            Assert.AreEqual(4, tmsCommand.Count);
             Assert.AreEqual("       JLT  JMP001", tmsCommand[0].CommandText);
-            Assert.AreEqual("       JEQ  JMP001", tmsCommand[1].CommandText);
-            Assert.AreEqual("       MOV  *R9+,R11", tmsCommand[2].CommandText, "pull the return address from the stack.");
-            Assert.AreEqual("       RT", tmsCommand[3].CommandText);
-            Assert.AreEqual("JMP001", tmsCommand[4].CommandText);
+            Assert.AreEqual("       MOV  *R9+,R11", tmsCommand[1].CommandText, "pull the return address from the stack.");
+            Assert.AreEqual("       RT", tmsCommand[2].CommandText);
+            Assert.AreEqual("JMP001", tmsCommand[3].CommandText);
+        }
+
+        [Test]
+        public void Return_Conditional_NegativeSign()
+        {
+            var z80SourceCommand = "    ret  M";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>() {
+                    (Z80SourceRegister.SP, WorkspaceRegister.R5)
+                },
+                new List<MemoryMapElement>(),
+                new LabelHighlighter()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(6, tmsCommand.Count);
+            Assert.AreEqual("       JLT  JMP001", tmsCommand[0].CommandText);
+            Assert.AreEqual("       JMP  JMP002", tmsCommand[1].CommandText);
+            Assert.AreEqual("JMP001", tmsCommand[2].CommandText);
+            Assert.AreEqual("       MOV  *R5+,R11", tmsCommand[3].CommandText, "pull the return address from the stack.");
+            Assert.AreEqual("       RT", tmsCommand[4].CommandText);
+            Assert.AreEqual("JMP002", tmsCommand[5].CommandText);
         }
 
         [Test]
@@ -138,7 +160,7 @@ namespace TMS9900TranslatingTests
             Assert.AreEqual("!ret translations on PO or PE condition are not automated.", tmsCommand[0].CommandText);
             Assert.AreEqual("!Z80 used a single flag for Parity and Overflow, TMS9900 used two flags.", tmsCommand[1].CommandText);
             Assert.AreEqual("!A human must decide whether to use JNO or JOP.", tmsCommand[2].CommandText);
-            Assert.AreEqual("!       ret  po", tmsCommand[3].CommandText);
+            Assert.AreEqual("!    ret  po", tmsCommand[3].CommandText);
         }
 
         [Test]

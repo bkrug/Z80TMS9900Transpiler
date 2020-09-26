@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Z80AssemblyParsing.Operands;
 
 namespace Z80AssemblyParsing.Commands
 {
@@ -28,5 +29,12 @@ namespace Z80AssemblyParsing.Commands
         public Operand SourceOperand { get; set; }
         public Operand DestinationOperand { get; set; }
         public bool IsEightBitOperation => SourceOperand.OperandSize == OperandSize.EightBit || DestinationOperand.OperandSize == OperandSize.EightBit;
+    }
+
+    public interface IConditionalAddressChangeCommand
+    {
+        Operand AddressOperand { get; }
+        ConditionOperand ConditionOperand { get; }
+        OpCode OpCode { get; }
     }
 }

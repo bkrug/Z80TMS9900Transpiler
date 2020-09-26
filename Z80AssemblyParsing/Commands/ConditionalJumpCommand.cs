@@ -2,7 +2,7 @@
 
 namespace Z80AssemblyParsing.Commands
 {
-    public class ConditionalJumpCommand : CommandWithTwoOperands
+    public class ConditionalJumpCommand : CommandWithTwoOperands, IConditionalAddressChangeCommand
     {
         public ConditionalJumpCommand(string sourceText, ConditionOperand conditionOperand, Operand addressOperand) : base(sourceText, conditionOperand, addressOperand)
         {

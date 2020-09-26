@@ -30,8 +30,12 @@ namespace TMS9900Translating.Translating
             else
             {
                 var sourceOperand = GetOperand(logicCommand.Operand, true);
-                if (sourceOperand is ImmediateTmsOperand)
+                if (sourceOperand is ImmediateTmsOperand immediateTmsOperand)
                 {
+                    if (typeof(T) == typeof(Z80AssemblyParsing.Commands.SubCommand)) {
+                        var twosComplement = 0x10000 - immediateTmsOperand.ImmediateValue;
+                        sourceOperand = new ImmediateTmsOperand((ushort)twosComplement);
+                    }
                     yield return new MoveByteCommand(logicCommand, zeroByte, accumulatorLowByte);
                     yield return GetEquivCommand<TmsImmediateCommand>(logicCommand, sourceOperand, accumulatorOperand);
                 }

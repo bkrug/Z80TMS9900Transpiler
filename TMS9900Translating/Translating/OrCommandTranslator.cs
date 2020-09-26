@@ -13,7 +13,6 @@ namespace TMS9900Translating.Translating
 
         public override IEnumerable<TmsCommand> Translate(Z80AssemblyParsing.Commands.OrCommand orCommand)
         {
-            var regZeroOperand = new RegisterTmsOperand(WorkspaceRegister.R0);
             var zeroByte = new LabeledAddressTmsOperand(_labelHighlighter.ZeroByteLabel);
             var accumulatorLowByte = new IndirectRegisterTmsOperand(WorkspaceRegister.R12);
             var accumulatorOperand = new RegisterTmsOperand(_registerMap[Z80AssemblyParsing.Register.A]);

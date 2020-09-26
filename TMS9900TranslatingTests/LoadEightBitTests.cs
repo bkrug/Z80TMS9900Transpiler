@@ -121,6 +121,31 @@ namespace TMS9900TranslatingTests
         }
 
         [Test]
+        public void Load8Bit_LoadImmediate_OneIndirectRegisterAndImmediate()
+        {
+            var z80SourceCommand = "    ld   (hl),23h";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
+                {
+                    (Z80SourceRegister.H, WorkspaceRegister.R2),
+                    (Z80SourceRegister.L, WorkspaceRegister.R2)
+                },
+                new List<MemoryMapElement>(),
+                new LabelHighlighter()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            var expected = new List<string>()
+            {
+                "       LI   R0,>2300",
+                "       MOVB R0,*R2"
+            };
+            var actual = tmsCommand.Select(tc => tc.CommandText).ToList();
+            CollectionAssert.AreEqual(expected, actual);
+        }
+
+        [Test]
         public void Load8Bit_LoadImmediate__UsingLabel_ByteOperation_NoLowBytes()
         {
             var z80SourceCommand = "    ld   B,byteLabel";

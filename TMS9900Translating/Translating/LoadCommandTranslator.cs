@@ -25,7 +25,8 @@ namespace TMS9900Translating.Translating
                 else
                     destinationOperand = GetOperand(loadCommand.DestinationOperand, loadCommand.IsEightBitOperation);
 
-                if (sourceOperandIsImmediate && LowerByteHasData(loadCommand.DestinationOperand))
+                if (sourceOperandIsImmediate 
+                    && (LowerByteHasData(loadCommand.DestinationOperand) || destinationOperand is IndirectRegisterTmsOperand || destinationOperand is IndexedAddressingTmsOperand))
                 {
                     yield return new LoadImmediateCommand(loadCommand, sourceOperand, new RegisterTmsOperand(WorkspaceRegister.R0));
                     yield return new MoveByteCommand(loadCommand, new RegisterTmsOperand(WorkspaceRegister.R0), destinationOperand);

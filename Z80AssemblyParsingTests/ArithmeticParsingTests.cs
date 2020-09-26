@@ -1,6 +1,4 @@
-using NUnit;
 using NUnit.Framework;
-using System;
 using Z80AssemblyParsing;
 using Z80AssemblyParsing.Commands;
 using Z80AssemblyParsing.Operands;
@@ -25,6 +23,35 @@ namespace Z80AssemblyParsingTests
             Assert.AreEqual(OpCode.ADD, actualCommand.OpCode);
             Assert.AreEqual(0x47, actualSourceOperand.ImmediateValue);
             Assert.AreEqual(Register.A, actualDestinationOperand.Register);
+        }
+
+        [Test]
+        public void ArithmeticParing_SubCommand()
+        {
+            var sourceCode = "      sub  B";
+
+            var parser = new Z80LineParser("#", "");
+            var actualCommand = AssertExtension.IsCorrectCommandType<SubCommand>(parser.ParseLine(sourceCode));
+            var actualOperand = AssertExtension.IsCorrectOperandType<RegisterOperand>(actualCommand.Operand);
+
+            Assert.AreEqual(sourceCode, actualCommand.SourceText);
+            Assert.AreEqual(OpCode.SUB, actualCommand.OpCode);
+            Assert.AreEqual(Register.B, actualOperand.Register);
+        }
+
+        [Test]
+        public void ArithmeticParing_CompareCommand()
+        {
+            var sourceCode = "      CP   (IX-#7f)";
+
+            var parser = new Z80LineParser("#", "");
+            var actualCommand = AssertExtension.IsCorrectCommandType<CompareCommand>(parser.ParseLine(sourceCode));
+            var actualOperand = AssertExtension.IsCorrectOperandType<DisplacementOperand>(actualCommand.Operand);
+
+            Assert.AreEqual(sourceCode, actualCommand.SourceText);
+            Assert.AreEqual(OpCode.CP, actualCommand.OpCode);
+            Assert.AreEqual(ExtendedRegister.IX, actualOperand.Register);
+            Assert.AreEqual(-127, actualOperand.Displacement);
         }
     }
 }

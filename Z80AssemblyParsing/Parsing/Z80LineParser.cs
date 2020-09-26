@@ -111,6 +111,10 @@ namespace Z80AssemblyParsing.Parsing
                     return new InterruptModeCommand(line, GetOperand(operandString));
                 case OpCode.AND:
                     return new AndCommand(line, GetOperand(operandString));
+                case OpCode.SUB:
+                    return new SubCommand(line, GetOperand(operandString));
+                case OpCode.CP:
+                    return new CompareCommand(line, GetOperand(operandString));
                 case OpCode.OR:
                     return new OrCommand(line, GetOperand(operandString));
                 case OpCode.XOR:

@@ -53,5 +53,17 @@ namespace Z80AssemblyParsingTests
             Assert.AreEqual(ExtendedRegister.IX, actualOperand.Register);
             Assert.AreEqual(-127, actualOperand.Displacement);
         }
+
+        [Test]
+        public void ArithmeticParing_NegateCommand()
+        {
+            var sourceCode = "      neg";
+
+            var parser = new Z80LineParser();
+            var actualCommand = AssertExtension.IsCorrectCommandType<NegateCommand>(parser.ParseLine(sourceCode));
+
+            Assert.AreEqual(sourceCode, actualCommand.SourceText);
+            Assert.AreEqual(OpCode.NEG, actualCommand.OpCode);
+        }
     }
 }

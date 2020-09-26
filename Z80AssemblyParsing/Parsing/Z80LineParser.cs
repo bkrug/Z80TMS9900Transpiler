@@ -94,6 +94,8 @@ namespace Z80AssemblyParsing.Parsing
                     return new RotateRightCommand(line);
                 case OpCode.NOP:
                     return new NopCommand(line);
+                case OpCode.NEG:
+                    return new NegateCommand(line);
                 default:
                     return new UnparsableLine(line, "Unparsable: ");
             }

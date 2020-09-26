@@ -12,13 +12,15 @@ namespace TMS9900Translating
         private int _nextDec = 0;
         private int _nextJump = 0;
         private int _nextRt = 0;
+        private string _negOneByteLabel;
         private string _oneByteLabel;
         private string _zeroByteLabel;
-        public string OneByteLabel
+
+        public string NegOneByteLabel
         {
             get
             {
-                return (_oneByteLabel = (_oneByteLabel ?? GetLabelUnusedByZ80("ONE")));
+                return (_negOneByteLabel = (_negOneByteLabel ?? GetLabelUnusedByZ80("NEGONE")));
             }
         }
 
@@ -27,6 +29,14 @@ namespace TMS9900Translating
             get
             {
                 return (_zeroByteLabel = (_zeroByteLabel ?? GetLabelUnusedByZ80("ZERO")));
+            }
+        }
+
+        public string OneByteLabel
+        {
+            get
+            {
+                return (_oneByteLabel = (_oneByteLabel ?? GetLabelUnusedByZ80("ONE")));
             }
         }
 

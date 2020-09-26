@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TMS9900Translating.Commands
+﻿namespace TMS9900Translating.Commands
 {
     public class DecrementCommand : CommandWithOneOperand
     {

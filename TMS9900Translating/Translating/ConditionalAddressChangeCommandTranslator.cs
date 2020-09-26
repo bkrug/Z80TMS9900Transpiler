@@ -7,7 +7,7 @@ using CommandWithTwoOperands = Z80AssemblyParsing.Commands.CommandWithTwoOperand
 
 namespace TMS9900Translating.Translating
 {
-    public abstract class ConditionalAddressChangeCommandTranslator<T> : CommandTranslator<T> where T : CommandWithTwoOperands, IConditionalAddressChangeCommand
+    public class ConditionalAddressChangeCommandTranslator<T> : CommandTranslator<T> where T : CommandWithTwoOperands, IConditionalAddressChangeCommand
     {
         public ConditionalAddressChangeCommandTranslator(MapCollection mapCollection, LabelHighlighter labelHighlighter) : base(mapCollection, labelHighlighter)
         {

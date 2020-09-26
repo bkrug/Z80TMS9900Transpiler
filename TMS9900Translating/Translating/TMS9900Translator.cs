@@ -63,7 +63,7 @@ namespace TMS9900Translating.Translating
         {
             { typeof(Z80Commands.LoadCommand), typeof(LoadCommandTranslator) },
             { typeof(Z80Commands.AddCommand), typeof(AddCommandTranslator) },
-            { typeof(Z80Commands.OrCommand), typeof(OrCommandTranslator) },
+            { typeof(Z80Commands.OrCommand), typeof(LogicCommandTranslator<Z80Commands.OrCommand, SetOnesCorrespondingByteCommand, OrImmediateCommand>) },
             { typeof(Z80Commands.XorCommand), typeof(XorCommandTranslator) },
             { typeof(Z80Commands.PushCommand), typeof(PushCommandTranslator) },
             { typeof(Z80Commands.PopCommand), typeof(PopCommandTranslator) },

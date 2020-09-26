@@ -415,5 +415,26 @@ namespace TMS9900TranslatingTests
             Assert.AreEqual("       MOVB R7,*R15", tmsCommand[0].CommandText, "H is mapped to R6, L is mapped to R7, and R15 contains the address of the lower byte of R6. This operation unifies the contents of HL.");
             Assert.AreEqual("       MOVB *R6,*R14", tmsCommand[1].CommandText);
         }
+
+        [Test]
+        public void Load8Bit_MoveByte_DisplacementOperand()
+        {
+            var z80SourceCommand = "    ld b,(ix+4)";
+            var z80Command = new Z80AssemblyParsing.Parsing.Z80LineParser().ParseLine(z80SourceCommand);
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>()
+                {
+                    (Z80SourceRegister.B, WorkspaceRegister.R2),
+                    (Z80SourceRegister.C, WorkspaceRegister.R2),
+                    (Z80SourceRegister.IX, WorkspaceRegister.R6)
+                },
+                new List<MemoryMapElement>(),
+                new LabelHighlighter()
+            );
+            var tmsCommand = translator.Translate(z80Command).ToList();
+
+            Assert.AreEqual(1, tmsCommand.Count);
+            Assert.AreEqual("       MOVB @4(6),R2", tmsCommand[0].CommandText);
+        }
     }
 }

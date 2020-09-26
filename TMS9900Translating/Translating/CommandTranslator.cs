@@ -118,6 +118,9 @@ namespace TMS9900Translating.Translating
                 return new RegisterTmsOperand(GetWsRegisterFromRegisterPair(registerExtendedOperand.Register));
             }
 
+            if (sourceOperand is Z80Operands.DisplacementOperand displacementOperand)
+                return new IndexedAddressingTmsOperand(_extendedRegisterMap[displacementOperand.Register], displacementOperand.Displacement);
+
             throw new Exception("Not a translatable operand: " + sourceOperand.DisplayValue);
         }
 

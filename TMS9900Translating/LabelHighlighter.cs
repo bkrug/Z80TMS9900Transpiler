@@ -10,6 +10,7 @@ namespace TMS9900Translating
         public IReadOnlyCollection<string> LabelsBranchedTo => _labelsBranchedTo;
         private int _nextInc = 0;
         private int _nextDec = 0;
+        private int _nextJump = 0;
         private string _oneByteLabel;
         private string _zeroByteLabel;
         public string OneByteLabel
@@ -57,6 +58,17 @@ namespace TMS9900Translating
             {
                 var nextDec = ++_nextDec;
                 decLabel = "DEC" + new string('0', 2 - (int)Math.Log10(nextDec)) + nextDec.ToString();
+            }
+            return decLabel;
+        }
+
+        public string GetNextJumpLabel()
+        {
+            var decLabel = string.Empty;
+            while (LabelsFromZ80Code.Contains(decLabel) || decLabel == string.Empty)
+            {
+                var nextJump = ++_nextJump;
+                decLabel = "JMP" + new string('0', 2 - (int)Math.Log10(nextJump)) + nextJump.ToString();
             }
             return decLabel;
         }

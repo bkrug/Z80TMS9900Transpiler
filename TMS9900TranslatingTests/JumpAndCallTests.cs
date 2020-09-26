@@ -80,6 +80,38 @@ namespace TMS9900TranslatingTests
         }
 
         [Test]
+        public void Call_TwoConditional_LabeledAddress()
+        {
+            var lineParser = new Z80AssemblyParsing.Parsing.Z80LineParser();
+            var z80Command1 = lineParser.ParseLine("    call nz,myRout");
+            var z80Command2 = lineParser.ParseLine("    call c,yourRout");
+            var translator = new TMS9900Translator(
+                new List<(Z80SourceRegister, WorkspaceRegister)>(),
+                new List<MemoryMapElement>(),
+                new LabelHighlighter()
+            );
+            var tmsCommand1 = translator.Translate(z80Command1).ToList();
+            var tmsCommand2 = translator.Translate(z80Command2).ToList();
+
+            var expected1 = new List<string>()
+            {
+                "       JEQ  JMP001",
+                "       BL   @myRout",
+                "JMP001",
+            };
+            var actual1 = tmsCommand1.Select(tc => tc.CommandText).ToList();
+            CollectionAssert.AreEqual(expected1, actual1);
+            var expected2 = new List<string>()
+            {
+                "       JNC  JMP002",
+                "       BL   @yourRout",
+                "JMP002",
+            };
+            var actual2 = tmsCommand2.Select(tc => tc.CommandText).ToList();
+            CollectionAssert.AreEqual(expected2, actual2);
+        }
+
+        [Test]
         public void Return()
         {
             var z80SourceCommand = "    ret";

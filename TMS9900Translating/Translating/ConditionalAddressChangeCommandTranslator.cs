@@ -43,37 +43,41 @@ namespace TMS9900Translating.Translating
             }
             else if (_typesByCondition.ContainsKey(addressChangeCommand.ConditionOperand.Condition))
             {
-                yield return GetInverseJumpCommand(addressChangeCommand);
+                var jmpLabel = _labelHighlighter.GetNextJumpLabel();
+                yield return GetInverseJumpCommand(addressChangeCommand, jmpLabel);
                 if (unifyCommand != null)
                     yield return unifyCommand;
                 yield return GetBranchCommand(addressChangeCommand, destinationOperand);
                 yield return new BlankLineInTms(addressChangeCommand)
                 {
-                    Label = "JMP001"
+                    Label = jmpLabel
                 };
             }
             else if (addressChangeCommand.ConditionOperand.Condition == Z80AssemblyParsing.JumpConditions.M)
             {
-                yield return new JumpIfLessThanCommand(addressChangeCommand, new Operands.LabeledAddressWithoutAtTmsOperand("JMP001"));
-                yield return new JumpCommand(addressChangeCommand, new Operands.LabeledAddressWithoutAtTmsOperand("JMP002"));
+                var jmpLabel1 = _labelHighlighter.GetNextJumpLabel();
+                var jmpLabel2 = _labelHighlighter.GetNextJumpLabel();
+                yield return new JumpIfLessThanCommand(addressChangeCommand, new Operands.LabeledAddressWithoutAtTmsOperand(jmpLabel1));
+                yield return new JumpCommand(addressChangeCommand, new Operands.LabeledAddressWithoutAtTmsOperand(jmpLabel2));
                 yield return new BlankLineInTms(addressChangeCommand)
                 {
-                    Label = "JMP001"
+                    Label = jmpLabel1
                 };
                 if (unifyCommand != null)
                     yield return unifyCommand;
                 yield return GetBranchCommand(addressChangeCommand, destinationOperand);
                 yield return new BlankLineInTms(addressChangeCommand)
                 {
-                    Label = "JMP002"
+                    Label = jmpLabel2
                 };
             }
         }
 
-        private CommandWithOneOperand GetInverseJumpCommand(T callCommand)
+        private CommandWithOneOperand GetInverseJumpCommand(T callCommand, string jmpLabel)
         {
             var translatorType = _typesByCondition[callCommand.ConditionOperand.Condition];
-            var translatorInstance = (CommandWithOneOperand)Activator.CreateInstance(translatorType, new object[] { callCommand, new Operands.LabeledAddressWithoutAtTmsOperand("JMP001") });
+            var addressOperand = new Operands.LabeledAddressWithoutAtTmsOperand(jmpLabel);
+            var translatorInstance = (CommandWithOneOperand)Activator.CreateInstance(translatorType, new object[] { callCommand, addressOperand });
             return translatorInstance;
         }
 
